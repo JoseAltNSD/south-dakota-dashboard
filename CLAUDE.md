@@ -1,0 +1,56 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## What this is
+
+An illustrative React 18 + Vite 5 mock-up of the South Dakota SLDS public dashboard. It follows students from high
+school into college across three stages (Readiness, Transition, Postsecondary). All figures are sample data, and the
+real charts will come from an embedded Power BI report, which this app only represents with a placeholder. Bracketed
+text such as `[SLDS EMAIL]`, `[YEAR]` or `[pending]` marks facts still to be confirmed with the client; keep those
+markers rather than inventing values.
+
+## Commands
+
+Requires Node.js 18+.
+
+```bash
+npm install
+npm run dev       # dev server at http://localhost:5173
+npm run build     # production build in dist/
+npm run preview   # serve the production build
+```
+
+There is no test runner, linter or formatter configured.
+
+## Architecture
+
+- **Routing**: `HashRouter` (`src/main.jsx`) plus `base: './'` (`vite.config.js`) so `dist/` works from any static
+  host or file share. Routes are `/`, `/explore`, `/learn` in `src/App.jsx`, which also sets `document.title` from
+  its `TITLES` map (add an entry when adding a route).
+- **Content lives in data files, not components.** `src/data/stages.js` holds each stage's copy, FAQ, indicators and
+  the filter option lists (`YEARS`, `LEVELS`, `DISTRICTS`, `SCHOOLS`, `GROUPS`); `src/data/help.js` holds glossary,
+  dictionary, downloads and FAQ content for Learn. Pages render from these, so copy edits usually belong there.
+- **URL query params are the shared state between pages.** Home links into Explore with `?stage=` and
+  `?level=District&district=...`; Explore validates them against `STAGE_ORDER`/`LEVELS`/`DISTRICTS` before use.
+  Learn uses `?section=` (`glossary`, `dictionary`, `read`, `download`, `about`, `faq`). Keep these deep links working
+  when renaming keys or options.
+- **Explore → Power BI report pages**: Explore builds the report's page list as Overview + one page per indicator
+  without `later: true` + District comparison. "Show in report" maps an indicator's index to a page index, so the
+  order of `indicators` in `stages.js` matters. Indicators with `later: true` appear in the guide as "Coming later"
+  but get no report page.
+- **`src/components/PowerBIEmbed.jsx`** is a placeholder whose props (`pages`, `activePage`, `onPageChange`) mirror
+  what a real embed needs (`report.setPage`, and Explore's filters → `report.setFilters`). The README's "Connecting
+  Power BI" section describes the swap; the hosting model (Embedded vs Publish to web) is still undecided.
+- **Styling**: one global `src/styles.css` with design tokens as CSS variables on `:root` and BEM-ish class names
+  (`.pbi__canvas`, `.btn--secondary`). Stage colors are `--readiness`, `--transition`/`--transition-ink`,
+  `--postsecondary`; data files reference them as `var(--...)`. No CSS modules or utility framework.
+
+## Domain rules to preserve
+
+- Student group results are state-level only (suppression rules). Explore enforces this by disabling the group
+  filter and resetting it to "All students" when level is not State.
+- Values with fewer than 10 students are suppressed; suppressed cells are shown striped/hatched.
+- Red (`--prairie-red`, `--signal-red`) is for site chrome only, never for data.
+- PMS hex values and the extended palette are approximate pending DOE Communications; the logo in `src/assets/` is a
+  placeholder.
