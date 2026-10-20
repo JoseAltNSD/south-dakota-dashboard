@@ -22,6 +22,12 @@ The build uses relative paths and hash-based routing (`#/explore`), so the `dist
 static host or opened from a file share without server configuration. Switch `HashRouter` to `BrowserRouter` in
 `src/main.jsx` if your host supports single-page-app fallbacks.
 
+## GitHub Pages
+
+`.github/workflows/deploy.yml` builds the site and publishes `dist/` to GitHub Pages on every push to `main` (or on
+demand from the Actions tab). In the repository's **Settings → Pages**, set **Source** to **GitHub Actions**. The site
+is served at `https://<owner>.github.io/<repo>/`.
+
 ## Structure
 
 ```
