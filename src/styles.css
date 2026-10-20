@@ -161,23 +161,47 @@ button { font: inherit; }
 
 /* Power BI embed placeholder */
 .pbi { width: 100%; background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius-lg); overflow: hidden; display: flex; flex-direction: column; }
-.pbi__canvas { position: relative; width: 100%; aspect-ratio: 16 / 9; min-height: 420px; background: #fafafa; display: flex; align-items: center; justify-content: center; padding: 24px; }
-.pbi__skeleton { position: absolute; inset: 28px; display: flex; flex-direction: column; gap: 20px; }
-.pbi__skeleton-title { height: 18px; width: 30%; background: #ececec; border-radius: 2px; }
-.pbi__skeleton-cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; height: 18%; }
-.pbi__skeleton-cards div, .pbi__skeleton-panel { border: 1px solid #ececec; border-radius: 4px; background: var(--surface); }
-.pbi__skeleton-body { flex: 1; display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
-.pbi__skeleton-bars { display: flex; align-items: flex-end; gap: 16px; padding: 24px 24px 0; }
-.pbi__skeleton-bars div { flex: 1; background: #ececec; }
-.pbi__skeleton-rows { display: flex; flex-direction: column; gap: 10px; padding: 16px; }
-.pbi__skeleton-rows div { height: 12px; background: #ececec; }
-.pbi__skeleton-rows div:nth-child(even) { background: #f1f1f1; }
-.pbi__label { position: relative; background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius-lg); padding: 20px 28px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; max-width: 380px; }
+.pbi__canvas { width: 100%; min-height: 420px; background: #fafafa; padding: 20px; }
+.pbi__frame { display: block; width: 100%; aspect-ratio: 16 / 9; min-height: 420px; border: 0; }
 .pbi__bar { border-top: 1px solid var(--hairline); background: var(--pbi-chrome); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 6px 12px; font-size: 12px; line-height: 16px; color: var(--muted); }
 .pbi__pages { display: flex; flex-wrap: wrap; gap: 4px; }
 .pbi__page { min-height: 32px; padding: 0 10px; border: 1px solid #c8c6c4; border-radius: var(--radius-md); background: var(--surface); color: var(--ink); font-size: 12px; font-weight: 600; cursor: pointer; }
 .pbi__page[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: var(--on-red); }
 .pbi__fullscreen { display: inline-flex; align-items: center; gap: 4px; background: transparent; border: 0; color: var(--muted); font-size: 12px; cursor: pointer; padding: 4px; }
+
+/* Sample report pages (stand-in for the Power BI report) */
+.rpt { display: flex; flex-direction: column; gap: 16px; }
+.rpt__head { display: flex; flex-direction: column; gap: 2px; }
+.rpt__tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 16px; }
+.rpt__body { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 16px; }
+.rpt__panel { background: var(--surface); border: 1px solid #ececec; border-radius: var(--radius-md); padding: 16px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.rpt__label { font-size: 12px; line-height: 16px; font-weight: 600; color: var(--muted); }
+.rpt__hero { font-size: 32px; line-height: 38px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.rpt__hero--lg { font-size: 44px; line-height: 50px; }
+
+.rpt-bars { display: flex; align-items: stretch; gap: 8px; height: 200px; margin-top: 8px; }
+.rpt-bars--compact { height: 64px; gap: 4px; margin-top: 4px; }
+.rpt-bars__col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.rpt-bars__col--break { border-left: 2px dashed var(--muted); padding-left: 6px; }
+.rpt-bars--compact .rpt-bars__col--break { padding-left: 2px; }
+.rpt-bars__track { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; border-bottom: 1px solid var(--control-border); }
+.rpt-bars__bar { width: 100%; border-radius: 4px 4px 0 0; }
+.rpt-bars__value { font-size: 12px; line-height: 16px; font-weight: 600; text-align: center; }
+.rpt-bars__year { font-size: 11px; line-height: 14px; color: var(--muted); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.rpt-compare { display: flex; flex-direction: column; gap: 8px; }
+.rpt-compare__row { display: grid; grid-template-columns: minmax(0, 9rem) 1fr 3rem; align-items: center; gap: 8px; font-size: 13px; line-height: 18px; }
+.rpt-compare__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rpt-compare__track { height: 14px; }
+.rpt-compare__bar { height: 100%; border-radius: 0 4px 4px 0; }
+.rpt-compare__value { text-align: right; font-variant-numeric: tabular-nums; }
+
+.rpt-heat__wrap { overflow-x: auto; }
+.rpt-heat { width: 100%; min-width: 560px; border-collapse: separate; border-spacing: 2px; font-size: 13px; line-height: 18px; }
+.rpt-heat th { text-align: left; font-weight: 600; padding: 6px 8px; }
+.rpt-heat thead th { font-size: 12px; color: var(--muted); vertical-align: bottom; }
+.rpt-heat td { text-align: center; padding: 8px; border-radius: 2px; font-variant-numeric: tabular-nums; }
+.rpt-heat__state th, .rpt-heat__state td { border-top: 1px solid var(--control-border); font-weight: 600; }
 
 /* Learn */
 .learn-layout { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; padding-top: 24px; padding-bottom: 48px; }

@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import Icon from '../components/Icon.jsx';
 import PowerBIEmbed from '../components/PowerBIEmbed.jsx';
+import SampleReport from '../components/SampleReport.jsx';
 import { STAGES, STAGE_ORDER, YEARS, LEVELS, DISTRICTS, SCHOOLS, GROUPS } from '../data/stages.js';
 
 const TOOLS = [
@@ -29,12 +30,14 @@ export default function Explore() {
   const ready = stage.indicators.filter((i) => !i.later);
   const pages = useMemo(
     () => [
-      { label: 'Overview', description: 'Summary cards and five-year trends for every indicator' },
-      ...ready.map((i) => ({ label: i.name, description: 'Headline value, five-year trend and state comparison' })),
-      { label: 'District comparison', description: 'Shape map and heat table of districts; suppressed values striped' },
+      { kind: 'overview', label: 'Overview' },
+      ...ready.map((i) => ({ kind: 'indicator', label: i.name, indicator: i })),
+      { kind: 'districts', label: 'District comparison' },
     ],
     [stageKey] // eslint-disable-line react-hooks/exhaustive-deps
   );
+
+  const activePage = Math.min(reportPage, pages.length - 1);
 
   const place =
     filters.level === 'State' ? 'South Dakota'
@@ -200,7 +203,9 @@ export default function Explore() {
             <h2 id="report-h" className="h2" style={{ scrollMarginTop: 16 }}>{stage.short} report</h2>
             <span className="body-sm muted">{viewing}</span>
           </div>
-          <PowerBIEmbed title={stage.short} pages={pages} activePage={Math.min(reportPage, pages.length - 1)} onPageChange={setReportPage} />
+          <PowerBIEmbed title={stage.short} pages={pages} activePage={activePage} onPageChange={setReportPage} embedUrl={stage.embedUrl}>
+            <SampleReport stage={stage} page={pages[activePage]} indicators={ready} filters={filters} subtitle={viewing} />
+          </PowerBIEmbed>
           <p className="caption">Source: South Dakota SLDS, {filters.year}. Sample data. Values are suppressed where fewer than 10 students are counted.</p>
           <div className="key-finding">
             <span className="body-sm strong">Key finding</span>

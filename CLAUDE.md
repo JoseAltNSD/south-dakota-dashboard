@@ -39,9 +39,11 @@ There is no test runner, linter or formatter configured.
   without `later: true` + District comparison. "Show in report" maps an indicator's index to a page index, so the
   order of `indicators` in `stages.js` matters. Indicators with `later: true` appear in the guide as "Coming later"
   but get no report page.
-- **`src/components/PowerBIEmbed.jsx`** is a placeholder whose props (`pages`, `activePage`, `onPageChange`) mirror
-  what a real embed needs (`report.setPage`, and Explore's filters → `report.setFilters`). The README's "Connecting
-  Power BI" section describes the swap; the hosting model (Embedded vs Publish to web) is still undecided.
+- **Report frame**: `PowerBIEmbed.jsx` shows an iframe when the stage has an `embedUrl`, otherwise its children,
+  which Explore sets to `SampleReport.jsx`. The sample pages are drawn from each indicator's `trend` (oldest year
+  first, the reverse of `YEARS`) and `breakAt` (series break). `sampleValue()` derives district, school and group
+  values from fixed per-name offsets and returns `null` for suppressed cells. The README's "Connecting Power BI"
+  section covers the swap to Power BI Embedded; the hosting model is still undecided.
 - **Styling**: one global `src/styles.css` with design tokens as CSS variables on `:root` and BEM-ish class names
   (`.pbi__canvas`, `.btn--secondary`). Stage colors are `--readiness`, `--transition`/`--transition-ink`,
   `--postsecondary`; data files reference them as `var(--...)`. No CSS modules or utility framework.

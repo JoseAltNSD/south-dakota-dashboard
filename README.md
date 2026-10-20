@@ -38,7 +38,8 @@ src/
   components/
     Header.jsx           Logo, product name, main navigation
     Footer.jsx           Logo, illustrative disclaimer, footer links
-    PowerBIEmbed.jsx     Placeholder for the embedded Power BI report
+    PowerBIEmbed.jsx     Frame for the Power BI report (iframe when a stage has an embedUrl)
+    SampleReport.jsx     Sample report pages drawn from the trend values in stages.js
     Icon.jsx             Small stroke icon set
   pages/
     Home.jsx             Question-led landing page and district finder
@@ -59,7 +60,14 @@ src/
 
 ## Connecting Power BI
 
-`src/components/PowerBIEmbed.jsx` renders a placeholder with the report's page buttons. To connect a real report:
+Until a real report is connected, the report frame shows sample pages from `src/components/SampleReport.jsx`: an
+overview of every indicator, one page per indicator (five-year trend and district comparison), and a district heat
+table. They follow the Explore filters and use the sample `trend` values in `src/data/stages.js`.
+
+To show an actual Power BI report for a stage, add `embedUrl: 'https://app.powerbi.com/view?r=...'` (a "Publish to
+web" link) to that stage in `stages.js`. The frame then shows the report in an iframe in place of the sample.
+
+To connect a secure report:
 
 1. Choose the hosting model: **Power BI Embedded** (secure, capacity cost) or **Publish to web** (free, public, no
    row-level security). This decision is still open with the client.

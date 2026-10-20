@@ -1,6 +1,9 @@
 // Content for the three stages shown on Explore the data.
 // All findings are written from SAMPLE data and must be replaced with real results.
 // Bracketed text marks facts still to be confirmed with the client.
+// `trend` holds sample percents for each school year, oldest first (the reverse of YEARS).
+// `breakAt` is the index of the first year after a change in how the data were collected.
+// Set `embedUrl` on a stage to a Power BI "Publish to web" link to show that report instead of the sample.
 
 export const STAGE_ORDER = ['readiness', 'transition', 'postsecondary'];
 
@@ -23,10 +26,10 @@ export const STAGES = {
       { q: 'What counts as dual credit?', a: 'A college course taken in high school that earns both high school and college credit.' },
     ],
     indicators: [
-      { id: 'att', name: 'Consistent attendance', question: 'Are students attending school consistently?', definition: 'The percent of students in grades 9–12 who attended at least 90% of the school days they were enrolled.', howto: 'Each bar is one school year. A taller bar means more students attended at least 90% of school days. The drop in 2022–23 matches a rise in absences seen nationally.' },
-      { id: 'gpa', name: 'GPA', question: 'Are students earning strong grades?', definition: 'The percent of 12th graders whose cumulative high school GPA is 3.0 or higher on a 4.0 scale.', howto: 'GPA is set by each school, so grading practices can differ between districts. Read it alongside proficiency results.' },
-      { id: 'prof', name: 'Reading and math proficiency', question: 'Are students meeting grade-level standards?', definition: 'The percent of 11th graders who met the state standard in reading or math on the state test.', howto: 'Proficient means a student met the state standard for their grade. The dashed line marks the change in tests.', noteLabel: 'Series break.', note: 'In [YEAR] South Dakota moved its 11th-grade test from Smarter Balanced to the ACT. Results before and after the change are not directly comparable.' },
-      { id: 'dual', name: 'Early college coursework', question: 'Are students taking college courses in high school?', definition: 'The percent of high school graduates who completed at least one dual credit course before graduating.', howto: 'South Dakota has a large dual credit program, so this shows how many students start earning college credit early.' },
+      { id: 'att', name: 'Consistent attendance', trend: [78, 69, 72, 74, 76], question: 'Are students attending school consistently?', definition: 'The percent of students in grades 9–12 who attended at least 90% of the school days they were enrolled.', howto: 'Each bar is one school year. A taller bar means more students attended at least 90% of school days. The drop in 2022–23 matches a rise in absences seen nationally.' },
+      { id: 'gpa', name: 'GPA', trend: [52, 50, 51, 53, 54], question: 'Are students earning strong grades?', definition: 'The percent of 12th graders whose cumulative high school GPA is 3.0 or higher on a 4.0 scale.', howto: 'GPA is set by each school, so grading practices can differ between districts. Read it alongside proficiency results.' },
+      { id: 'prof', name: 'Reading and math proficiency', trend: [48, 47, 46, 41, 42], breakAt: 3, question: 'Are students meeting grade-level standards?', definition: 'The percent of 11th graders who met the state standard in reading or math on the state test.', howto: 'Proficient means a student met the state standard for their grade. The dashed line marks the change in tests.', noteLabel: 'Series break.', note: 'In [YEAR] South Dakota moved its 11th-grade test from Smarter Balanced to the ACT. Results before and after the change are not directly comparable.' },
+      { id: 'dual', name: 'Early college coursework', trend: [31, 33, 36, 39, 42], question: 'Are students taking college courses in high school?', definition: 'The percent of high school graduates who completed at least one dual credit course before graduating.', howto: 'South Dakota has a large dual credit program, so this shows how many students start earning college credit early.' },
     ],
   },
   transition: {
@@ -47,10 +50,10 @@ export const STAGES = {
       { q: 'Do applications include out-of-state colleges?', a: 'Not yet. Applications cover colleges that report to the SLDS.' },
     ],
     indicators: [
-      { id: 'act', name: 'ACT participation and performance', question: 'Are students taking the ACT, and how do they score?', definition: 'The percent of 11th graders who took the ACT, and their average composite score (1 to 36).', howto: 'The large number shows how many students took the test. Average scores appear in the table view.', noteLabel: 'Series break.', note: 'Participation rose when the ACT became the state 11th-grade test.' },
-      { id: 'app', name: 'College applications', question: 'Are seniors applying to college?', definition: 'The percent of 12th graders who submitted at least one application to a college that reports to the SLDS.', howto: 'Applications to colleges outside the SLDS may be missing, so this may undercount.' },
-      { id: 'fafsa', name: 'FAFSA completion', question: 'Are seniors applying for financial aid?', definition: 'The percent of 12th graders who completed the Free Application for Federal Student Aid (FAFSA) by June 30.', howto: 'Completing the FAFSA is one of the strongest signs that a student plans to enroll in college.', noteLabel: 'Data source.', note: 'FAFSA records come from the Board of Regents [agreement pending].' },
-      { id: 'grad', name: 'High school graduation', question: 'Are students graduating on time?', definition: 'The four-year adjusted cohort graduation rate (ACGR). Optional indicator, also published in the state Report Card.', howto: 'Follows students who started 9th grade together and adjusts for students who moved in or out.' },
+      { id: 'act', name: 'ACT participation and performance', trend: [71, 72, 96, 97, 97], breakAt: 2, question: 'Are students taking the ACT, and how do they score?', definition: 'The percent of 11th graders who took the ACT, and their average composite score (1 to 36).', howto: 'The large number shows how many students took the test. Average scores appear in the table view.', noteLabel: 'Series break.', note: 'Participation rose when the ACT became the state 11th-grade test.' },
+      { id: 'app', name: 'College applications', trend: [55, 54, 56, 57, 58], question: 'Are seniors applying to college?', definition: 'The percent of 12th graders who submitted at least one application to a college that reports to the SLDS.', howto: 'Applications to colleges outside the SLDS may be missing, so this may undercount.' },
+      { id: 'fafsa', name: 'FAFSA completion', trend: [52, 53, 51, 44, 50], question: 'Are seniors applying for financial aid?', definition: 'The percent of 12th graders who completed the Free Application for Federal Student Aid (FAFSA) by June 30.', howto: 'Completing the FAFSA is one of the strongest signs that a student plans to enroll in college.', noteLabel: 'Data source.', note: 'FAFSA records come from the Board of Regents [agreement pending].' },
+      { id: 'grad', name: 'High school graduation', trend: [84, 85, 85, 86, 86], question: 'Are students graduating on time?', definition: 'The four-year adjusted cohort graduation rate (ACGR). Optional indicator, also published in the state Report Card.', howto: 'Follows students who started 9th grade together and adjusts for students who moved in or out.' },
     ],
   },
   postsecondary: {
@@ -71,9 +74,9 @@ export const STAGES = {
       { q: 'Are tribal colleges included?', a: 'Records from tribal colleges may be incomplete.' },
     ],
     indicators: [
-      { id: 'enr', name: 'College enrollment', question: 'Do graduates enroll in college?', definition: 'The percent of high school graduates enrolled at any two- or four-year college in the fall after graduation.', howto: 'Counts enrollment in or out of state, at public or private colleges.' },
-      { id: 'cred', name: 'First-year credits', question: 'Are first-year students earning enough credits?', definition: 'The percent of first-year students who earned 24 or more college credits, and who passed gateway math and English.', howto: 'Earning 24 credits in year one keeps a student on pace for a degree. Gateway course results appear in the table view.' },
-      { id: 'pers', name: 'Persistence', question: 'Do students come back for a second year?', definition: 'The percent of first-year students who enrolled at any college the following fall.', howto: 'A student counts as persisting even if they move to a different college.' },
+      { id: 'enr', name: 'College enrollment', trend: [61, 59, 58, 59, 60], question: 'Do graduates enroll in college?', definition: 'The percent of high school graduates enrolled at any two- or four-year college in the fall after graduation.', howto: 'Counts enrollment in or out of state, at public or private colleges.' },
+      { id: 'cred', name: 'First-year credits', trend: [44, 45, 46, 47, 47], question: 'Are first-year students earning enough credits?', definition: 'The percent of first-year students who earned 24 or more college credits, and who passed gateway math and English.', howto: 'Earning 24 credits in year one keeps a student on pace for a degree. Gateway course results appear in the table view.' },
+      { id: 'pers', name: 'Persistence', trend: [79, 80, 81, 80, 81], question: 'Do students come back for a second year?', definition: 'The percent of first-year students who enrolled at any college the following fall.', howto: 'A student counts as persisting even if they move to a different college.' },
       { id: 'deg', name: 'Degree completion', question: 'Do students earn a degree or certificate?', later: true, definition: 'Completion rates will be added once enough graduating classes have had time to finish a degree or certificate.' },
     ],
   },
