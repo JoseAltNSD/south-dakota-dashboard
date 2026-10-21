@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import Icon from '../components/Icon.jsx';
 import { SECTIONS, TERMS, DICTIONARY, DOWNLOADS, ABOUT, FAQ } from '../data/help.js';
+import { LEAD, PARTNERS } from '../data/agencies.js';
 
 export default function Learn() {
   const [params, setParams] = useSearchParams();
@@ -140,6 +141,9 @@ export default function Learn() {
           {section === 'about' && (
             <section aria-labelledby="a-h" className="stack gap-16">
               <h2 id="a-h" className="h2">About the data</h2>
+              <p>
+                The SLDS is led by the {LEAD.name} in partnership with the {PARTNERS.map((p) => p.name).join(' and the ')}.
+              </p>
               <div className="grid grid--4">
                 {ABOUT.map((a) => (
                   <div key={a.title} className="card stack gap-8" style={{ padding: '16px 20px' }}>

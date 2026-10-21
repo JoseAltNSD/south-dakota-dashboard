@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Icon from '../components/Icon.jsx';
+import AgencyLogos from '../components/AgencyLogos.jsx';
 import { STAGES, STAGE_ORDER, DISTRICTS } from '../data/stages.js';
 
 const HELP = [
@@ -116,7 +117,13 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="band band--well" aria-labelledby="help-h">
+      <section className="band band--well" aria-label="Partner agencies">
+        <div className="container">
+          <AgencyLogos on="light" centered />
+        </div>
+      </section>
+
+      <section className="band" aria-labelledby="help-h">
         <div className="container stack gap-32">
           <h2 id="help-h" className="h2">Help and context</h2>
           <div className="grid grid--4">

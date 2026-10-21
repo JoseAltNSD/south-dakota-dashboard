@@ -83,6 +83,24 @@ button { font: inherit; }
 .site-footer__inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px; padding-top: 32px; padding-bottom: 32px; }
 .site-footer__about { display: flex; flex-direction: column; gap: 4px; max-width: 460px; }
 .site-footer__logo { width: 244px; height: auto; display: block; margin-bottom: 12px; }
+.site-footer__side { display: flex; flex-direction: column; gap: 32px; }
+
+/* Agency logos: DOE leads, partners smaller after "In partnership with". */
+.agencies { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px 32px; }
+.agencies__partners { display: flex; flex-direction: column; gap: 8px; }
+.agencies__label { font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+.agencies--light .agencies__label { color: var(--muted); }
+.agencies__row { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px; }
+.agencies--centered { flex-direction: column; align-items: center; gap: 24px; text-align: center; }
+.agencies--centered .agencies__label { font-size: 16px; line-height: 22px; }
+.agencies--centered .agencies__row { justify-content: center; gap: 24px 64px; }
+.agency-logo { display: block; height: 40px; width: auto; max-width: 100%; }
+.agency-logo--lead { height: auto; width: 244px; }
+.agency-logo--white { filter: brightness(0) invert(1); }
+.agency-logo--ink { filter: brightness(0); opacity: 0.85; }
+/* Files with a white background: force to pure black and white, then blend the background away. */
+.agency-logo--matte.agency-logo--white { filter: grayscale(1) brightness(0.7) contrast(100) invert(1); mix-blend-mode: screen; }
+.agency-logo--matte.agency-logo--ink { filter: grayscale(1) brightness(0.7) contrast(100); mix-blend-mode: multiply; }
 .badge-outline { align-self: flex-start; border: 1px solid var(--on-red); border-radius: var(--radius-sm); padding: 0 6px; font-size: 12px; line-height: 18px; font-weight: 700; letter-spacing: 0.06em; }
 .site-footer nav { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: flex-start; }
 

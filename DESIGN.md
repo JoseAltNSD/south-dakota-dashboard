@@ -46,6 +46,7 @@ These came out of review rounds. They override the original design system README
 10. **No "On this page:" jump-link row** on Explore. It was removed.
 11. **Explore uses horizontal stage tabs.** A left sidebar index was tried, and was removed so the bands could run full width. Tabs also match the client's "three tabs" requirement.
 12. The owner wants to be able to **revert**. Before large changes, keep a copy of the current files.
+13. **Shared branding: DOE leads, the Board of Regents (BOR) and the Board of Technical Education (BTE) are partners** (Session 3 asked for branding that shows the agencies working together; decided 2026-10-20). The header stays DOE-only. The partners appear after an "In partnership with" label in the footer, in a Home band and on Learn's About the data. Partner logos are smaller than the DOE logo, and on any one background all logos share one tone (all white on red, all dark on light).
 
 ---
 
@@ -112,8 +113,8 @@ The font family is `"Segoe UI", "Segoe UI Web (West European)", -apple-system, B
 - The header wraps on narrow screens.
 
 **Footer** (prairie red)
-- Logo (244px), then "South Dakota Statewide Longitudinal Data System" (16, 600), an outlined "ILLUSTRATIVE" badge, and the disclaimer: *"Illustrative mock-up for design review. Agency names show intended branding only; this is not an official publication of the South Dakota Department of Education or the South Dakota Board of Regents."*
-- Links: About the data, Accessibility, Privacy, Contact the SLDS team, Feedback.
+- Left column: DOE logo (244px), then "South Dakota Statewide Longitudinal Data System" (16, 600), an outlined "ILLUSTRATIVE" badge, and the disclaimer: *"Illustrative mock-up for design review. Agency names show intended branding only; this is not an official publication of the South Dakota Department of Education, the South Dakota Board of Regents or the South Dakota Board of Technical Education."*
+- Right column: the links (About the data, Accessibility, Privacy, Contact the SLDS team, Feedback), then 32px below them the "IN PARTNERSHIP WITH" eyebrow and the BOR and BTE logos (40px tall, white).
 
 **Buttons**
 - Primary: prairie red, turning ink on hover.
@@ -161,7 +162,8 @@ The font family is `"Segoe UI", "Segoe UI Web (West European)", -apple-system, B
 3. **One connected record, from high school to college** (white): four steps.
    - Step 1 K-12 schools, Step 2 Leaving high school and Step 3 College are white cards with colored eyebrow text.
    - "Coming later: Workforce" uses the hatched fill.
-4. **Help and context** (gray well): four tiles (Glossary, Data dictionary, How to read the charts, Download data) with icons, plus a line pointing to the state Report Card.
+4. **Partner agencies** (gray well, no heading or body text): "IN PARTNERSHIP WITH" (16/22, 600, uppercase, muted) centered above one centered row of all three logos in one dark tone, 24px below the label: DOE (244px wide), BOR and BTE (40px tall), vertically centered on each other with 64px between them. The row wraps on narrow screens.
+5. **Help and context** (white, flipped from gray so the bands keep alternating): four tiles (Glossary, Data dictionary, How to read the charts, Download data) with icons, plus a line pointing to the state Report Card.
 
 ### Explore the data (`/explore`, `Explore.dc.html`)
 
@@ -198,7 +200,7 @@ The font family is `"Segoe UI", "Segoe UI Web (West European)", -apple-system, B
 - **Data dictionary:** a scrollable table (Indicator, Stage chip, Definition, Students counted, Source).
 - **How to read the charts:** a numbered anatomy demo (question, headline value, context line, trend, source) with a matching list.
 - **Download data:** four cards (Readiness CSV, Transition CSV, Postsecondary CSV, Data dictionary PDF).
-- **About the data:** four cards (sources, years covered, privacy, known limits).
+- **About the data:** one sentence naming the agencies ("The SLDS is led by the South Dakota Department of Education in partnership with the South Dakota Board of Regents and the South Dakota Board of Technical Education."), then four cards (sources, years covered, privacy, known limits). What each agency contributes is not described yet, pending the client; the "Where the data come from" card still names only DOE and BOR.
 - **FAQ:** `<details>` accordions.
 - A "Still have a question?" strip with `[SLDS EMAIL]` closes the page.
 - *Not yet updated to match Home and Explore:* this page has no full-width bands, and its download cards still have 4px colored top borders. Ask the owner before restyling it.
@@ -275,6 +277,7 @@ Full text for every stage and indicator lives in `src/data/stages.js` and `src/d
 ## 9. Open items and placeholders
 
 - **Brand:** confirm the PMS hex values and the extended palette with DOE Communications; get the official logo file (SVG) and any joint DOE and Board of Regents lockup.
+- **Partner logos:** request official white (knockout) and one-color dark versions from BOR and BTE, plus a dark DOE version. Until then, `AgencyLogos.jsx` recolors with CSS filters. The BTE file (`sd-board-of-technical-education.png`) has a solid white background, so it is marked `matte` and recolored with a high-contrast filter plus a blend mode. The BOR file is a small (330px) white WebP. Confirm with the client what data each agency contributes.
 - **Power BI hosting:** "Publish to web" or Power BI Embedded (cost vs. security). The client wants a secure endpoint. Build the Power BI theme JSON from the tokens above. `embedUrl` support covers only the "Publish to web" case.
 - **Sample charts:** confirm with the owner whether the canvas artboard should get the same sample charts as React, and whether the sample heat table should use the teal data ramp instead of per-stage shades.
 - **Data:** FAFSA data-sharing agreement; postsecondary start year (2019–20 or 2020–21); attendance threshold; the year the test changed; subgroup suppression rules (currently state only, fewer than 10 students).
@@ -296,3 +299,4 @@ Full text for every stage and indicator lives in `src/data/stages.js` and `src/d
 11. **Sample charts (2026-10-19):** the Power BI skeleton in React was replaced by sample report pages (overview tiles, indicator trend and district bars, district heat table) drawn from per-indicator `trend` data, with series breaks and suppression shown. Stages can now take a "Publish to web" `embedUrl`.
 12. **Stage tabs (2026-10-20):** made more visible with a stage-tint fill, 4px stage-color underline, hover background and a larger dot. The full-name caption was dropped.
 13. **Intro blocks (2026-10-20):** "Why is this important?" and "Which students am I seeing?" got a 4px stage-color left border, stage-colored headings and muted body text.
+14. **Partner branding (2026-10-20):** Board of Regents and Board of Technical Education logos added after "In partnership with" in the footer and a new centered Home band, a partner sentence on About the data, and all three agencies named in the disclaimer.
