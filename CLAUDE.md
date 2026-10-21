@@ -46,7 +46,7 @@ There is no test runner, linter or formatter configured.
   section covers the swap to Power BI Embedded; the hosting model is still undecided.
 - **Styling**: one global `src/styles.css` with design tokens as CSS variables on `:root` and BEM-ish class names
   (`.pbi__canvas`, `.btn--secondary`). Stage colors are `--readiness`, `--transition`/`--transition-ink`,
-  `--postsecondary`; data files reference them as `var(--...)`. No CSS modules or utility framework.
+  `--postsecondary`, each with a `--*-tint` for light fills; data files reference them as `var(--...)`. No CSS modules or utility framework.
 
 ## Domain rules to preserve
 

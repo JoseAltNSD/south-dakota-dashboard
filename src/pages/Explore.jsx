@@ -84,12 +84,9 @@ export default function Explore() {
             {STAGE_ORDER.map((key) => {
               const s = STAGES[key];
               return (
-                <button key={key} type="button" role="tab" className="stage-tab" aria-selected={key === stageKey} onClick={() => selectStage(key)}>
-                  <span className="stage-tab__dot" style={{ background: s.color }} aria-hidden="true" />
-                  <span className="stack">
-                    <span className="stage-tab__title">{s.short}</span>
-                    <span className="caption">{s.full}</span>
-                  </span>
+                <button key={key} type="button" role="tab" className="stage-tab" aria-selected={key === stageKey} onClick={() => selectStage(key)} style={{ '--stage': s.color, '--stage-tint': s.tint }}>
+                  <span className="stage-tab__dot" aria-hidden="true" />
+                  <span className="stage-tab__title">{s.short}</span>
                 </button>
               );
             })}
@@ -162,12 +159,12 @@ export default function Explore() {
             </div>
           )}
 
-          <div className="grid grid--intro">
-            <div className="stack gap-8">
+          <div className="grid grid--intro" style={{ '--stage': stage.color, '--stage-ink': stage.ink }}>
+            <div className="stack gap-8 intro-block">
               <h2 className="h3">Why is this important?</h2>
               <p>{stage.why}</p>
             </div>
-            <div className="stack gap-8">
+            <div className="stack gap-8 intro-block">
               <h2 className="h3">Which students am I seeing?</h2>
               <p>{stage.who}</p>
             </div>
