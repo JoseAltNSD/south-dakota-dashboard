@@ -22,6 +22,8 @@
   --postsecondary-tint: #efe6ec;
 
   --suppressed: #cfc8bc;
+  /* Reference series in charts (South Dakota, All students). Under 3:1 on white, so it is always labeled. */
+  --data-ref: #9a9395;
   --pbi-chrome: #f3f2f1;
 
   --radius-sm: 2px;
@@ -214,8 +216,6 @@ button { font: inherit; }
 .rpt-bars--compact .rpt-bars__col--break { padding-left: 2px; }
 .rpt-bars__track { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; border-bottom: 1px solid var(--control-border); }
 .rpt-bars__bar { width: 100%; border-radius: 4px 4px 0 0; }
-.rpt-bars__value { font-size: 12px; line-height: 16px; font-weight: 600; text-align: center; }
-.rpt-bars__year { font-size: 11px; line-height: 14px; color: var(--muted); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .rpt-compare { display: flex; flex-direction: column; gap: 8px; }
 .rpt-compare__row { display: grid; grid-template-columns: minmax(0, 9rem) 1fr 3rem; align-items: center; gap: 8px; font-size: 13px; line-height: 18px; }
@@ -223,6 +223,40 @@ button { font: inherit; }
 .rpt-compare__track { height: 14px; }
 .rpt-compare__bar { height: 100%; border-radius: 0 4px 4px 0; }
 .rpt-compare__value { text-align: right; font-variant-numeric: tabular-nums; }
+.rpt-compare__track--ref { position: relative; }
+.rpt-compare__tick { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; background: var(--data-ref); }
+
+.rpt__toolbar { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 8px 16px; }
+.rpt__switch { min-height: 32px; padding: 0 12px; border: 1px solid #c8c6c4; border-radius: var(--radius-md); background: var(--surface); color: var(--ink); font-size: 12px; font-weight: 600; cursor: pointer; }
+.rpt__switch:hover { background: #f5f5f5; }
+.rpt__slicer { display: flex; flex-direction: column; gap: 4px; flex: 0 1 260px; }
+.rpt__multiples { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; }
+
+/* Legend keys: a swatch, a line or a tick in the series color, beside text in text colors. */
+.rpt-key { display: inline-block; width: 12px; height: 12px; margin-right: 6px; border-radius: 2px; vertical-align: -1px; background: var(--key, var(--data-ref)); }
+.rpt-key--line { width: 16px; height: 2px; border-radius: 1px; vertical-align: middle; }
+.rpt-key--dashed { background: repeating-linear-gradient(90deg, var(--key) 0 5px, transparent 5px 8px); }
+.rpt-key--tick { width: 2px; border-radius: 0; background: var(--data-ref); }
+
+.rpt-trend { min-width: 0; }
+.rpt-trend svg { display: block; overflow: visible; }
+.rpt-trend__legend { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-bottom: 4px; color: var(--ink); }
+.rpt-trend__now { fill: #f3f2f1; }
+.rpt-trend__grid { stroke: #ececec; stroke-width: 1; }
+.rpt-trend__tick { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.rpt-trend__tick--on { fill: var(--ink); font-weight: 600; }
+.rpt-trend__break { stroke: var(--muted); stroke-width: 2; stroke-dasharray: 4 4; }
+.rpt-trend__dot { stroke: var(--surface); stroke-width: 2; }
+.rpt-trend__end { fill: var(--ink); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.rpt-groups { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.rpt-groups__legend { display: flex; flex-wrap: wrap; gap: 4px 16px; color: var(--ink); }
+.rpt-groups__row { display: grid; grid-template-columns: minmax(0, 14rem) 1fr 3rem 96px; align-items: center; gap: 8px 12px; font-size: 13px; line-height: 18px; }
+.rpt-spark { display: block; }
+@media (max-width: 560px) {
+  .rpt-groups__row { grid-template-columns: 1fr 3rem 96px; }
+  .rpt-groups__row .rpt-compare__name { grid-column: 1 / -1; }
+}
 
 .rpt-heat__wrap { overflow-x: auto; }
 .rpt-heat { width: 100%; min-width: 560px; border-collapse: separate; border-spacing: 2px; font-size: 13px; line-height: 18px; }

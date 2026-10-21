@@ -32,7 +32,8 @@ export default function Explore() {
     () => [
       { kind: 'overview', label: 'Overview' },
       ...ready.map((i) => ({ kind: 'indicator', label: i.name, indicator: i })),
-      { kind: 'districts', label: 'District comparison' },
+      { kind: 'places', label: 'Districts and schools' },
+      { kind: 'groups', label: 'Student groups' },
     ],
     [stageKey] // eslint-disable-line react-hooks/exhaustive-deps
   );

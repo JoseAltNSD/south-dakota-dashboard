@@ -89,7 +89,13 @@ export const YEARS = ['2025–26', '2024–25', '2023–24', '2022–23', '2021�
 export const LEVELS = ['State', 'District', 'School'];
 export const DISTRICTS = ['Aberdeen 06-1', 'Brookings 05-1', 'Pierre 32-2', 'Rapid City Area 51-4', 'Sioux Falls 49-5'];
 export const SCHOOLS = ['[High school A]', '[High school B]', '[Alternative school]'];
-export const GROUPS = [
-  'All students', 'Female', 'Male', 'American Indian or Alaska Native', 'Asian', 'Black or African American',
-  'Hispanic or Latino', 'Two or more races', 'White', 'Economically disadvantaged', 'Not economically disadvantaged',
+// Student groups, in the order the Student groups report page shows them.
+export const GROUP_CATEGORIES = [
+  { label: 'Sex', groups: ['Female', 'Male'] },
+  {
+    label: 'Race and ethnicity',
+    groups: ['American Indian or Alaska Native', 'Asian', 'Black or African American', 'Hispanic or Latino', 'Two or more races', 'White'],
+  },
+  { label: 'Economic status', groups: ['Economically disadvantaged', 'Not economically disadvantaged'] },
 ];
+export const GROUPS = ['All students', ...GROUP_CATEGORIES.flatMap((c) => c.groups)];

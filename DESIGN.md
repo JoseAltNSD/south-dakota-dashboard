@@ -73,9 +73,10 @@ Colors come from the DOE brand. The PMS values are approximate conversions and n
 | `transition-ink` | `#7a5f18` | Transition text |
 | `postsecondary` | `#5b3550` | Postsecondary stage color |
 | Stage tints (`readiness-tint`, `transition-tint`, `postsecondary-tint`) | `#e3f0f1`, `#f3ebd6`, `#efe6ec` | Selected Explore stage tab, and small stage chips in the data dictionary |
+| `data-ref` | `#9a9395` | Reference series in charts: the South Dakota line, tick and bar, and the "All students" line and tick. Chosen with the palette validator to separate from all three stage colors; it is under 3:1 on white, so every chart that uses it has a legend and value labels. |
 | `suppressed` hatch | `repeating-linear-gradient(135deg, #cfc8bc 0 6px, #e8e2d7 6px 12px)` | "Coming later" or suppressed items |
 | Data ramp | `#e3f0f1 → #a9d1d4 → #5fa8ae → #1f6f78 → #134850` | Maps and heat tables (Power BI theme) |
-| Sample heat ramp | `color-mix(in srgb, <stage color> 12–60%, white)`, 5 steps | District heat table in the React sample report. Capped at 60% so ink text stays readable. |
+| Sample heat ramp | `color-mix(in srgb, <stage color> 12–60%, white)`, 5 steps | "Show as table" view on the Districts and schools page of the React sample report. Capped at 60% so ink text stays readable. |
 | Power BI chrome | `#f3f2f1` bar, `#fafafa` canvas, `#ececec` sample panel borders | Embed placeholder and sample report |
 
 **Data rules:** never use red in data marks, never pair red with lime, and never use tan or lime for text. Do not rely on color alone; always add labels.
@@ -129,7 +130,7 @@ The font family is `"Segoe UI", "Segoe UI Web (West European)", -apple-system, B
 - **With an `embedUrl`** on the stage (a "Publish to web" link in `stages.js`), the frame shows the real report in an iframe (`aspect-ratio: 16/9; min-height: 420px`). The sample bottom bar is hidden, because that report has its own page navigation.
 - **Without one** (the current state for all stages), the canvas (`#fafafa`, `min-height: 420px`, 20px padding, height follows content) shows **sample report pages** drawn from sample data, followed by the bottom bar.
 - The bottom bar (`#f3f2f1`) has "Microsoft Power BI" on the left, page buttons in the center (the selected one is ink with white text), and "Full screen" on the right.
-- Report pages per stage: **Overview**, then one page per available indicator, then **District comparison**.
+- Report pages per stage: **Overview**, then one page per available indicator, then **Districts and schools**, then **Student groups**.
 - For Power BI Embedded, the iframe is swapped for `powerbi-client-react`. The page buttons map to `report.setPage()` and the filters to `report.setFilters()`.
 - *Superseded:* the earlier gray skeleton (title bar, card outlines, bar and table panels) with a centered "Power BI embedded report / Page: {name}" label was removed from React when the sample charts were added. The canvas artboard may still show it.
 
@@ -137,11 +138,16 @@ The font family is `"Segoe UI", "Segoe UI Web (West European)", -apple-system, B
 - Every page has a header: the h3 title (the indicator question, or "{Stage}: {page}") and a caption with the current filters plus "Sample data".
 - Panels are white with a 1px `#ececec` border and 4px radius. Labels are 12px, 600, muted. Headline values are 32/38 (600, tabular numbers), or 44/50 on indicator pages.
 - **Overview:** one tile per indicator (auto-fit grid, 220px minimum) with the value, the change from the year before ("+2 pts from 2024–25", or "Not comparable with the year before" at a series break) and a compact five-year bar strip.
-- **Indicator page:** two panels. Left: the headline value for the selected place and year, the state value when Level is not State, and a 200px five-year bar chart with the selected year labeled. Right: horizontal bars for every district plus South Dakota (in `control-border` gray), sorted high to low. When a district is selected it is bold and the other districts fade to 45%.
-- **District comparison:** a heat table (districts × indicators, state row at the bottom), shaded per indicator with the sample heat ramp. It scrolls sideways under 560px.
-- Bars use the stage color. Years other than the selected one are at 45% opacity. A series break (`breakAt`) is a 2px dashed muted line before that year, with a caption.
+- **Indicator page:** two panels.
+  - Left: the headline value for the selected place and year, the state value when Level is not State, and a **"Trend over time" line chart** (220px tall, five years). The lines compare the selection with its references: State shows South Dakota alone, or the chosen student group against All students; District shows the district against South Dakota; School shows the school, its district (dashed) and South Dakota. The selected place is in the stage color, references in `data-ref`. A legend names each line when there are two or more, and line ends carry value labels where they don't collide. The selected year has a light `#f3f2f1` column.
+  - Right: "Districts compared", horizontal bars for every district, sorted high to low, with a `data-ref` tick for South Dakota. When a district is selected it is bold and the other districts fade to 45%.
+- **Districts and schools:** small multiples, one panel per indicator (auto-fit grid, 300px minimum), each with horizontal bars from 0 to 100% and a South Dakota tick. At State or District level the bars are the five districts, sorted high to low. At School level they are the schools in the selected district, followed by the district itself as a `data-ref` gray bar. A "Show as table" switch (top right, like Power BI's own) swaps the charts for the heat table (places × indicators, shaded per indicator with the sample heat ramp, scrolling sideways under 560px).
+- **Student groups** (always state level): an "Indicator" dropdown inside the report (a stand-in for a Power BI slicer), the note "Student group results are shown for the state only, so small groups can't be identified.", then one row per group under the headings Sex, Race and ethnicity, and Economic status. Each row has the group name, a bar for the selected year with a `data-ref` tick for All students, the value, and a 96 × 28px sparkline of the group's five years (stage color) over All students (`data-ref`). All sparklines on the page share one range so slopes compare across rows. The row of the group chosen in the Explore filter is bold. On phones the name moves above the bar.
+- The Overview tiles keep a compact five-year bar strip in the stage color, with years other than the selected one at 45% opacity and a 2px dashed muted line before a series break.
+- Line charts zoom the y-axis to the data (rounded out to tens, at least 20 points tall); bars always run from 0 to 100%. A series break leaves a gap in every line and a 2px dashed muted vertical line, with a caption.
+- Chart marks follow the dataviz rules: 2px lines with round joins, 8px dots with a 2px white ring, hairline `#ececec` gridlines, text in text colors (never the series color), and never red.
 - Suppressed values (fewer than 10 students) use the hatch fill, show "Suppressed" or "*", and have a caption explaining the asterisk. The `[Alternative school]` is always suppressed, and some district × indicator cells are too.
-- Each bar chart has `role="img"` and an `aria-label` that lists every year's value. Bars and cells have `title` tooltips.
+- Each chart has `role="img"` and an `aria-label` that lists every value it shows. Dots, bars, rows and cells have `title` tooltips.
 
 **Icons:** simple 24px-grid stroke icons (1.8 stroke width): info, book, chat (FAQ), download, chart, table, close, expand, arrow. In production, swap them for Fluent UI System Icons. Do not use emoji.
 
@@ -222,7 +228,7 @@ Filter options:
 - **Schools:** placeholders [High school A], [High school B], [Alternative school].
 - **Student groups:** All students; Female; Male; American Indian or Alaska Native; Asian; Black or African American; Hispanic or Latino; Two or more races; White; Economically disadvantaged; Not economically disadvantaged.
 
-Each indicator with a report page also has a five-year sample `trend` (oldest year first) and, where the source changed, `breakAt` (Reading and math proficiency at 2024–25, ACT at 2023–24). District, school and group values are derived from these with a fixed offset per name, so the same filters always show the same numbers.
+Each indicator with a report page also has a five-year sample `trend` (oldest year first) and, where the source changed, `breakAt` (Reading and math proficiency at 2024–25, ACT at 2023–24). District, school and group values are derived from these with a fixed offset per name plus a fixed yearly drift per name, so trends separate from the state but the same filters always show the same numbers. A few small state-level groups (Asian, Black or African American, Two or more races) are suppressed in some years. `GROUP_CATEGORIES` in `stages.js` sets the group headings and order.
 
 Full text for every stage and indicator lives in `src/data/stages.js` and `src/data/help.js` (React), and in each artboard's `renderVals()` (canvas).
 
@@ -280,6 +286,7 @@ Full text for every stage and indicator lives in `src/data/stages.js` and `src/d
 - **Partner logos:** request official white (knockout) and one-color dark versions from BOR and BTE, plus a dark DOE version. Until then, `AgencyLogos.jsx` recolors with CSS filters. The BTE file (`sd-board-of-technical-education.png`) has a solid white background, so it is marked `matte` and recolored with a high-contrast filter plus a blend mode. The BOR file is a small (330px) white WebP. Confirm with the client what data each agency contributes.
 - **Power BI hosting:** "Publish to web" or Power BI Embedded (cost vs. security). The client wants a secure endpoint. Build the Power BI theme JSON from the tokens above. `embedUrl` support covers only the "Publish to web" case.
 - **Sample charts:** confirm with the owner whether the canvas artboard should get the same sample charts as React, and whether the sample heat table should use the teal data ramp instead of per-stage shades.
+- **For the Power BI report builders:** each stage's report should include (1) five-year trend lines on every indicator page, comparing the selected place with its district and the state, or the chosen group with all students; (2) a districts and schools page with small-multiple bar charts per indicator, plus a table view; (3) a student groups page (state level only) with an indicator slicer, bars per group against all students, and per-group trend sparklines. The sample report pages show the intended layout.
 - **Data:** FAFSA data-sharing agreement; postsecondary start year (2019–20 or 2020–21); attendance threshold; the year the test changed; subgroup suppression rules (currently state only, fewer than 10 students).
 - **Placeholders to replace:** `[SLDS EMAIL]`, `[YEAR]`, `[SCORE]`, `[SIZE]`, `[YEARS]`, the school names, and the Report Card URL (currently doe.sd.gov).
 - **Scope to confirm:** the College enrollment indicator, which was added by design; the relationship to the accountability Report Card; whether the Glossary and help page should get the band treatment.
@@ -300,3 +307,4 @@ Full text for every stage and indicator lives in `src/data/stages.js` and `src/d
 12. **Stage tabs (2026-10-20):** made more visible with a stage-tint fill, 4px stage-color underline, hover background and a larger dot. The full-name caption was dropped.
 13. **Intro blocks (2026-10-20):** "Why is this important?" and "Which students am I seeing?" got a 4px stage-color left border, stage-colored headings and muted body text.
 14. **Partner branding (2026-10-20):** Board of Regents and Board of Technical Education logos added after "In partnership with" in the footer and a new centered Home band, a partner sentence on About the data, and all three agencies named in the disclaimer.
+15. **Trends and comparisons (2026-10-20):** in response to feedback that the reports lacked trends over time and side-by-side comparisons of districts, schools and student groups. Indicator pages got a trend line chart against the district and state; "District comparison" became "Districts and schools" with small-multiple bar charts per indicator (table behind "Show as table"); a new "Student groups" page compares groups at state level with per-group trend sparklines.

@@ -61,8 +61,9 @@ src/
 ## Connecting Power BI
 
 Until a real report is connected, the report frame shows sample pages from `src/components/SampleReport.jsx`: an
-overview of every indicator, one page per indicator (five-year trend and district comparison), and a district heat
-table. They follow the Explore filters and use the sample `trend` values in `src/data/stages.js`.
+overview of every indicator, one page per indicator (five-year trend lines against the district and state, and a
+district comparison), a districts and schools page (small-multiple bar charts, or a table), and a student groups page
+(state level only, with per-group trends). They follow the Explore filters and use the sample `trend` values in `src/data/stages.js`.
 
 To show an actual Power BI report for a stage, add `embedUrl: 'https://app.powerbi.com/view?r=...'` (a "Publish to
 web" link) to that stage in `stages.js`. The frame then shows the report in an iframe in place of the sample.

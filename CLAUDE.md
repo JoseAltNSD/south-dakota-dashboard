@@ -36,13 +36,14 @@ There is no test runner, linter or formatter configured.
   Learn uses `?section=` (`glossary`, `dictionary`, `read`, `download`, `about`, `faq`). Keep these deep links working
   when renaming keys or options.
 - **Explore → Power BI report pages**: Explore builds the report's page list as Overview + one page per indicator
-  without `later: true` + District comparison. "Show in report" maps an indicator's index to a page index, so the
+  without `later: true` + Districts and schools + Student groups. "Show in report" maps an indicator's index to a page index, so the
   order of `indicators` in `stages.js` matters. Indicators with `later: true` appear in the guide as "Coming later"
   but get no report page.
 - **Report frame**: `PowerBIEmbed.jsx` shows an iframe when the stage has an `embedUrl`, otherwise its children,
   which Explore sets to `SampleReport.jsx`. The sample pages are drawn from each indicator's `trend` (oldest year
   first, the reverse of `YEARS`) and `breakAt` (series break). `sampleValue()` derives district, school and group
-  values from fixed per-name offsets and returns `null` for suppressed cells. The README's "Connecting Power BI"
+  values from fixed per-name offsets and yearly drifts and returns `null` for suppressed cells. Student groups are
+  grouped by `GROUP_CATEGORIES` in `stages.js`; `GROUPS` is derived from it. The README's "Connecting Power BI"
   section covers the swap to Power BI Embedded; the hosting model is still undecided.
 - **Styling**: one global `src/styles.css` with design tokens as CSS variables on `:root` and BEM-ish class names
   (`.pbi__canvas`, `.btn--secondary`). Stage colors are `--readiness`, `--transition`/`--transition-ink`,
