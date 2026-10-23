@@ -115,7 +115,7 @@ The font family is `"Segoe UI", "Segoe UI Web (West European)", -apple-system, B
 
 **Footer** (prairie red)
 - Left column: DOE logo (244px), then "South Dakota Statewide Longitudinal Data System" (16, 600), an outlined "ILLUSTRATIVE" badge, and the disclaimer: *"Illustrative mock-up for design review. Agency names show intended branding only; this is not an official publication of the South Dakota Department of Education, the South Dakota Board of Regents or the South Dakota Board of Technical Education."*
-- Right column: the links (About the data, Accessibility, Privacy, Contact the SLDS team, Feedback), then 32px below them the "IN PARTNERSHIP WITH" eyebrow and the BOR and BTE logos (40px tall, white).
+- Right column: the links (About the data, Accessibility, Privacy, Contact the SLDS team, Feedback, which opens the feedback dialog), then 32px below them the "IN PARTNERSHIP WITH" eyebrow and the BOR and BTE logos (40px tall, white).
 
 **Buttons**
 - Primary: prairie red, turning ink on hover.
@@ -192,7 +192,9 @@ The font family is `"Segoe UI", "Segoe UI Web (West European)", -apple-system, B
    - "What is this?" and "How to read it" text, plus an optional note box
    - two actions, vertically centered on one row: **"Show in report"** (a text button that switches the report page; in React it also scrolls to the report) and **"Learn about this indicator (EW framework)"**, a link to the indicator's page on educationtoworkforce.org (new tab)
    - "Coming later" indicators show a hatched note instead.
-5. **Questions strip** (white): "Questions about this data?" with `[SLDS EMAIL]`, and a "Send feedback" button.
+5. **Questions strip** (white): "Questions about this data?" with `[SLDS EMAIL]`, and a "Send feedback" button that opens the feedback dialog.
+
+**Feedback dialog** (any page): a modal with About (the current page, "Another page" or "The whole site"), Type (Question, Problem, Suggestion), a required Message and an optional Email. Errors show in signal red under the field. Send shows a thank-you; the mock-up sends nothing.
 
 ### Glossary and help (`/learn`, `Learn.dc.html`)
 
@@ -201,7 +203,7 @@ The font family is `"Segoe UI", "Segoe UI Web (West European)", -apple-system, B
 - **Glossary:** a search input that filters live, a term count, and a white `<dl>` card of terms.
 - **Data dictionary:** a scrollable table (Indicator, Stage chip, Definition, Students counted, Source).
 - **How to read the charts:** a numbered anatomy demo (question, headline value, context line, trend, source) with a matching list.
-- **Download data:** four cards (High school CSV, Transition CSV, Postsecondary CSV, Data dictionary PDF).
+- **Download data:** four cards (High school CSV, Transition CSV, Postsecondary CSV, Data dictionary CSV). The files are built from the sample data in long format (one row per indicator, year, place and group), start with a "Sample data" note line and end in `-SAMPLE.csv`. Suppressed values are blank, with "Yes" in the Suppressed column.
 - **About the data:** one sentence naming the agencies ("The SLDS is led by the South Dakota Department of Education in partnership with the South Dakota Board of Regents and the South Dakota Board of Technical Education."), then four cards (sources, years covered, privacy, known limits). What each agency contributes is not described yet, pending the client; the "Where the data come from" card still names only DOE and BOR.
 - **FAQ:** `<details>` accordions.
 - A "Still have a question?" strip with `[SLDS EMAIL]` closes the page.

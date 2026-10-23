@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import Icon from '../components/Icon.jsx';
 import { SECTIONS, TERMS, DICTIONARY, DOWNLOADS, ABOUT, FAQ } from '../data/help.js';
 import { LEAD, PARTNERS } from '../data/agencies.js';
+import { downloadData } from '../downloads.js';
 
 export default function Learn() {
   const [params, setParams] = useSearchParams();
@@ -128,13 +129,13 @@ export default function Learn() {
                     <span className="strong">{f.title}</span>
                     <span className="body-sm muted">{f.text}</span>
                     <span className="caption">{f.meta}</span>
-                    <button type="button" className="btn btn--primary btn--sm" style={{ alignSelf: 'flex-start', marginTop: 4 }}>
+                    <button type="button" className="btn btn--primary btn--sm" style={{ alignSelf: 'flex-start', marginTop: 4 }} onClick={() => downloadData(f.file)}>
                       <Icon name="download" size={16} strokeWidth={2} /> {f.btn}
                     </button>
                   </div>
                 ))}
               </div>
-              <p className="caption">Suppressed values appear as “Suppressed” in the files.</p>
+              <p className="caption">Suppressed values are left blank and marked “Yes” in the Suppressed column.</p>
             </section>
           )}
 

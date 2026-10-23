@@ -43,7 +43,7 @@ export function sampleValue(ind, yearIdx, { level, district, school, group }) {
 
 // An indicator with `parts` (reading and math) is drawn as one measure per part, which keeps the indicator's break
 // and notes. Each part gets its own id, so its derived place and group values differ.
-const measures = (ind) => (ind.parts ? ind.parts.map((p) => ({ ...ind, ...p, id: `${ind.id}-${p.id}` })) : [ind]);
+export const measures = (ind) => (ind.parts ? ind.parts.map((p) => ({ ...ind, ...p, id: `${ind.id}-${p.id}` })) : [ind]);
 const breakNote = (ind) => ind.breakNote ?? 'the data source changed';
 const fmt = (v) => (v == null ? 'Suppressed' : `${v}%`);
 const STATE = { level: 'State', group: 'All students' };

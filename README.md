@@ -38,6 +38,8 @@ src/
   components/
     Header.jsx           Logo, product name, main navigation
     Footer.jsx           Logo, illustrative disclaimer, footer links
+    Feedback.jsx         "Send feedback" dialog, opened from Explore and the footer
+    Select.jsx           Page-drawn drop-down (native menus don't show on a shared screen)
     PowerBIEmbed.jsx     Frame for the Power BI report (iframe when a stage has an embedUrl)
     SampleReport.jsx     Sample report pages drawn from the trend values in stages.js
     Icon.jsx             Small stroke icon set
@@ -48,6 +50,7 @@ src/
   data/
     stages.js            Stage and indicator content, filter options
     help.js              Glossary terms, dictionary rows, downloads, FAQ
+  downloads.js           Builds the "Download data" CSVs in the browser from the sample values
   assets/
     sd-doe-logo-white.png  Placeholder logo (replace with the official file from DOE Communications)
 ```

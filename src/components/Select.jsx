@@ -59,10 +59,15 @@ export default function Select({ id, value, options, onChange, disabled = false 
       PageUp: () => show(Math.max(0, active - 10)),
       Enter: () => (open ? pick(active) : show()),
       ' ': () => (open ? pick(active) : show()),
-      Escape: () => setOpen(false),
     };
     if (e.key === 'Tab') {
       if (open) pick(active);
+    } else if (e.key === 'Escape') {
+      // Only stop Escape while the list is open, so a closed drop-down inside a dialog still lets it close.
+      if (open) {
+        e.preventDefault();
+        setOpen(false);
+      }
     } else if (actions[e.key]) {
       e.preventDefault();
       actions[e.key]();

@@ -49,6 +49,10 @@ There is no test runner, linter or formatter configured.
   trend tile per part, and the other pages list the parts separately. Student groups are
   grouped by `GROUP_CATEGORIES` in `stages.js`; `GROUPS` is derived from it. The README's "Connecting Power BI"
   section covers the swap to Power BI Embedded; the hosting model is still undecided.
+- **Downloads and feedback**: `src/downloads.js` builds every "Download data" CSV in the browser from
+  `sampleValue()`, so files match the charts; `DOWNLOADS` in `help.js` names each card's `file` (a stage key or
+  `dictionary`). `Feedback.jsx` provides a modal `<dialog>` to every page through `useFeedback()` (Explore's
+  "Send feedback" and the footer link); it has no backend and only shows a thank-you.
 - **Drop-downs**: use `src/components/Select.jsx`, not a native `<select>`. Native menus are drawn by the OS and don't
   show when the screen is shared in a meeting.
 - **Styling**: one global `src/styles.css` with design tokens as CSS variables on `:root` and BEM-ish class names

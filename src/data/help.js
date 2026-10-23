@@ -52,10 +52,10 @@ export const DICTIONARY = [
 ];
 
 export const DOWNLOADS = [
-  { title: 'High school data', text: 'Attendance, GPA, proficiency and dual credit.', meta: 'CSV · 2021–22 to 2025–26 · [SIZE]', btn: 'Download CSV', color: 'var(--readiness)' },
-  { title: 'Transition data', text: 'ACT, college applications, FAFSA and graduation.', meta: 'CSV · 2021–22 to 2025–26 · [SIZE]', btn: 'Download CSV', color: 'var(--transition)' },
-  { title: 'Postsecondary data', text: 'Enrollment, first-year credits and persistence.', meta: 'CSV · graduating classes [YEARS] · [SIZE]', btn: 'Download CSV', color: 'var(--postsecondary)' },
-  { title: 'Data dictionary', text: 'Definitions, sources and suppression rules.', meta: 'PDF · [SIZE]', btn: 'Download PDF', color: 'var(--control-border)' },
+  { file: 'readiness', title: 'High school data', text: 'Attendance, GPA, proficiency and dual credit.', meta: 'CSV · 2021–22 to 2025–26 · [SIZE]', btn: 'Download CSV', color: 'var(--readiness)' },
+  { file: 'transition', title: 'Transition data', text: 'ACT, college applications, FAFSA and graduation.', meta: 'CSV · 2021–22 to 2025–26 · [SIZE]', btn: 'Download CSV', color: 'var(--transition)' },
+  { file: 'postsecondary', title: 'Postsecondary data', text: 'Enrollment, first-year credits and persistence.', meta: 'CSV · graduating classes [YEARS] · [SIZE]', btn: 'Download CSV', color: 'var(--postsecondary)' },
+  { file: 'dictionary', title: 'Data dictionary', text: 'Definitions, who is counted and sources.', meta: 'CSV · [SIZE]', btn: 'Download CSV', color: 'var(--control-border)' },
 ];
 
 export const ABOUT = [

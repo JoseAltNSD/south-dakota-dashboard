@@ -4,6 +4,8 @@ import Icon from '../components/Icon.jsx';
 import PowerBIEmbed from '../components/PowerBIEmbed.jsx';
 import SampleReport from '../components/SampleReport.jsx';
 import Select from '../components/Select.jsx';
+import { useFeedback } from '../components/Feedback.jsx';
+import { downloadData } from '../downloads.js';
 import { STAGES, STAGE_ORDER, YEARS, LEVELS, DISTRICTS, SCHOOLS, GROUPS, EW_FRAMEWORK_URL } from '../data/stages.js';
 
 const TOOLS = [
@@ -17,6 +19,7 @@ const DEFAULT_FILTERS = { level: 'State', district: DISTRICTS[1], school: SCHOOL
 
 export default function Explore() {
   const [params, setParams] = useSearchParams();
+  const openFeedback = useFeedback();
   const stageKey = STAGE_ORDER.includes(params.get('stage')) ? params.get('stage') : 'readiness';
   const stage = STAGES[stageKey];
 
@@ -158,11 +161,11 @@ export default function Explore() {
               )}
               {panel === 'download' && (
                 <>
-                  <p className="body-sm">Files include all years, levels and student groups that can be shown publicly.</p>
+                  <p className="body-sm">Files include all years, levels and student groups that can be shown publicly. Suppressed values are left blank.</p>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                    <button type="button" className="btn btn--secondary btn--sm">{stage.short} data (CSV)</button>
-                    <button type="button" className="btn btn--secondary btn--sm">All stages (CSV)</button>
-                    <button type="button" className="btn btn--secondary btn--sm">Data dictionary (PDF)</button>
+                    <button type="button" className="btn btn--secondary btn--sm" onClick={() => downloadData(stageKey)}>{stage.short} data (CSV)</button>
+                    <button type="button" className="btn btn--secondary btn--sm" onClick={() => downloadData('all')}>All stages (CSV)</button>
+                    <button type="button" className="btn btn--secondary btn--sm" onClick={() => downloadData('dictionary')}>Data dictionary (CSV)</button>
                   </div>
                 </>
               )}
@@ -266,7 +269,7 @@ export default function Explore() {
           <span className="strong">Questions about this data?</span>
           <span className="body-sm muted">The SLDS team can help you find or interpret results. [SLDS EMAIL]</span>
         </div>
-        <button type="button" className="btn btn--secondary btn--sm" style={{ minHeight: 44, padding: '0 16px' }}>Send feedback</button>
+        <button type="button" className="btn btn--secondary btn--sm" style={{ minHeight: 44, padding: '0 16px' }} onClick={openFeedback}>Send feedback</button>
       </section>
     </>
   );

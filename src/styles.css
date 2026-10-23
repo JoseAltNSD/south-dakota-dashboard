@@ -105,6 +105,7 @@ button { font: inherit; }
 .agency-logo--matte.agency-logo--ink { filter: grayscale(1) brightness(0.7) contrast(100); mix-blend-mode: multiply; }
 .badge-outline { align-self: flex-start; border: 1px solid var(--on-red); border-radius: var(--radius-sm); padding: 0 6px; font-size: 12px; line-height: 18px; font-weight: 700; letter-spacing: 0.06em; }
 .site-footer nav { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: flex-start; }
+.footer-link { padding: 0; border: 0; background: none; font: inherit; color: var(--on-red); text-decoration: underline; cursor: pointer; }
 
 /* Buttons */
 .btn { min-height: 44px; padding: 0 20px; border-radius: var(--radius-md); display: inline-flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; text-decoration: none; cursor: pointer; border: 1px solid transparent; }
@@ -190,6 +191,22 @@ button { font: inherit; }
 .dropdown__option { min-height: 36px; padding: 8px 12px; cursor: pointer; }
 .dropdown__option.is-active { background: #f5f5f5; }
 .dropdown__option[aria-selected="true"] { font-weight: 600; box-shadow: inset 3px 0 0 var(--ink); }
+
+/* Feedback dialog (a modal <dialog>; clicks on the dialog itself close it, so the padding sits on __inner) */
+.dialog { width: min(520px, calc(100vw - 32px)); max-height: calc(100vh - 32px); padding: 0; border: 0; border-radius: var(--radius-lg); background: var(--surface); color: var(--ink); box-shadow: 0 12px 32px rgba(31, 26, 28, 0.24); }
+.dialog::backdrop { background: rgba(31, 26, 28, 0.45); }
+.dialog__inner { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+.dialog__head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.dialog__close { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: var(--radius-md); background: transparent; color: var(--ink); cursor: pointer; }
+.dialog__close:hover { background: #f5f5f5; }
+.dialog__actions { display: flex; justify-content: flex-end; gap: 8px; }
+.field__label { font-size: 14px; line-height: 20px; font-weight: 600; }
+.field__error { font-size: 14px; line-height: 20px; font-weight: 600; color: var(--signal-red); }
+.input[aria-invalid="true"] { border-color: var(--signal-red); }
+.textarea { min-height: 120px; padding: 10px 12px; line-height: 20px; resize: vertical; }
+.choices { display: flex; flex-wrap: wrap; gap: 4px 20px; }
+.choice { display: inline-flex; align-items: center; gap: 8px; min-height: 32px; font-size: 14px; cursor: pointer; }
+.choice input { width: 18px; height: 18px; margin: 0; accent-color: var(--ink); }
 
 .report-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px; }
 .key-finding { background: var(--band); border-radius: var(--radius-lg); padding: 16px 20px; display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }

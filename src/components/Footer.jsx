@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom';
 import AgencyLogos from './AgencyLogos.jsx';
+import { useFeedback } from './Feedback.jsx';
 import { LEAD } from '../data/agencies.js';
 
 export default function Footer() {
+  const openFeedback = useFeedback();
+
   return (
     <footer className="site-footer">
       <div className="container site-footer__inner">
@@ -22,7 +25,7 @@ export default function Footer() {
             <Link to="/learn?section=about">Accessibility</Link>
             <Link to="/learn?section=about">Privacy</Link>
             <Link to="/learn?section=faq">Contact the SLDS team</Link>
-            <Link to="/learn?section=faq">Feedback</Link>
+            <button type="button" className="footer-link" onClick={openFeedback}>Feedback</button>
           </nav>
           <AgencyLogos on="dark" showLead={false} />
         </div>
