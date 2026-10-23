@@ -11,12 +11,6 @@ const HELP = [
   { title: 'Download data', text: 'Get the numbers behind every chart as a spreadsheet.', icon: 'download', section: 'download' },
 ];
 
-const STEPS = [
-  { label: 'Step 1', title: 'K-12 schools', text: 'Attendance, grades, tests and coursework. Data from 2010–11 to today.', ink: 'var(--readiness)' },
-  { label: 'Step 2', title: 'Leaving high school', text: 'ACT, college applications, FAFSA and graduation.', ink: 'var(--transition-ink)' },
-  { label: 'Step 3', title: 'College', text: 'Enrollment, first-year credits and persistence. Data from [2019–20 or 2020–21].', ink: 'var(--postsecondary)' },
-];
-
 export default function Home() {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
@@ -57,8 +51,8 @@ export default function Home() {
       <section className="band band--well" aria-labelledby="q-h">
         <div className="container stack gap-32">
           <div className="stack gap-4">
-            <h2 id="q-h" className="h2">Start with a question</h2>
-            <p className="muted">Results are grouped into three stages of a student’s path.</p>
+            <h2 id="q-h" className="h2">Explore by stage</h2>
+            <p className="muted">See how students are doing at each step, from high school into college.</p>
           </div>
           <div className="grid grid--3">
             {STAGE_ORDER.map((key) => {
@@ -92,38 +86,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="band" aria-labelledby="path-h">
-        <div className="container stack gap-24">
-          <div className="stack gap-4">
-            <h2 id="path-h" className="h2">One connected record, from high school to college</h2>
-            <p className="muted" style={{ maxWidth: 760 }}>
-              The SLDS links K-12 and college records so we can follow the same group of students over time. No
-              individual student is ever shown.
-            </p>
-          </div>
-          <ol className="steps">
-            {STEPS.map((st) => (
-              <li key={st.title} className="step">
-                <span className="eyebrow" style={{ color: st.ink }}>{st.label}</span>
-                <span className="h3">{st.title}</span>
-                <span className="body-sm muted">{st.text}</span>
-              </li>
-            ))}
-            <li className="step hatch">
-              <span className="eyebrow">Coming later</span>
-              <span className="h3">Workforce</span>
-              <span className="body-sm">Jobs and wages, once Department of Labor data join the system.</span>
-            </li>
-          </ol>
-        </div>
-      </section>
-
-      <section className="band band--well" aria-label="Partner agencies">
-        <div className="container">
-          <AgencyLogos on="light" centered />
-        </div>
-      </section>
-
       <section className="band" aria-labelledby="help-h">
         <div className="container stack gap-32">
           <h2 id="help-h" className="h2">Help and context</h2>
@@ -142,6 +104,12 @@ export default function Home() {
             Looking for school accountability ratings? Those are published in the{' '}
             <a href="https://doe.sd.gov/" target="_blank" rel="noreferrer">South Dakota Report Card</a>.
           </p>
+        </div>
+      </section>
+
+      <section className="band band--well" aria-label="Partner agencies">
+        <div className="container">
+          <AgencyLogos on="light" centered />
         </div>
       </section>
     </>

@@ -146,8 +146,6 @@ button { font: inherit; }
 .stage-card .question-link:not(.question-link--later) { background: var(--stage-tint); }
 .question-link--later, .question-link--later:hover { color: var(--ink); text-decoration: none; }
 .question-link--later .caption { color: var(--ink); }
-.steps { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 16px; }
-.step { flex: 1 1 240px; background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius-lg); padding: 16px; display: flex; flex-direction: column; gap: 4px; }
 .help-tile { display: flex; gap: 12px; align-items: flex-start; padding: 16px; color: var(--ink); text-decoration: none; }
 .help-tile:hover { color: var(--signal-red); }
 .help-tile:hover .help-tile__title { text-decoration: underline; }
@@ -263,7 +261,9 @@ button { font: inherit; }
 
 .rpt-groups { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
 .rpt-groups__legend { display: flex; flex-wrap: wrap; gap: 4px 16px; color: var(--ink); }
-.rpt-groups__row { display: grid; grid-template-columns: minmax(0, 14rem) 1fr 3rem 96px; align-items: center; gap: 8px 12px; font-size: 13px; line-height: 18px; }
+.rpt-groups__row { display: grid; grid-template-columns: minmax(0, 14rem) 1fr 3rem 96px; align-items: center; gap: 8px 12px; font-size: 13px; line-height: 18px; margin: 0 -8px; padding: 4px 8px; border-radius: var(--radius-md); }
+/* The group chosen in the Explore filter: the whole row takes the stage tint, with a stage-color edge */
+.rpt-groups__row--picked { background: var(--stage-tint); box-shadow: inset 4px 0 0 var(--stage); }
 .rpt-spark { display: block; }
 @media (max-width: 560px) {
   .rpt-groups__row { grid-template-columns: 1fr 3rem 96px; }

@@ -268,7 +268,13 @@ function GroupsPage({ stage, indicators, filters, yearIdx }) {
               const v = sampleValue(ind, yearIdx, f);
               const picked = filters.level === 'State' && filters.group === g;
               return (
-                <div key={g} className="rpt-groups__row" title={`${g}, ${filters.year}: ${fmt(v)} (all students ${fmt(all)})`}>
+                <div
+                  key={g}
+                  className={`rpt-groups__row${picked ? ' rpt-groups__row--picked' : ''}`}
+                  style={picked ? { '--stage': stage.color, '--stage-tint': stage.tint } : undefined}
+                  aria-current={picked || undefined}
+                  title={`${g}, ${filters.year}: ${fmt(v)} (all students ${fmt(all)})`}
+                >
                   <span className={`rpt-compare__name${picked ? ' strong' : ''}`}>{g}</span>
                   <div className="rpt-compare__track rpt-compare__track--ref">
                     {v == null
