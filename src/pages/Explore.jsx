@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import Icon from '../components/Icon.jsx';
 import PowerBIEmbed from '../components/PowerBIEmbed.jsx';
 import SampleReport from '../components/SampleReport.jsx';
-import { STAGES, STAGE_ORDER, YEARS, LEVELS, DISTRICTS, SCHOOLS, GROUPS } from '../data/stages.js';
+import Select from '../components/Select.jsx';
+import { STAGES, STAGE_ORDER, YEARS, LEVELS, DISTRICTS, SCHOOLS, GROUPS, EW_FRAMEWORK_URL } from '../data/stages.js';
 
 const TOOLS = [
   { key: 'seeing', label: 'What am I seeing?', icon: 'info' },
@@ -20,7 +21,8 @@ export default function Explore() {
   const stage = STAGES[stageKey];
 
   const [panel, setPanel] = useState(null);
-  const [reportPage, setReportPage] = useState(0);
+  // `?indicator=` opens that indicator's report page; anything else opens the Overview (page 0).
+  const [reportPage, setReportPage] = useState(() => stage.indicators.filter((i) => !i.later).findIndex((i) => i.id === params.get('indicator')) + 1);
   const [filters, setFilters] = useState(() => ({
     ...DEFAULT_FILTERS,
     level: LEVELS.includes(params.get('level')) ? params.get('level') : DEFAULT_FILTERS.level,
@@ -28,6 +30,14 @@ export default function Explore() {
   }));
 
   const ready = stage.indicators.filter((i) => !i.later);
+
+  // Arriving with `?indicator=` (from Home) scrolls to the report. Waits a frame because App scrolls to the top
+  // on every route change, and its effect runs after this one.
+  useEffect(() => {
+    if (reportPage === 0) return undefined;
+    const frame = requestAnimationFrame(() => document.getElementById('report-h')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+    return () => cancelAnimationFrame(frame);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const pages = useMemo(
     () => [
       { kind: 'overview', label: 'Overview' },
@@ -55,8 +65,7 @@ export default function Explore() {
   }
 
   function update(field) {
-    return (e) => {
-      const value = e.target.value;
+    return (value) => {
       setFilters((f) => ({
         ...f,
         [field]: value,
@@ -242,7 +251,7 @@ export default function Explore() {
                     {ind.note && <p className="note"><strong>{ind.noteLabel}</strong> {ind.note}</p>}
                     <div className="indicator-card__actions">
                       <button type="button" className="link-btn" onClick={() => showInReport(ind.id)}>Show in report</button>
-                      <Link to="/learn?section=download">Download CSV</Link>
+                      <a href={`${EW_FRAMEWORK_URL}/${ind.framework}`} target="_blank" rel="noreferrer">Learn about this indicator (EW framework)</a>
                     </div>
                   </>
                 )}
@@ -267,9 +276,7 @@ function Field({ id, label, value, onChange, options, disabled = false }) {
   return (
     <div className="field">
       <label htmlFor={id}>{label}</label>
-      <select id={id} className="select" value={value} onChange={onChange} disabled={disabled}>
-        {options.map((o) => <option key={o} value={o}>{o}</option>)}
-      </select>
+      <Select id={id} value={value} onChange={onChange} options={options} disabled={disabled} />
     </div>
   );
 }

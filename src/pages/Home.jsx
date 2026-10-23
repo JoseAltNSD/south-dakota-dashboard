@@ -63,27 +63,28 @@ export default function Home() {
           <div className="grid grid--3">
             {STAGE_ORDER.map((key) => {
               const s = STAGES[key];
-              const ready = s.indicators.filter((i) => !i.later).length;
-              const later = s.indicators.length - ready;
               return (
-                <article key={key} className="card stage-card">
+                <article key={key} className="card stage-card" style={{ '--stage-tint': s.tint }}>
                   <span className="eyebrow" style={{ color: s.ink }}>{s.short}</span>
                   <h3 className="h3">{s.full}</h3>
                   <p className="body-sm muted">{s.blurb}</p>
                   <ul className="stage-card__questions">
-                    {s.questions.map((q) => (
-                      <li key={q}>
-                        <Link className="question-link" to={`/explore?stage=${key}`}>
-                          <span>{q}</span>
-                          <Icon name="arrowRight" size={16} strokeWidth={2} />
-                        </Link>
+                    {s.indicators.map((i) => (
+                      <li key={i.id}>
+                        {i.later ? (
+                          <span className="question-link question-link--later hatch">
+                            <span>{i.name}</span>
+                            <span className="caption">Coming later</span>
+                          </span>
+                        ) : (
+                          <Link className="question-link" to={`/explore?stage=${key}&indicator=${i.id}`}>
+                            <span>{i.name}</span>
+                            <Icon name="arrowRight" size={16} strokeWidth={2} />
+                          </Link>
+                        )}
                       </li>
                     ))}
                   </ul>
-                  <div className="stage-card__foot">
-                    <span className="muted">{ready} indicators{later ? `, ${later} coming later` : ''}</span>
-                    <Link to={`/explore?stage=${key}`} className="strong">See all</Link>
-                  </div>
                 </article>
               );
             })}

@@ -5,8 +5,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## What this is
 
 An illustrative React 18 + Vite 5 mock-up of the South Dakota SLDS public dashboard. It follows students from high
-school into college across three stages (Readiness, Transition, Postsecondary). All figures are sample data, and the
-real charts will come from an embedded Power BI report, which this app only represents with a placeholder. Bracketed
+school into college across three stages (High school, Transition, Postsecondary; the first one's key is still
+`readiness`). All figures are sample data, and the real charts will come from an embedded Power BI report, which this
+app only represents with a placeholder. Bracketed
 text such as `[SLDS EMAIL]`, `[YEAR]` or `[pending]` marks facts still to be confirmed with the client; keep those
 markers rather than inventing values.
 
@@ -31,8 +32,9 @@ There is no test runner, linter or formatter configured.
 - **Content lives in data files, not components.** `src/data/stages.js` holds each stage's copy, FAQ, indicators and
   the filter option lists (`YEARS`, `LEVELS`, `DISTRICTS`, `SCHOOLS`, `GROUPS`); `src/data/help.js` holds glossary,
   dictionary, downloads and FAQ content for Learn. Pages render from these, so copy edits usually belong there.
-- **URL query params are the shared state between pages.** Home links into Explore with `?stage=` and
-  `?level=District&district=...`; Explore validates them against `STAGE_ORDER`/`LEVELS`/`DISTRICTS` before use.
+- **URL query params are the shared state between pages.** Home links into Explore with `?stage=`,
+  `?stage=...&indicator=<id>` (opens that indicator's report page and scrolls to it) and `?level=District&district=...`; Explore
+  validates them against `STAGE_ORDER`/indicator ids/`LEVELS`/`DISTRICTS` before use.
   Learn uses `?section=` (`glossary`, `dictionary`, `read`, `download`, `about`, `faq`). Keep these deep links working
   when renaming keys or options.
 - **Explore → Power BI report pages**: Explore builds the report's page list as Overview + one page per indicator
@@ -45,6 +47,8 @@ There is no test runner, linter or formatter configured.
   values from fixed per-name offsets and yearly drifts and returns `null` for suppressed cells. Student groups are
   grouped by `GROUP_CATEGORIES` in `stages.js`; `GROUPS` is derived from it. The README's "Connecting Power BI"
   section covers the swap to Power BI Embedded; the hosting model is still undecided.
+- **Drop-downs**: use `src/components/Select.jsx`, not a native `<select>`. Native menus are drawn by the OS and don't
+  show when the screen is shared in a meeting.
 - **Styling**: one global `src/styles.css` with design tokens as CSS variables on `:root` and BEM-ish class names
   (`.pbi__canvas`, `.btn--secondary`). Stage colors are `--readiness`, `--transition`/`--transition-ink`,
   `--postsecondary`, each with a `--*-tint` for light fills; data files reference them as `var(--...)`. No CSS modules or utility framework.

@@ -1,7 +1,7 @@
 # South Dakota SLDS Data Dashboard (illustrative mock-up)
 
 A React + Vite version of the public-facing SLDS dashboard mock-up. It follows South Dakota students from high school
-into college across three stages: Readiness, Transition and Postsecondary.
+into college across three stages: High school, Transition and Postsecondary.
 
 > **Illustrative only.** All figures are sample data. Agency names and the logo show intended branding and do not
 > represent an official publication of the South Dakota Department of Education or the Board of Regents. Bracketed

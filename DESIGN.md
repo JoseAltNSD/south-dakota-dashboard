@@ -41,7 +41,7 @@ These came out of review rounds. They override the original design system README
 5. **"Illustrative" must stay visible:** as a lime badge in the header, and as an outlined badge plus disclaimer text in the footer. The banner strip under the nav was **removed** at the owner's request. Do not re-add it.
 6. **The DOE logo** (white, transparent PNG) is used in the **header** (48px tall, linking to Home) and the **footer** (244px wide). It was cropped from an image the owner supplied, and the official file must come from DOE Communications.
 7. **No "Download data" button in the top nav.** Downloads are reached from the Explore tool button, the Home help tile and the Glossary and help "Download data" section.
-8. **Explore filters are all dropdowns**, laid out in a labeled grid: Level, District, School, School year, Student group. A sentence-style ("Show results for… in… for…") layout was tried and **rejected**, as were segmented buttons and year buttons.
+8. **Explore filters are all dropdowns** (page-drawn `Select.jsx`, not native selects, so they show on screen shares), laid out in a labeled grid: Level, District, School, School year, Student group. A sentence-style ("Show results for… in… for…") layout was tried and **rejected**, as were segmented buttons and year buttons.
 9. **One single Power BI section per stage** on Explore, spanning the full content width. Do not split the report into per-indicator embeds, KPI tiles or a separate district-comparison embed. Those are now **pages inside the one report**.
 10. **No "On this page:" jump-link row** on Explore. It was removed.
 11. **Explore uses horizontal stage tabs.** A left sidebar index was tried, and was removed so the bands could run full width. Tabs also match the client's "three tabs" requirement.
@@ -161,10 +161,9 @@ The font family is `"Segoe UI", "Segoe UI Web (West European)", -apple-system, B
    - Eyebrow "SOUTH DAKOTA STATEWIDE LONGITUDINAL DATA SYSTEM", then the display H1 "How are South Dakota students doing after high school?", then a lead paragraph.
    - Buttons: "Explore the data" (primary) and "New here? Start with the glossary" (secondary).
    - On the right, a **"Find your district or school"** card with a search input and a "Go" button.
-2. **Start with a question** (gray well band): three stage cards (Readiness, Transition, Postsecondary). Each card has:
+2. **Start with a question** (gray well band): three stage cards (High school, Transition, Postsecondary). Each card has:
    - a colored eyebrow, the h3 full stage name and a one-line blurb
-   - two question links (gray `#f5f5f5` rows with an arrow)
-   - a footer showing the indicator count and "See all"
+   - every indicator in the stage as a link (rows filled with the stage tint, with an arrow) to its report page; a "coming later" indicator is a hatched row with no link
 3. **One connected record, from high school to college** (white): four steps.
    - Step 1 K-12 schools, Step 2 Leaving high school and Step 3 College are white cards with colored eyebrow text.
    - "Coming later: Workforce" uses the hatched fill.
@@ -194,7 +193,7 @@ The font family is `"Segoe UI", "Segoe UI Web (West European)", -apple-system, B
 4. **About these indicators** (gray well): a 2-column grid of white cards, one per indicator. Each card has:
    - the indicator name as a colored eyebrow, and the question as h3
    - "What is this?" and "How to read it" text, plus an optional note box
-   - two actions, vertically centered on one row: **"Show in report"** (a text button that switches the report page; in React it also scrolls to the report) and **"Download CSV"**
+   - two actions, vertically centered on one row: **"Show in report"** (a text button that switches the report page; in React it also scrolls to the report) and **"Learn about this indicator (EW framework)"**, a link to the indicator's page on educationtoworkforce.org (new tab)
    - "Coming later" indicators show a hatched note instead.
 5. **Questions strip** (white): "Questions about this data?" with `[SLDS EMAIL]`, and a "Send feedback" button.
 
@@ -205,7 +204,7 @@ The font family is `"Segoe UI", "Segoe UI Web (West European)", -apple-system, B
 - **Glossary:** a search input that filters live, a term count, and a white `<dl>` card of terms.
 - **Data dictionary:** a scrollable table (Indicator, Stage chip, Definition, Students counted, Source).
 - **How to read the charts:** a numbered anatomy demo (question, headline value, context line, trend, source) with a matching list.
-- **Download data:** four cards (Readiness CSV, Transition CSV, Postsecondary CSV, Data dictionary PDF).
+- **Download data:** four cards (High school CSV, Transition CSV, Postsecondary CSV, Data dictionary PDF).
 - **About the data:** one sentence naming the agencies ("The SLDS is led by the South Dakota Department of Education in partnership with the South Dakota Board of Regents and the South Dakota Board of Technical Education."), then four cards (sources, years covered, privacy, known limits). What each agency contributes is not described yet, pending the client; the "Where the data come from" card still names only DOE and BOR.
 - **FAQ:** `<details>` accordions.
 - A "Still have a question?" strip with `[SLDS EMAIL]` closes the page.
@@ -219,7 +218,7 @@ The font family is `"Segoe UI", "Segoe UI Web (West European)", -apple-system, B
 
 | Stage | Indicators (in order) |
 |---|---|
-| **Readiness**: High school progress and college readiness | Consistent attendance; GPA; Reading and math proficiency (series break note: Smarter Balanced → ACT); Early college coursework (dual credit) |
+| **High school**: High school progress and college readiness | Consistent attendance; GPA; 11th grade reading and math proficiency (series break note: Smarter Balanced → ACT in 2024–25); Early college coursework (dual credit) |
 | **Transition**: High school completion and transition | ACT participation and performance (series break note); College applications; FAFSA completion (data source note: Board of Regents, agreement pending); High school graduation (optional, also in the Report Card) |
 | **Postsecondary**: Postsecondary enrollment and early progress | College enrollment (*added by design to cover enrollment; confirm with client*); First-year credits (24+ credits, gateway courses); Persistence; Degree completion (**coming later**) |
 

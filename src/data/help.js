@@ -29,7 +29,7 @@ export const TERMS = [
 ].map(([term, def]) => ({ term, def }));
 
 const S = {
-  R: { stage: 'Readiness', ink: 'var(--readiness)', tint: '#e3f0f1' },
+  R: { stage: 'High school', ink: 'var(--readiness)', tint: '#e3f0f1' },
   T: { stage: 'Transition', ink: 'var(--transition-ink)', tint: '#f3ebd6' },
   P: { stage: 'Postsecondary', ink: 'var(--postsecondary)', tint: '#efe6ec' },
 };
@@ -38,7 +38,7 @@ const row = (name, s, def, pop, src) => ({ name, ...S[s], def, pop, src });
 export const DICTIONARY = [
   row('Consistent attendance', 'R', 'Percent of students attending at least 90% of enrolled days.', 'Grades 9–12', 'SD SLDS (K-12)'),
   row('GPA', 'R', 'Percent of students with a cumulative GPA of 3.0 or higher.', 'Grade 12', 'SD SLDS (K-12)'),
-  row('Reading and math proficiency', 'R', 'Percent of students scoring proficient on the state test.', 'Grade 11', 'SD state assessment'),
+  row('11th grade reading and math proficiency', 'R', 'Percent of students scoring proficient on the state test.', 'Grade 11', 'SD state assessment'),
   row('Early college coursework', 'R', 'Percent of graduates completing at least one dual credit course.', 'High school graduates', 'SD SLDS, Board of Regents'),
   row('ACT participation and performance', 'T', 'Percent of students taking the ACT, and average composite score.', 'Grade 11', 'ACT'),
   row('College applications', 'T', 'Percent of seniors submitting at least one college application.', 'Grade 12', 'Board of Regents [confirm]'),
@@ -51,7 +51,7 @@ export const DICTIONARY = [
 ];
 
 export const DOWNLOADS = [
-  { title: 'Readiness data', text: 'Attendance, GPA, proficiency and dual credit.', meta: 'CSV · 2021–22 to 2025–26 · [SIZE]', btn: 'Download CSV', color: 'var(--readiness)' },
+  { title: 'High school data', text: 'Attendance, GPA, proficiency and dual credit.', meta: 'CSV · 2021–22 to 2025–26 · [SIZE]', btn: 'Download CSV', color: 'var(--readiness)' },
   { title: 'Transition data', text: 'ACT, college applications, FAFSA and graduation.', meta: 'CSV · 2021–22 to 2025–26 · [SIZE]', btn: 'Download CSV', color: 'var(--transition)' },
   { title: 'Postsecondary data', text: 'Enrollment, first-year credits and persistence.', meta: 'CSV · graduating classes [YEARS] · [SIZE]', btn: 'Download CSV', color: 'var(--postsecondary)' },
   { title: 'Data dictionary', text: 'Definitions, sources and suppression rules.', meta: 'PDF · [SIZE]', btn: 'Download PDF', color: 'var(--control-border)' },

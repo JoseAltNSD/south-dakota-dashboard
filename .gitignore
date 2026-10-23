@@ -20,3 +20,7 @@ npm-debug.log*
 !.vscode/extensions.json
 .idea/
 *.swp
+
+# Local working notes
+tmp/
+TASKS.md

@@ -2,6 +2,7 @@
 // to match the Power BI environment, as the design system recommends.
 const PATHS = {
   arrowRight: 'M5 12h14M13 6l6 6-6 6',
+  chevronDown: 'M6 9l6 6 6-6',
   info: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 11v6M12 7.5v.5',
   book: 'M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2V5zM4 19a2 2 0 0 1 2-2h13',
   table: 'M3 5h18v14H3zM3 10h18M9 10v9',

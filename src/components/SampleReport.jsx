@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import { DISTRICTS, SCHOOLS, YEARS, GROUP_CATEGORIES } from '../data/stages.js';
+import Select from './Select.jsx';
 
 /**
  * Stand-in report pages drawn from the sample `trend` values in stages.js, so the mock-up
@@ -40,6 +41,7 @@ export function sampleValue(ind, yearIdx, { level, district, school, group }) {
   return Math.max(0, Math.min(100, Math.round(v)));
 }
 
+const breakNote = (ind) => ind.breakNote ?? 'the data source changed';
 const fmt = (v) => (v == null ? 'Suppressed' : `${v}%`);
 const STATE = { level: 'State', group: 'All students' };
 const seriesValues = (ind, f) => YEARS_ASC.map((_, i) => sampleValue(ind, i, f));
@@ -123,7 +125,7 @@ function IndicatorPage({ stage, ind, filters, yearIdx }) {
         )}
         <span className="rpt__label" style={{ marginTop: 8 }}>Trend over time</span>
         <TrendLines series={trendSeries(ind, filters, stage.color)} breakAt={ind.breakAt} yearIdx={yearIdx} name={ind.name} />
-        {ind.breakAt != null && <span className="caption">Gap and dashed line: the data source changed in {YEARS_ASC[ind.breakAt]}. Compare years on either side with care.</span>}
+        {ind.breakAt != null && <span className="caption">Gap and dashed line: {breakNote(ind)} in {YEARS_ASC[ind.breakAt]}. Compare years on either side with care.</span>}
       </div>
       <div className="rpt__panel">
         <span className="rpt__label">Districts compared, {filters.year}</span>
@@ -246,12 +248,10 @@ function GroupsPage({ stage, indicators, filters, yearIdx }) {
   return (
     <>
       <div className="rpt__toolbar">
-        <label className="rpt__slicer">
-          <span className="rpt__label">Indicator</span>
-          <select className="select" value={ind.id} onChange={(e) => setIndId(e.target.value)}>
-            {indicators.map((i) => <option key={i.id} value={i.id}>{i.name}</option>)}
-          </select>
-        </label>
+        <div className="rpt__slicer">
+          <label htmlFor="rpt-ind" className="rpt__label">Indicator</label>
+          <Select id="rpt-ind" value={ind.id} onChange={setIndId} options={indicators.map((i) => ({ value: i.id, label: i.name }))} />
+        </div>
         <span className="body-sm muted">Student group results are shown for the state only, so small groups can’t be identified.</span>
       </div>
       <div className="rpt__panel">
@@ -285,7 +285,7 @@ function GroupsPage({ stage, indicators, filters, yearIdx }) {
         ))}
       </div>
       <span className="caption">
-        * Suppressed: fewer than 10 students.{ind.breakAt != null && ` The trend has a gap at ${YEARS_ASC[ind.breakAt]}, when the data source changed.`}
+        * Suppressed: fewer than 10 students.{ind.breakAt != null && ` The trend has a gap at ${YEARS_ASC[ind.breakAt]}, when ${breakNote(ind)}.`}
       </span>
     </>
   );
