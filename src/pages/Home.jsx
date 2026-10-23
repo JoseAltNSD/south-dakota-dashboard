@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Icon from '../components/Icon.jsx';
 import AgencyLogos from '../components/AgencyLogos.jsx';
-import { STAGES, STAGE_ORDER, DISTRICTS } from '../data/stages.js';
+import heroImage from '../assets/hero-students.jpg';
+import { STAGES, STAGE_ORDER } from '../data/stages.js';
 
 const HELP = [
   { title: 'Glossary', text: 'Plain-language meanings of terms like cohort and persistence.', icon: 'book', section: 'glossary' },
@@ -12,20 +12,10 @@ const HELP = [
 ];
 
 export default function Home() {
-  const navigate = useNavigate();
-  const [query, setQuery] = useState('');
-
-  function findPlace(e) {
-    e.preventDefault();
-    const q = query.trim().toLowerCase();
-    const match = q && DISTRICTS.find((d) => d.toLowerCase().includes(q));
-    navigate(match ? `/explore?level=District&district=${encodeURIComponent(match)}` : '/explore');
-  }
-
   return (
     <>
-      <section className="container hero">
-        <div className="hero__copy">
+      <section className="hero">
+        <div className="container hero__copy">
           <span className="eyebrow muted">South Dakota Statewide Longitudinal Data System</span>
           <h1 className="display">How are South Dakota students doing after high school?</h1>
           <p className="hero__lead">
@@ -37,15 +27,8 @@ export default function Home() {
             <Link className="btn btn--secondary" to="/learn">New here? Start with the glossary</Link>
           </div>
         </div>
-        <form className="card finder" onSubmit={findPlace}>
-          <label htmlFor="find" className="h3">Find your district or school</label>
-          <p className="body-sm muted">Jump straight to results for a place you know.</p>
-          <div className="finder__row">
-            <input id="find" className="input" type="search" placeholder="e.g. Brookings" value={query} onChange={(e) => setQuery(e.target.value)} />
-            <button type="submit" className="btn btn--primary btn--sm" style={{ minHeight: 44 }}>Go</button>
-          </div>
-          <p className="caption">Or view <Link to="/explore">statewide results</Link>.</p>
-        </form>
+        {/* Decorative, so it has empty alt text. Fills the right half on wide screens; hidden below 900px. */}
+        <img className="hero__image" src={heroImage} alt="" />
       </section>
 
       <section className="band band--well" aria-labelledby="q-h">

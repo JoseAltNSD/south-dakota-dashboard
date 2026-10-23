@@ -160,7 +160,7 @@ The font family is `"Segoe UI", "Segoe UI Web (West European)", -apple-system, B
 1. **Hero** (white, 72px vertical padding)
    - Eyebrow "SOUTH DAKOTA STATEWIDE LONGITUDINAL DATA SYSTEM", then the display H1 "How are South Dakota students doing after high school?", then a lead paragraph.
    - Buttons: "Explore the data" (primary) and "New here? Start with the glossary" (secondary).
-   - On the right, a **"Find your district or school"** card with a search input and a "Go" button.
+   - On the right (900px and wider), a photo of students (`src/assets/hero-students.jpg`, a 1200px web copy of `hero-section-image.JPG`) covers the right half of the hero, top to bottom and out to the window edge, with no rounding. Its left edge starts where the copy ends (48px left of center) and fades in from white over 200px (a CSS mask), so the fade sits in the gap beside the text. It is cropped with `object-fit: cover`, focused on the faces (`50% 30%`). The hero's height comes from the text (72px padding), and the copy is capped at half the container minus 48px so it never runs under the photo. The photo is decorative (empty alt) and hidden below 900px, where the text column would be too narrow.
 2. **Explore by stage** (gray well band, subtitle "See how students are doing at each step, from high school into college."): three stage cards (High school, Transition, Postsecondary). Each card has:
    - a colored eyebrow, the h3 full stage name and a one-line blurb
    - every indicator in the stage as a link (rows filled with the stage tint, with an arrow) to its report page; a "coming later" indicator is a hatched row with no link
@@ -264,7 +264,7 @@ Full text for every stage and indicator lives in `src/data/stages.js` and `src/d
 ### React
 
 - Routes: `/`, `/explore`, `/learn`, using HashRouter so the site works on any static host.
-- Deep links: `#/explore?stage=transition`, `#/explore?level=District&district=…`, `#/learn?section=dictionary`. The Home finder matches a district name and opens Explore with that district selected.
+- Deep links: `#/explore?stage=transition`, `#/explore?level=District&district=…`, `#/learn?section=dictionary`. Home no longer has a district finder (replaced by the hero photo), but Explore still accepts the district link.
 - All tokens are CSS variables in `src/styles.css`. Band classes are `.band` and `.band--well`.
 - `PowerBIEmbed.jsx` renders an iframe when the stage has `embedUrl`, otherwise its children (`SampleReport.jsx`). It documents how to swap in `powerbi-client-react`.
 - `SampleReport.jsx` exports `sampleValue(indicator, yearIdx, filters)`, which returns a percent or `null` (suppressed). Replace `trend` values in `stages.js` to change the sample charts; don't hard-code numbers in the component.
@@ -306,3 +306,4 @@ Full text for every stage and indicator lives in `src/data/stages.js` and `src/d
 13. **Intro blocks (2026-10-20):** "Why is this important?" and "Which students am I seeing?" got a 4px stage-color left border, stage-colored headings and muted body text.
 14. **Partner branding (2026-10-20):** Board of Regents and Board of Technical Education logos added after "In partnership with" in the footer and a new centered Home band, a partner sentence on About the data, and all three agencies named in the disclaimer.
 15. **Trends and comparisons (2026-10-20):** in response to feedback that the reports lacked trends over time and side-by-side comparisons of districts, schools and student groups. Indicator pages got a trend line chart against the district and state; "District comparison" became "Districts and schools" with small-multiple bar charts per indicator (table behind "Show as table"); a new "Student groups" page compares groups at state level with per-group trend sparklines.
+16. **Hero photo (2026-10-23):** the "Find your district or school" card was replaced with a photo of students that covers the right half of the hero and fades in from white on its left edge, shown on wide screens only.

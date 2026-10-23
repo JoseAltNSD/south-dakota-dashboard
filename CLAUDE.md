@@ -32,8 +32,9 @@ There is no test runner, linter or formatter configured.
 - **Content lives in data files, not components.** `src/data/stages.js` holds each stage's copy, FAQ, indicators and
   the filter option lists (`YEARS`, `LEVELS`, `DISTRICTS`, `SCHOOLS`, `GROUPS`); `src/data/help.js` holds glossary,
   dictionary, downloads and FAQ content for Learn. Pages render from these, so copy edits usually belong there.
-- **URL query params are the shared state between pages.** Home links into Explore with `?stage=`,
-  `?stage=...&indicator=<id>` (opens that indicator's report page and scrolls to it) and `?level=District&district=...`; Explore
+- **URL query params are the shared state between pages.** Home links into Explore with `?stage=` and
+  `?stage=...&indicator=<id>` (opens that indicator's report page and scrolls to it). Explore also accepts
+  `?level=District&district=...` (Home's district finder was removed, but keep the link working). Explore
   validates them against `STAGE_ORDER`/indicator ids/`LEVELS`/`DISTRICTS` before use.
   Learn uses `?section=` (`glossary`, `dictionary`, `read`, `download`, `about`, `faq`). Keep these deep links working
   when renaming keys or options.

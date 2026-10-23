@@ -131,13 +131,21 @@ button { font: inherit; }
 .intro-block p { color: var(--muted); }
 
 /* Home */
-.hero { display: flex; flex-wrap: wrap; gap: 32px 48px; align-items: center; padding-top: 72px; padding-bottom: 72px; }
-.hero__copy { flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+.hero { position: relative; overflow: hidden; }
+.hero__copy { display: flex; flex-direction: column; gap: 16px; padding-top: 72px; padding-bottom: 72px; }
 .hero__copy .display { max-width: 640px; }
 .hero__lead { max-width: 600px; }
 .hero__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
-.finder { flex: 1 1 320px; display: flex; flex-direction: column; gap: 12px; }
-.finder__row { display: flex; gap: 8px; }
+/* The photo covers the right half of the hero, out to the window edge, and the hero's height comes from the text.
+   The container is centered on the window, so capping the copy at half its width minus 48px keeps the text and
+   buttons off the photo. Below 900px the copy would be too narrow, so the photo is hidden.
+   The photo starts where the copy ends (48px left of center) and fades in from white over 200px, so the faded edge
+   sits in the gap and never under the text. */
+.hero__image { display: none; position: absolute; top: 0; right: 0; width: calc(50% + 48px); height: 100%; object-fit: cover; object-position: 50% 30%; -webkit-mask-image: linear-gradient(to right, transparent, #000 200px); mask-image: linear-gradient(to right, transparent, #000 200px); }
+@media (min-width: 900px) {
+  .hero__image { display: block; }
+  .hero .hero__copy > * { max-width: calc(50% - 48px); }
+}
 .input { flex: 1; min-width: 0; min-height: 44px; padding: 0 12px; border: 1px solid var(--control-border); border-radius: var(--radius-md); font: inherit; font-size: 14px; background: var(--surface); color: var(--ink); width: 100%; }
 .stage-card { display: flex; flex-direction: column; gap: 12px; }
 .stage-card__questions { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }

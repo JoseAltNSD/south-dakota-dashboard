@@ -44,7 +44,7 @@ src/
     SampleReport.jsx     Sample report pages drawn from the trend values in stages.js
     Icon.jsx             Small stroke icon set
   pages/
-    Home.jsx             Question-led landing page and district finder
+    Home.jsx             Landing page: hero, stage cards, help tiles
     Explore.jsx          Stage tabs, page tools, filters, Power BI report, indicator guide
     Learn.jsx            Glossary (searchable), data dictionary, chart guide, downloads, about, FAQ
   data/
