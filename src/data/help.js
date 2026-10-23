@@ -38,7 +38,8 @@ const row = (name, s, def, pop, src) => ({ name, ...S[s], def, pop, src });
 export const DICTIONARY = [
   row('Consistent attendance', 'R', 'Percent of students attending at least 90% of enrolled days.', 'Grades 9–12', 'SD SLDS (K-12)'),
   row('GPA', 'R', 'Percent of students with a cumulative GPA of 3.0 or higher.', 'Grade 12', 'SD SLDS (K-12)'),
-  row('11th grade reading and math proficiency', 'R', 'Percent of students scoring proficient on the state test.', 'Grade 11', 'SD state assessment'),
+  row('11th grade reading proficiency', 'R', 'Percent of students scoring proficient in reading on the state test.', 'Grade 11', 'SD state assessment'),
+  row('11th grade math proficiency', 'R', 'Percent of students scoring proficient in math on the state test.', 'Grade 11', 'SD state assessment'),
   row('Early college coursework', 'R', 'Percent of graduates completing at least one dual credit course.', 'High school graduates', 'SD SLDS, Board of Regents'),
   row('ACT participation and performance', 'T', 'Percent of students taking the ACT, and average composite score.', 'Grade 11', 'ACT'),
   row('College applications', 'T', 'Percent of seniors submitting at least one college application.', 'Grade 12', 'Board of Regents [confirm]'),

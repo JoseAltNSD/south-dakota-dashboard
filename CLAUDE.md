@@ -44,7 +44,9 @@ There is no test runner, linter or formatter configured.
 - **Report frame**: `PowerBIEmbed.jsx` shows an iframe when the stage has an `embedUrl`, otherwise its children,
   which Explore sets to `SampleReport.jsx`. The sample pages are drawn from each indicator's `trend` (oldest year
   first, the reverse of `YEARS`) and `breakAt` (series break). `sampleValue()` derives district, school and group
-  values from fixed per-name offsets and yearly drifts and returns `null` for suppressed cells. Student groups are
+  values from fixed per-name offsets and yearly drifts and returns `null` for suppressed cells. An indicator with
+  `parts` (reading and math proficiency) keeps one report tab but each part has its own `trend`: its page shows a
+  trend tile per part, and the other pages list the parts separately. Student groups are
   grouped by `GROUP_CATEGORIES` in `stages.js`; `GROUPS` is derived from it. The README's "Connecting Power BI"
   section covers the swap to Power BI Embedded; the hosting model is still undecided.
 - **Drop-downs**: use `src/components/Select.jsx`, not a native `<select>`. Native menus are drawn by the OS and don't

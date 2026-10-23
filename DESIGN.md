@@ -215,7 +215,7 @@ The font family is `"Segoe UI", "Segoe UI Web (West European)", -apple-system, B
 
 | Stage | Indicators (in order) |
 |---|---|
-| **High school**: High school progress and college readiness | Consistent attendance; GPA; 11th grade reading and math proficiency (series break note: Smarter Balanced → ACT in 2024–25); Early college coursework (dual credit) |
+| **High school**: High school progress and college readiness | Consistent attendance; GPA; 11th grade reading and math proficiency (one report page with a reading trend tile and a math trend tile, never combined; series break note: Smarter Balanced → ACT in 2024–25); Early college coursework (dual credit) |
 | **Transition**: High school completion and transition | ACT participation and performance (series break note); College applications; FAFSA completion (data source note: Board of Regents, agreement pending); High school graduation (optional, also in the Report Card) |
 | **Postsecondary**: Postsecondary enrollment and early progress | College enrollment (*added by design to cover enrollment; confirm with client*); First-year credits (24+ credits, gateway courses); Persistence; Degree completion (**coming later**) |
 
@@ -224,7 +224,7 @@ Filter options:
 - **Schools:** placeholders [High school A], [High school B], [Alternative school].
 - **Student groups:** All students; Female; Male; American Indian or Alaska Native; Asian; Black or African American; Hispanic or Latino; Two or more races; White; Economically disadvantaged; Not economically disadvantaged.
 
-Each indicator with a report page also has a five-year sample `trend` (oldest year first) and, where the source changed, `breakAt` (Reading and math proficiency at 2024–25, ACT at 2023–24). District, school and group values are derived from these with a fixed offset per name plus a fixed yearly drift per name, so trends separate from the state but the same filters always show the same numbers. A few small state-level groups (Asian, Black or African American, Two or more races) are suppressed in some years. `GROUP_CATEGORIES` in `stages.js` sets the group headings and order.
+Each indicator with a report page also has a five-year sample `trend` (oldest year first) and, where the source changed, `breakAt` (reading and math proficiency at 2024–25, ACT at 2023–24). District, school and group values are derived from these with a fixed offset per name plus a fixed yearly drift per name, so trends separate from the state but the same filters always show the same numbers. A few small state-level groups (Asian, Black or African American, Two or more races) are suppressed in some years. `GROUP_CATEGORIES` in `stages.js` sets the group headings and order.
 
 Full text for every stage and indicator lives in `src/data/stages.js` and `src/data/help.js` (React), and in each artboard's `renderVals()` (canvas).
 

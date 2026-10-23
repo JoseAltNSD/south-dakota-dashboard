@@ -41,6 +41,9 @@ export function sampleValue(ind, yearIdx, { level, district, school, group }) {
   return Math.max(0, Math.min(100, Math.round(v)));
 }
 
+// An indicator with `parts` (reading and math) is drawn as one measure per part, which keeps the indicator's break
+// and notes. Each part gets its own id, so its derived place and group values differ.
+const measures = (ind) => (ind.parts ? ind.parts.map((p) => ({ ...ind, ...p, id: `${ind.id}-${p.id}` })) : [ind]);
 const breakNote = (ind) => ind.breakNote ?? 'the data source changed';
 const fmt = (v) => (v == null ? 'Suppressed' : `${v}%`);
 const STATE = { level: 'State', group: 'All students' };
@@ -48,7 +51,7 @@ const seriesValues = (ind, f) => YEARS_ASC.map((_, i) => sampleValue(ind, i, f))
 
 export default function SampleReport({ stage, page, indicators, filters, subtitle }) {
   const yearIdx = Math.max(0, YEARS_ASC.indexOf(filters.year));
-  const props = { stage, indicators, filters, yearIdx };
+  const props = { stage, indicators: indicators.flatMap(measures), filters, yearIdx };
   const sub = page.kind === 'groups' ? `South Dakota · ${filters.year} · All student groups` : subtitle;
 
   return (
@@ -112,24 +115,50 @@ function trendSeries(ind, filters, color) {
 }
 
 function IndicatorPage({ stage, ind, filters, yearIdx }) {
-  const v = sampleValue(ind, yearIdx, filters);
-  const rows = DISTRICTS.map((d) => ({ name: d, value: sampleValue(ind, yearIdx, { level: 'District', district: d }) }));
+  const parts = measures(ind);
+  const districtRows = (m) => DISTRICTS.map((d) => ({ name: d, value: sampleValue(m, yearIdx, { level: 'District', district: d }) }));
+  const picked = filters.level !== 'State' ? filters.district : null;
 
-  return (
-    <div className="rpt__body">
-      <div className="rpt__panel">
-        <span className="rpt__label">{ind.name} · {filters.year}</span>
-        <span className="rpt__hero rpt__hero--lg">{fmt(v)}</span>
-        {filters.level !== 'State' && (
-          <span className="body-sm muted">South Dakota: {fmt(sampleValue(ind, yearIdx, STATE))}</span>
-        )}
-        <span className="rpt__label" style={{ marginTop: 8 }}>Trend over time</span>
-        <TrendLines series={trendSeries(ind, filters, stage.color)} breakAt={ind.breakAt} yearIdx={yearIdx} name={ind.name} />
-        {ind.breakAt != null && <span className="caption">Gap and dashed line: {breakNote(ind)} in {YEARS_ASC[ind.breakAt]}. Compare years on either side with care.</span>}
+  const trendPanels = parts.map((m) => (
+    <div key={m.id} className="rpt__panel">
+      <span className="rpt__label">{m.name} · {filters.year}</span>
+      <span className="rpt__hero rpt__hero--lg">{fmt(sampleValue(m, yearIdx, filters))}</span>
+      {filters.level !== 'State' && (
+        <span className="body-sm muted">South Dakota: {fmt(sampleValue(m, yearIdx, STATE))}</span>
+      )}
+      <span className="rpt__label" style={{ marginTop: 8 }}>{m.short ? `${m.short}: trend over time` : 'Trend over time'}</span>
+      <TrendLines series={trendSeries(m, filters, stage.color)} breakAt={m.breakAt} yearIdx={yearIdx} name={m.name} />
+      {m.breakAt != null && <span className="caption">Gap and dashed line: {breakNote(m)} in {YEARS_ASC[m.breakAt]}. Compare years on either side with care.</span>}
+    </div>
+  ));
+
+  if (parts.length === 1) {
+    return (
+      <div className="rpt__body">
+        {trendPanels}
+        <div className="rpt__panel">
+          <span className="rpt__label">Districts compared, {filters.year}</span>
+          <CompareBars rows={districtRows(ind)} color={stage.color} picked={picked} state={sampleValue(ind, yearIdx, STATE)} />
+          <span className="caption">* Suppressed: fewer than 10 students.</span>
+        </div>
       </div>
+    );
+  }
+
+  // Several parts: a trend tile per part side by side, then the district comparison for each part below.
+  return (
+    <div className="stack gap-16">
+      <div className="rpt__body">{trendPanels}</div>
       <div className="rpt__panel">
         <span className="rpt__label">Districts compared, {filters.year}</span>
-        <CompareBars rows={rows} color={stage.color} picked={filters.level !== 'State' ? filters.district : null} state={sampleValue(ind, yearIdx, STATE)} />
+        <div className="rpt__body">
+          {parts.map((m) => (
+            <div key={m.id} className="stack gap-8">
+              <span className="body-sm strong">{m.short ?? m.name}</span>
+              <CompareBars rows={districtRows(m)} color={stage.color} picked={picked} state={sampleValue(m, yearIdx, STATE)} />
+            </div>
+          ))}
+        </div>
         <span className="caption">* Suppressed: fewer than 10 students.</span>
       </div>
     </div>
