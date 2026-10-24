@@ -20,6 +20,11 @@
   --readiness-tint: #e3f0f1;
   --transition-tint: #f3ebd6;
   --postsecondary-tint: #efe6ec;
+  /* Shades of the postsecondary purple for the parts of one total, darkest first. 1 and 2 take white labels. */
+  --postsecondary-ramp-1: #5b3550;
+  --postsecondary-ramp-2: #835c77;
+  --postsecondary-ramp-3: #ab879f;
+  --postsecondary-ramp-4: #cfb6c6;
 
   --suppressed: #cfc8bc;
   /* Reference series in charts (South Dakota, All students). Under 3:1 on white, so it is always labeled. */
@@ -263,6 +268,8 @@ button { font: inherit; }
 .rpt__toolbar { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 8px 16px; }
 .rpt__switch { min-height: 32px; padding: 0 12px; border: 1px solid #c8c6c4; border-radius: var(--radius-md); background: var(--surface); color: var(--ink); font-size: 12px; font-weight: 600; cursor: pointer; }
 .rpt__switch:hover { background: #f5f5f5; }
+.rpt__switch[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--surface); }
+.rpt__segments { display: flex; flex-wrap: wrap; gap: 4px; }
 .rpt__slicer { display: flex; flex-direction: column; gap: 4px; flex: 0 1 260px; }
 .rpt__multiples { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; }
 
@@ -282,6 +289,7 @@ button { font: inherit; }
 .rpt-trend__break { stroke: var(--muted); stroke-width: 2; stroke-dasharray: 4 4; }
 .rpt-trend__dot { stroke: var(--surface); stroke-width: 2; }
 .rpt-trend__end { fill: var(--ink); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.rpt-stack__value { font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums; }
 /* Score labels sit over the bars, so a white outline keeps them readable on the dark selected bar. */
 .rpt-combo__label { stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; paint-order: stroke; }
 

@@ -43,6 +43,25 @@ export function sampleValue(ind, yearIdx, { level, district, school, group }) {
   return Math.max(0, Math.min(100, Math.round(v)));
 }
 
+// Splits an indicator's value into its breakdown parts, as percents of all graduates that add up to the value exactly
+// (largest remainder). Each part starts from its `share` of enrollees, shifted by a fixed offset per place or group.
+// Returns null when the breakdown is suppressed: schools and small groups have few students in each part, so the
+// whole breakdown is hidden if any part is under 4%, and hiding one part alone would reveal it by subtraction.
+function sampleBreakdown(ind, bd, yearIdx, filters) {
+  const total = sampleValue(ind, yearIdx, filters);
+  if (total == null) return null;
+  const { level, district, school, group } = filters;
+  const place = level === 'District' ? district : level === 'School' ? school + district : group === 'All students' ? '' : group;
+  const raw = bd.parts.map((p) => Math.max(0.01, p.share[yearIdx] + (place ? offset(place + bd.id + p.name, 4) / 100 : 0)));
+  const sum = raw.reduce((a, b) => a + b, 0);
+  const exact = raw.map((r) => (r / sum) * total);
+  const values = exact.map(Math.floor);
+  const left = total - values.reduce((a, b) => a + b, 0);
+  exact.map((e, i) => [e - values[i], i]).sort((a, b) => b[0] - a[0]).slice(0, left).forEach(([, i]) => { values[i] += 1; });
+  const small = level === 'School' || (level === 'State' && SMALL_GROUPS.includes(group));
+  return small && Math.min(...values) < 4 ? null : values;
+}
+
 // Average ACT composite (1 to 36) for the example two-axis chart. Place and group offsets are derived as for a
 // percent and scaled to the 35-point range, so the state value is the sample `score` itself. It is suppressed
 // wherever participation is, since both count the same students.
@@ -148,7 +167,7 @@ function IndicatorPage({ stage, ind, filters, yearIdx }) {
   ));
 
   if (parts.length === 1) {
-    return (
+    const body = (
       <div className="rpt__body">
         {trendPanels}
         <div className="rpt__panel">
@@ -156,6 +175,13 @@ function IndicatorPage({ stage, ind, filters, yearIdx }) {
           <CompareBars rows={districtRows(ind)} color={stage.color} picked={picked} state={sampleValue(ind, yearIdx, STATE)} />
           <span className="caption">* Suppressed: fewer than 10 students.</span>
         </div>
+      </div>
+    );
+    if (!ind.breakdowns) return body;
+    return (
+      <div className="stack gap-16">
+        {body}
+        <BreakdownPanel ind={ind} filters={filters} yearIdx={yearIdx} />
       </div>
     );
   }
@@ -231,13 +257,7 @@ function ComboChart({ bars, line, breakAt, yearIdx, color }) {
         <span><i className="rpt-key rpt-key--line" style={{ '--key': 'var(--ink)' }} />Average composite score (right axis)</span>
       </div>
       <svg width={W} height={H} role="img" aria-label={label}>
-        {/* The same stripes as the .hatch class, for suppressed bars. */}
-        <defs>
-          <pattern id={hatch} width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-            <rect width="12" height="12" fill="#e8e2d7" />
-            <rect width="6" height="12" fill="var(--suppressed)" />
-          </pattern>
-        </defs>
+        <HatchPattern id={hatch} />
         {[0, 25, 50, 75, 100].map((t, k) => (
           <g key={t}>
             <line x1={L} x2={W - R} y1={yPct(t)} y2={yPct(t)} className="rpt-trend__grid" />
@@ -267,6 +287,124 @@ function ComboChart({ bars, line, breakAt, yearIdx, color }) {
             <text x={x(i)} y={yScore(v) - 10} textAnchor="middle" className="rpt-trend__end rpt-combo__label">{v.toFixed(1)}</text>
           </g>
         ))}
+      </svg>
+    </div>
+  );
+}
+
+// The same stripes as the .hatch class, for suppressed marks inside an SVG chart. Fill with `url(#id)`.
+function HatchPattern({ id }) {
+  return (
+    <defs>
+      <pattern id={id} width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <rect width="12" height="12" fill="#e8e2d7" />
+        <rect width="6" height="12" fill="var(--suppressed)" />
+      </pattern>
+    </defs>
+  );
+}
+
+// "What graduates enroll in": the indicator split into parts, by credential or by type of college. Stacked columns
+// show the total as column height; "Show as lines" draws each part as its own line beside the total.
+function BreakdownPanel({ ind, filters, yearIdx }) {
+  const [bdId, setBdId] = useState(ind.breakdowns[0].id);
+  const [asLines, setAsLines] = useState(false);
+  const bd = ind.breakdowns.find((b) => b.id === bdId);
+  const columns = YEARS_ASC.map((_, i) => ({ total: sampleValue(ind, i, filters), parts: sampleBreakdown(ind, bd, i, filters) }));
+  const suppressed = columns.some((c) => c.parts == null);
+
+  const lines = [
+    { label: 'All enrolled', values: columns.map((c) => (c.parts ? c.total : null)), color: 'var(--ink)' },
+    ...bd.parts.map((p, k) => ({ label: p.name, values: columns.map((c) => c.parts?.[k] ?? null), color: p.color })),
+  ];
+
+  return (
+    <div className="rpt__panel">
+      <div className="rpt__toolbar">
+        <div className="stack gap-4">
+          <span className="rpt__label">What graduates enroll in, as a percent of all graduates</span>
+          <div className="rpt__segments" role="group" aria-label="Break down by">
+            {ind.breakdowns.map((b) => (
+              <button key={b.id} type="button" className="rpt__switch" aria-pressed={b.id === bdId} onClick={() => setBdId(b.id)}>{b.label}</button>
+            ))}
+          </div>
+        </div>
+        <button type="button" className="rpt__switch" onClick={() => setAsLines(!asLines)}>
+          {asLines ? 'Show as stacked columns' : 'Show as lines'}
+        </button>
+      </div>
+      {asLines
+        ? <TrendLines series={lines} breakAt={ind.breakAt} yearIdx={yearIdx} name={`${ind.name}, ${bd.label.toLowerCase()}`} />
+        : <StackedColumns parts={bd.parts} columns={columns} yearIdx={yearIdx} name={`${ind.name}, ${bd.label.toLowerCase()}`} />}
+      <span className="caption">
+        The parts add up to the college enrollment rate.
+        {suppressed && ' Striped columns: the breakdown is suppressed because a part has too few students. The total is on the trend tile.'}
+        {' '}Sample data; categories to confirm.
+      </span>
+    </div>
+  );
+}
+
+// Columns stacked from the bottom in part order, on a 0-based axis so heights compare. Each segment is labeled when
+// it is tall enough, and each column carries its total on top.
+function StackedColumns({ parts, columns, yearIdx, name }) {
+  const [ref, width] = useWidth();
+  const hatch = useId();
+  const H = 260, T = 20, B = 28, L = 40, R = 16;
+  const W = Math.max(width, 280);
+  const slot = (W - L - R) / YEARS_ASC.length;
+  const x = (i) => L + slot * (i + 0.5);
+  const top = Math.max(20, Math.ceil((Math.max(...columns.map((c) => c.total ?? 0)) + 5) / 10) * 10);
+  const y = (v) => T + (1 - v / top) * (H - T - B);
+  const barW = Math.min(64, slot * 0.6);
+  const step = top > 60 ? 20 : 10;
+  const ticks = Array.from({ length: top / step + 1 }, (_, k) => k * step);
+  const label = `${name} by school year. ${YEARS_ASC.map((yr, i) => `${yr}: ${columns[i].parts ? parts.map((p, k) => `${p.name} ${columns[i].parts[k]}%`).join(', ') : 'suppressed'}`).join('; ')}`;
+
+  return (
+    <div className="rpt-trend" ref={ref}>
+      <div className="rpt-trend__legend caption">
+        {parts.map((p) => <span key={p.name}><i className="rpt-key" style={{ '--key': p.color }} />{p.name}</span>)}
+      </div>
+      <svg width={W} height={H} role="img" aria-label={label}>
+        <HatchPattern id={hatch} />
+        <rect x={x(yearIdx) - slot / 2 + 4} y={T} width={slot - 8} height={H - T - B} className="rpt-trend__now" />
+        {ticks.map((t) => (
+          <g key={t}>
+            <line x1={L} x2={W - R} y1={y(t)} y2={y(t)} className="rpt-trend__grid" />
+            <text x={L - 8} y={y(t) + 4} textAnchor="end" className="rpt-trend__tick">{t}%</text>
+          </g>
+        ))}
+        {YEARS_ASC.map((yr, i) => (
+          <text key={yr} x={x(i)} y={H - 8} textAnchor="middle" className={`rpt-trend__tick${i === yearIdx ? ' rpt-trend__tick--on' : ''}`}>{yr}</text>
+        ))}
+        {columns.map(({ total, parts: values }, i) => {
+          const left = x(i) - barW / 2;
+          if (!values) {
+            const h = total == null ? H - T - B : y(0) - y(total);
+            return <rect key={i} x={left} y={y(0) - h} width={barW} height={h} fill={`url(#${hatch})`}><title>{`${YEARS_ASC[i]}: breakdown suppressed`}</title></rect>;
+          }
+          let base = 0;
+          return (
+            <g key={i}>
+              {values.map((v, k) => {
+                const y0 = y(base + v);
+                const h = y(base) - y0;
+                base += v;
+                return (
+                  <g key={k}>
+                    <rect x={left} y={y0} width={barW} height={Math.max(0, h - 1)} fill={parts[k].color}>
+                      <title>{`${parts[k].name}, ${YEARS_ASC[i]}: ${v}% of graduates`}</title>
+                    </rect>
+                    {/* Parts are ordered darkest first; the first two shades take white labels. */}
+                    {h >= 16 && <text x={x(i)} y={y0 + h / 2 + 4} textAnchor="middle" className="rpt-stack__value" fill={k < 2 ? '#fff' : 'var(--ink)'}>{v}%</text>}
+                  </g>
+                );
+              })}
+              <text x={x(i)} y={y(total) - 6} textAnchor="middle" className="rpt-trend__end">{total}%</text>
+            </g>
+          );
+        })}
       </svg>
     </div>
   );

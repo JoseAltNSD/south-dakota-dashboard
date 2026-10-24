@@ -51,7 +51,8 @@ There is no test runner, linter or formatter configured.
   `parts` (reading and math proficiency; ACT participation and performance) keeps one report tab but each part has its
   own `trend`: its page shows a trend tile per part, and the other pages list the parts separately. Parts share the
   indicator's suppression (`suppressId`). ACT's optional `score` feeds only the example two-axis chart behind "Show
-  combined chart" on its page. Student groups are
+  combined chart" on its page. College enrollment's `breakdowns` (shares of enrollees per part) feed the "What
+  graduates enroll in" panel; `sampleBreakdown()` splits the total so parts always add up to it. Student groups are
   grouped by `GROUP_CATEGORIES` in `stages.js`; `GROUPS` is derived from it. The README's "Connecting Power BI"
   section covers the swap to Power BI Embedded; the hosting model is still undecided.
 - **Downloads and feedback**: `src/downloads.js` builds every "Download data" CSV in the browser from

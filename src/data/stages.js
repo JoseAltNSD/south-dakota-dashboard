@@ -5,6 +5,7 @@
 // `breakAt` is the index of the first year after a change in how the data were collected, and `breakNote`
 // says what changed ("the data source changed" when it is missing).
 // `framework` is the indicator's page under EW_FRAMEWORK_URL, the Education-to-Workforce Indicator Framework.
+// `breakdowns` (college enrollment only) splits the indicator into parts that add up to it; see ENROLLMENT_BREAKDOWNS.
 // `metric` summarizes, in our own words, the framework's recommended metric for the indicator. Explore shows it
 // below the report while that indicator's tab is open. It may differ from our `definition`.
 // `parts` splits one indicator into measures that are never combined (reading and math; ACT participation and performance). Each part has its own
@@ -16,6 +17,32 @@
 export const EW_FRAMEWORK_URL = 'https://educationtoworkforce.org/indicators';
 
 export const STAGE_ORDER = ['readiness', 'transition', 'postsecondary'];
+
+// The parts of college enrollment, for the "What graduates enroll in" chart. Each part's `share` is its fraction of
+// enrolled students by school year (oldest first); the shares in a breakdown add up to 1 every year. Parts are listed
+// darkest first and stack from the bottom. Sample data; categories to confirm with the client.
+const ENROLLMENT_BREAKDOWNS = [
+  {
+    id: 'credential',
+    label: 'By credential',
+    parts: [
+      { name: 'Bachelor’s degree', color: 'var(--postsecondary-ramp-1)', share: [0.56, 0.55, 0.55, 0.54, 0.53] },
+      { name: 'Associate degree', color: 'var(--postsecondary-ramp-2)', share: [0.25, 0.25, 0.24, 0.24, 0.24] },
+      { name: 'Certificate', color: 'var(--postsecondary-ramp-3)', share: [0.11, 0.12, 0.13, 0.14, 0.15] },
+      { name: 'Other or undeclared', color: 'var(--postsecondary-ramp-4)', share: [0.08, 0.08, 0.08, 0.08, 0.08] },
+    ],
+  },
+  {
+    id: 'college',
+    label: 'By type of college',
+    parts: [
+      { name: 'In-state public university (Board of Regents)', color: 'var(--postsecondary-ramp-1)', share: [0.46, 0.45, 0.45, 0.44, 0.44] },
+      { name: 'In-state technical college', color: 'var(--postsecondary-ramp-2)', share: [0.24, 0.25, 0.26, 0.27, 0.28] },
+      { name: 'In-state private or tribal college', color: 'var(--postsecondary-ramp-3)', share: [0.10, 0.10, 0.10, 0.10, 0.10] },
+      { name: 'Out of state', color: 'var(--postsecondary-ramp-4)', share: [0.20, 0.20, 0.19, 0.19, 0.18] },
+    ],
+  },
+];
 
 export const STAGES = {
   readiness: {
@@ -81,7 +108,7 @@ export const STAGES = {
       { q: 'Are tribal colleges included?', a: 'Records from tribal colleges may be incomplete.' },
     ],
     indicators: [
-      { id: 'enr', name: 'College enrollment', trend: [61, 59, 58, 59, 60], framework: 'postsecondary-enrollment-directly-after-high-school', metric: 'The percent of high school graduates enrolled in any for-credit college program, including credit-bearing career and technical education, by October 31 after graduation.', question: 'Do graduates enroll in college?', definition: 'The percent of high school graduates enrolled at any two- or four-year college in the fall after graduation.', howto: 'Counts enrollment in or out of state, at public or private colleges.' },
+      { id: 'enr', name: 'College enrollment', trend: [61, 59, 58, 59, 60], breakdowns: ENROLLMENT_BREAKDOWNS, framework: 'postsecondary-enrollment-directly-after-high-school', metric: 'The percent of high school graduates enrolled in any for-credit college program, including credit-bearing career and technical education, by October 31 after graduation.', question: 'Do graduates enroll in college?', definition: 'The percent of high school graduates enrolled at any two- or four-year college in the fall after graduation.', howto: 'Counts enrollment in or out of state, at public or private colleges.' },
       { id: 'cred', name: 'First-year credits', trend: [44, 45, 46, 47, 47], framework: 'first-year-credit-accumulation', metric: 'The percent of first-year undergraduates who attempt and earn enough credits to stay on pace to graduate on time: 30 credits a year for full-time students and 15 for part-time students.', question: 'Are first-year students earning enough credits?', definition: 'The percent of first-year students who earned 24 or more college credits, and who passed gateway math and English.', howto: 'Earning 24 credits in year one keeps a student on pace for a degree. Gateway course results appear in the table view.' },
       { id: 'pers', name: 'Persistence', trend: [79, 80, 81, 80, 81], framework: 'postsecondary-persistence', metric: 'The percent of students who are still enrolled the next year, at the same or another college, or who have earned a credential. It is tracked for up to 150% of normal program length.', question: 'Do students come back for a second year?', definition: 'The percent of first-year students who enrolled at any college the following fall.', howto: 'A student counts as persisting even if they move to a different college.' },
       { id: 'deg', name: 'Degree completion', framework: 'postsecondary-certificate-or-degree-completion', question: 'Do students earn a degree or certificate?', later: true, definition: 'Completion rates will be added once enough graduating classes have had time to finish a degree or certificate.' },
