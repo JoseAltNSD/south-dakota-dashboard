@@ -47,8 +47,8 @@ export function downloadData(file) {
   const [name, rows] = FILES[file]();
   const csv = [[NOTE], ...rows].map((r) => r.map(cell).join(',')).join('\r\n');
   // The byte-order mark makes Excel read the file as UTF-8, so en dashes in school years survive.
-  const url = URL.createObjectURL(new Blob(['﻿', csv], { type: 'text/csv;charset=utf-8' }));
-  const link = Object.assign(document.createElement('a'), { href: url, download: `sd-slds-${name}-SAMPLE.csv` });
+  const url = URL.createObjectURL(new Blob(['\uFEFF', csv], { type: 'text/csv;charset=utf-8' }));
+  const link = Object.assign(document.createElement('a'), { href: url, download: `hs-postsecondary-${name}-SAMPLE.csv` });
   document.body.append(link);
   link.click();
   link.remove();

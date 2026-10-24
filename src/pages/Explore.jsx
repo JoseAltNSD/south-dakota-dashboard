@@ -52,6 +52,8 @@ export default function Explore() {
   );
 
   const activePage = Math.min(reportPage, pages.length - 1);
+  // The framework metadata below the report follows the open tab; other tabs have no single indicator.
+  const openIndicator = pages[activePage].indicator;
 
   const place =
     filters.level === 'State' ? 'South Dakota'
@@ -216,11 +218,17 @@ export default function Explore() {
           <PowerBIEmbed title={stage.short} pages={pages} activePage={activePage} onPageChange={setReportPage} embedUrl={stage.embedUrl}>
             <SampleReport stage={stage} page={pages[activePage]} indicators={ready} filters={filters} subtitle={viewing} />
           </PowerBIEmbed>
-          <p className="caption">Source: South Dakota SLDS, {filters.year}. Sample data. Values are suppressed where fewer than 10 students are counted.</p>
-          <div className="key-finding">
-            <span className="body-sm strong">Key finding</span>
-            <p>{stage.finding}</p>
-          </div>
+          <p className="caption">Source: South Dakota Department of Education and partners, {filters.year}. Sample data. Values are suppressed where fewer than 10 students are counted.</p>
+          {openIndicator?.metric && (
+            <div className="key-finding">
+              <span className="body-sm strong">About this indicator: {openIndicator.name}</span>
+              <span className="caption">Recommended metric from the Education-to-Workforce Indicator Framework</span>
+              <p>{openIndicator.metric}</p>
+              <a href={`${EW_FRAMEWORK_URL}/${openIndicator.framework}`} target="_blank" rel="noreferrer" className="body-sm strong">
+                Learn about this indicator (EW framework)
+              </a>
+            </div>
+          )}
         </div>
       </section>
 
@@ -267,7 +275,7 @@ export default function Explore() {
       <section aria-label="Questions" className="container questions-strip">
         <div className="stack gap-4">
           <span className="strong">Questions about this data?</span>
-          <span className="body-sm muted">The SLDS team can help you find or interpret results. [SLDS EMAIL]</span>
+          <span className="body-sm muted">The dashboard team can help you find or interpret results. [CONTACT EMAIL]</span>
         </div>
         <button type="button" className="btn btn--secondary btn--sm" style={{ minHeight: 44, padding: '0 16px' }} onClick={openFeedback}>Send feedback</button>
       </section>

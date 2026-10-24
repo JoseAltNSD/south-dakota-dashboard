@@ -18,7 +18,7 @@ export default function App() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    document.title = `South Dakota SLDS: ${TITLES[pathname] ?? 'Data Dashboard'}`;
+    document.title = [TITLES[pathname], 'HS to Postsecondary Dashboard'].filter(Boolean).join(' | ');
   }, [pathname]);
 
   return (

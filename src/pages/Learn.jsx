@@ -55,7 +55,7 @@ export default function Learn() {
                   ))}
                 </dl>
               ) : (
-                <p className="empty">No terms match. Try a shorter word, or contact the SLDS team.</p>
+                <p className="empty">No terms match. Try a shorter word, or contact the dashboard team.</p>
               )}
             </section>
           )}
@@ -102,7 +102,7 @@ export default function Learn() {
                     <span className="num">4</span>
                     <div className="mini-bars"><div style={{ height: 62 }} /><div style={{ height: 50 }} /><div style={{ height: 54 }} /><div style={{ height: 57 }} /><div style={{ height: 60 }} /></div>
                   </div>
-                  <div className="anatomy__row"><span className="num">5</span><span className="caption">Source: South Dakota SLDS, 2025–26.</span></div>
+                  <div className="anatomy__row"><span className="num">5</span><span className="caption">Source: South Dakota Department of Education and partners, 2025–26.</span></div>
                 </div>
                 <ol>
                   <li><strong>The question.</strong> What the indicator helps you answer.</li>
@@ -143,7 +143,7 @@ export default function Learn() {
             <section aria-labelledby="a-h" className="stack gap-16">
               <h2 id="a-h" className="h2">About the data</h2>
               <p>
-                The SLDS is led by the {LEAD.name} in partnership with the {PARTNERS.map((p) => p.name).join(' and the ')}.
+                The dashboard is led by the {LEAD.name} in partnership with the {PARTNERS.map((p) => p.name).join(' and the ')}.
               </p>
               <div className="grid grid--4">
                 {ABOUT.map((a) => (
@@ -171,8 +171,8 @@ export default function Learn() {
           )}
 
           <aside className="card contact-strip">
-            <span className="body-sm"><strong>Still have a question?</strong> The SLDS team can help you find or interpret data.</span>
-            <span className="body-sm strong">Contact us at [SLDS EMAIL]</span>
+            <span className="body-sm"><strong>Still have a question?</strong> The dashboard team can help you find or interpret data.</span>
+            <span className="body-sm strong">Contact us at [CONTACT EMAIL]</span>
           </aside>
         </div>
       </div>

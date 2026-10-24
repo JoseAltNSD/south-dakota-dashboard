@@ -82,7 +82,7 @@ export function FeedbackProvider({ children }) {
             <div className="stack gap-12" role="status">
               <p className="strong">Thanks for your feedback.</p>
               <p className="body-sm">
-                The SLDS team reviews every message.
+                The dashboard team reviews every message.
                 {fields.email.trim() ? ` If we need to follow up, we’ll write to ${fields.email.trim()}.` : ''}
               </p>
               <p className="caption">Illustrative mock-up: nothing was sent.</p>

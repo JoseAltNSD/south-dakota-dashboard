@@ -8,7 +8,7 @@ An illustrative React 18 + Vite 5 mock-up of the South Dakota SLDS public dashbo
 school into college across three stages (High school, Transition, Postsecondary; the first one's key is still
 `readiness`). All figures are sample data, and the real charts will come from an embedded Power BI report, which this
 app only represents with a placeholder. Bracketed
-text such as `[SLDS EMAIL]`, `[YEAR]` or `[pending]` marks facts still to be confirmed with the client; keep those
+text such as `[CONTACT EMAIL]`, `[YEAR]` or `[pending]` marks facts still to be confirmed with the client; keep those
 markers rather than inventing values.
 
 ## Commands
@@ -42,12 +42,16 @@ There is no test runner, linter or formatter configured.
   without `later: true` + Districts and schools + Student groups. "Show in report" maps an indicator's index to a page index, so the
   order of `indicators` in `stages.js` matters. Indicators with `later: true` appear in the guide as "Coming later"
   but get no report page.
+- **Framework metric**: each indicator's `metric` (our own summary of the EW framework's recommended metric, not
+  copied text) shows in the "About this indicator" box below the report while that indicator's tab is open.
 - **Report frame**: `PowerBIEmbed.jsx` shows an iframe when the stage has an `embedUrl`, otherwise its children,
   which Explore sets to `SampleReport.jsx`. The sample pages are drawn from each indicator's `trend` (oldest year
   first, the reverse of `YEARS`) and `breakAt` (series break). `sampleValue()` derives district, school and group
   values from fixed per-name offsets and yearly drifts and returns `null` for suppressed cells. An indicator with
-  `parts` (reading and math proficiency) keeps one report tab but each part has its own `trend`: its page shows a
-  trend tile per part, and the other pages list the parts separately. Student groups are
+  `parts` (reading and math proficiency; ACT participation and performance) keeps one report tab but each part has its
+  own `trend`: its page shows a trend tile per part, and the other pages list the parts separately. Parts share the
+  indicator's suppression (`suppressId`). ACT's optional `score` feeds only the example two-axis chart behind "Show
+  combined chart" on its page. Student groups are
   grouped by `GROUP_CATEGORIES` in `stages.js`; `GROUPS` is derived from it. The README's "Connecting Power BI"
   section covers the swap to Power BI Embedded; the hosting model is still undecided.
 - **Downloads and feedback**: `src/downloads.js` builds every "Download data" CSV in the browser from
@@ -66,5 +70,8 @@ There is no test runner, linter or formatter configured.
   filter and resetting it to "All students" when level is not State.
 - Values with fewer than 10 students are suppressed; suppressed cells are shown striped/hatched.
 - Red (`--prairie-red`, `--signal-red`) is for site chrome only, never for data.
+- Don't use "South Dakota Statewide Longitudinal Data System" or "SLDS" in visible text: that name belongs to an
+  existing project. The site is "HS to Postsecondary Dashboard" (header, tab titles) or "High school to postsecondary
+  transition dashboard" (hero, footer).
 - PMS hex values and the extended palette are approximate pending DOE Communications; the logo in `src/assets/` is a
   placeholder.

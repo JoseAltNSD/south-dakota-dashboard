@@ -11,19 +11,20 @@ export const SECTIONS = [
 
 export const TERMS = [
   ['Adjusted cohort graduation rate (ACGR)', 'The share of students who start 9th grade together and earn a regular diploma within four years. It adjusts for students who move in or out.'],
-  ['ACT', 'A college entrance exam taken by most South Dakota 11th graders. Composite scores range from 1 to 36.'],
+  ['ACT', 'A college entrance exam and, since 2024–25, the state 11th-grade test. Composite scores range from 1 to 36.'],
+  ['ACT College Readiness Benchmarks', 'Minimum ACT scores in English, math, reading and science. A student who meets a benchmark has about a 50% chance of earning a B or higher, or about a 75% chance of a C or higher, in the matching first-year college course.'],
   ['Cohort', 'A group of students who share a starting point, such as entering 9th grade or graduating in the same year. Following a cohort shows how the same students do over time.'],
-  ['Common Education Data Standards (CEDS)', 'A shared national vocabulary for education data. The SLDS uses it so records from schools and colleges line up.'],
+  ['Common Education Data Standards (CEDS)', 'A shared national vocabulary for education data. The state uses it so records from schools and colleges line up.'],
   ['Consistent attendance', 'Attending at least 90% of the school days a student was enrolled. [Confirm threshold.]'],
   ['District', 'A public school district, also called a local education agency (LEA). Most South Dakota districts have one high school.'],
   ['Dual credit', 'A college course taken in high school that earns both high school and college credit. Also called early college coursework.'],
   ['FAFSA', 'The Free Application for Federal Student Aid. Completing it is required for most grants, loans and work-study.'],
   ['Gateway course', 'A student’s first credit-bearing college course in math or English. Passing it early is a strong sign of college success.'],
   ['Indicator', 'A single measure, such as FAFSA completion, shown as a percentage of students.'],
+  ['Linked education records', 'Records from schools and colleges connected securely over time, from K-12 into college, so groups of students can be followed. Individual students are never shown.'],
   ['National Student Clearinghouse', 'A national organization that reports college enrollment and degrees. It lets us see students who attend college outside South Dakota.'],
   ['Persistence', 'Enrolling in college again in the fall after the first year, at the same or a different college.'],
   ['Proficiency', 'Meeting the state standard on a test for a student’s grade level.'],
-  ['Statewide Longitudinal Data System (SLDS)', 'A secure system that links education records over time, from K-12 into college, so we can follow groups of students. Individual students are never shown.'],
   ['Student group', 'Students who share a characteristic, such as gender, race and ethnicity, or economic status. Sometimes called a subgroup.'],
   ['Suppression', 'Hiding a value when too few students are counted, usually fewer than 10, so no one can be identified.'],
 ].map(([term, def]) => ({ term, def }));
@@ -36,15 +37,16 @@ const S = {
 const row = (name, s, def, pop, src) => ({ name, ...S[s], def, pop, src });
 
 export const DICTIONARY = [
-  row('Consistent attendance', 'R', 'Percent of students attending at least 90% of enrolled days.', 'Grades 9–12', 'SD SLDS (K-12)'),
-  row('GPA', 'R', 'Percent of students with a cumulative GPA of 3.0 or higher.', 'Grade 12', 'SD SLDS (K-12)'),
+  row('Consistent attendance', 'R', 'Percent of students attending at least 90% of enrolled days.', 'Grades 9–12', 'SD DOE (K-12)'),
+  row('GPA', 'R', 'Percent of students with a cumulative GPA of 3.0 or higher.', 'Grade 12', 'SD DOE (K-12)'),
   row('11th grade reading proficiency', 'R', 'Percent of students scoring proficient in reading on the state test.', 'Grade 11', 'SD state assessment'),
   row('11th grade math proficiency', 'R', 'Percent of students scoring proficient in math on the state test.', 'Grade 11', 'SD state assessment'),
-  row('Early college coursework', 'R', 'Percent of graduates completing at least one dual credit course.', 'High school graduates', 'SD SLDS, Board of Regents'),
-  row('ACT participation and performance', 'T', 'Percent of students taking the ACT, and average composite score.', 'Grade 11', 'ACT'),
+  row('Early college coursework', 'R', 'Percent of graduates completing at least one dual credit course.', 'High school graduates', 'SD DOE, Board of Regents'),
+  row('ACT participation', 'T', 'Percent of 11th graders who took the ACT.', 'Grade 11', 'ACT'),
+  row('ACT performance', 'T', 'Percent of ACT test takers who met all four ACT College Readiness Benchmarks (English, math, reading and science).', 'Grade 11 ACT test takers', 'ACT'),
   row('College applications', 'T', 'Percent of seniors submitting at least one college application.', 'Grade 12', 'Board of Regents [confirm]'),
   row('FAFSA completion', 'T', 'Percent of seniors completing the FAFSA by June 30.', 'Grade 12', 'Board of Regents, NCAN [pending]'),
-  row('High school graduation (optional)', 'T', 'Four-year adjusted cohort graduation rate.', '9th-grade cohort', 'SD SLDS (K-12)'),
+  row('High school graduation (optional)', 'T', 'Four-year adjusted cohort graduation rate.', '9th-grade cohort', 'SD DOE (K-12)'),
   row('College enrollment', 'P', 'Percent of graduates enrolled in college the fall after graduation.', 'High school graduates', 'Board of Regents, National Student Clearinghouse'),
   row('First-year credits and gateway courses', 'P', 'Percent earning 24+ credits, and passing gateway math and English, in year one.', 'First-year students', 'Board of Regents'),
   row('Persistence', 'P', 'Percent enrolled again the following fall.', 'First-year students', 'Board of Regents, National Student Clearinghouse'),
@@ -59,10 +61,10 @@ export const DOWNLOADS = [
 ];
 
 export const ABOUT = [
-  { title: 'Where the data come from', text: 'K-12 records from the Department of Education and college records from the Board of Regents, linked in the SLDS. Out-of-state college enrollment comes from the National Student Clearinghouse.' },
+  { title: 'Where the data come from', text: 'K-12 records from the Department of Education and college records from the Board of Regents, linked across agencies. Out-of-state college enrollment comes from the National Student Clearinghouse.' },
   { title: 'Years covered', text: 'K-12 data go back to 2010–11. College data start in [2019–20 or 2020–21], so college trends are shorter.' },
   { title: 'Protecting privacy', text: 'No individual student is shown. Values are suppressed when fewer than 10 students are counted, and student group results are shown at the state level only.' },
-  { title: 'Known limits', text: 'The state test changed from Smarter Balanced to the ACT, so proficiency trends have a break. Some tribal college records may be missing. Workforce data are not yet included.' },
+  { title: 'Known limits', text: 'The state test changed from Smarter Balanced to the ACT in 2024–25, so proficiency and ACT trends have a break. Some tribal college records may be missing. Workforce data are not yet included.' },
 ];
 
 export const FAQ = [

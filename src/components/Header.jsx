@@ -9,7 +9,7 @@ export default function Header() {
           <img src={logo} alt="South Dakota Department of Education" className="brand__logo" />
           <span className="brand__divider" aria-hidden="true" />
           <span className="stack gap-4">
-            <span className="brand__title">SLDS Data Dashboard</span>
+            <span className="brand__title">HS to Postsecondary Dashboard</span>
             <span className="badge-lime">ILLUSTRATIVE</span>
           </span>
         </Link>

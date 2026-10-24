@@ -65,7 +65,7 @@ Colors come from the DOE brand. The PMS values are approximate conversions and n
 | `muted` | `#5e5558` | Secondary text, captions |
 | `hairline` | `#ddd5c4` | Card borders, table rules, stage-tab baseline |
 | `control-border` | `#857e80` | Inputs, selects, secondary buttons |
-| `band` (well) | `#f7f7f7` | Gray bands, key-finding box, notes |
+| `band` (well) | `#f7f7f7` | Gray bands, "About this indicator" box, notes |
 | hover gray | `#f5f5f5` | Secondary button hover, stage-tab hover, question-link background, active side-nav item |
 | `lime-accent` / `on-lime` | `#babf10` / `#2a2d02` | "ILLUSTRATIVE" badge on the red header **only** |
 | `readiness` | `#1f6f78` | Readiness stage color, and the primary data color |
@@ -87,7 +87,7 @@ The font family is `"Segoe UI", "Segoe UI Web (West European)", -apple-system, B
 
 | Style | Size / line height | Weight | Use |
 |---|---|---|---|
-| display | 40 / 44 | 600 | Home hero question (prairie red) |
+| display | 40 / 44 | 600 | Home hero title (prairie red) |
 | h1 | 32 / 38 | 600 | Page title (prairie red) |
 | h2 | 24 / 30 | 600 | Section headings |
 | h3 | 18 / 24 | 600 | Card titles, sub-sections |
@@ -109,13 +109,13 @@ The font family is `"Segoe UI", "Segoe UI Web (West European)", -apple-system, B
 ## 4. Global components
 
 **Header** (prairie red, all pages)
-- Left: the logo (48px tall), a 1px white divider at 50% opacity, then "SLDS Data Dashboard" (16/22, 600) with the lime "ILLUSTRATIVE" badge under it. The whole block links to Home.
+- Left: the logo (48px tall), a 1px white divider at 50% opacity, then "HS to Postsecondary Dashboard" (16/22, 600) with the lime "ILLUSTRATIVE" badge under it. The whole block links to Home.
 - Right: the main nav (Home, Explore the data, Glossary and help). Links are 14px, 600 weight, 44px tall. The active page has a 3px white underline and `aria-current="page"`.
 - The header wraps on narrow screens.
 
 **Footer** (prairie red)
-- Left column: DOE logo (244px), then "South Dakota Statewide Longitudinal Data System" (16, 600), an outlined "ILLUSTRATIVE" badge, and the disclaimer: *"Illustrative mock-up for design review. Agency names show intended branding only; this is not an official publication of the South Dakota Department of Education, the South Dakota Board of Regents or the South Dakota Board of Technical Education."*
-- Right column: the links (About the data, Accessibility, Privacy, Contact the SLDS team, Feedback, which opens the feedback dialog), then 32px below them the "IN PARTNERSHIP WITH" eyebrow and the BOR and BTE logos (40px tall, white).
+- Left column: "High school to postsecondary transition dashboard" (16, 600), an outlined "ILLUSTRATIVE" badge, and the disclaimer: *"Illustrative mock-up for design review. Agency names show intended branding only; this is not an official publication of the South Dakota Department of Education, the South Dakota Board of Regents or the South Dakota Board of Technical Education."*
+- Right column: the links (About the data, Accessibility, Privacy, Contact the dashboard team, Feedback, which opens the feedback dialog), then 32px below them one row of logos: the DOE logo (244px wide, white), then the "IN PARTNERSHIP WITH" eyebrow above the BOR and BTE logos (40px tall, white). The logos share a bottom edge, so the DOE logo sits level with the partner logos.
 
 **Buttons**
 - Primary: prairie red, turning ink on hover.
@@ -158,7 +158,7 @@ The font family is `"Segoe UI", "Segoe UI Web (West European)", -apple-system, B
 ### Home (`/`, `Main.dc.html`)
 
 1. **Hero** (white, 72px vertical padding)
-   - Eyebrow "SOUTH DAKOTA STATEWIDE LONGITUDINAL DATA SYSTEM", then the display H1 "How are South Dakota students doing after high school?", then a lead paragraph.
+   - The display H1 "High school to postsecondary transition dashboard" (no eyebrow above it), then a lead paragraph.
    - Buttons: "Explore the data" (primary) and "New here? Start with the glossary" (secondary).
    - On the right (900px and wider), a photo of students (`src/assets/hero-students.jpg`, a 1200px web copy of `hero-section-image.JPG`) covers the right half of the hero, top to bottom and out to the window edge, with no rounding. Its left edge starts where the copy ends (48px left of center) and fades in from white over 200px (a CSS mask), so the fade sits in the gap beside the text. It is cropped with `object-fit: cover`, focused on the faces (`50% 30%`). The hero's height comes from the text (72px padding), and the copy is capped at half the container minus 48px so it never runs under the photo. The photo is decorative (empty alt) and hidden below 900px, where the text column would be too narrow.
 2. **Explore by stage** (gray well band, subtitle "See how students are doing at each step, from high school into college."): three stage cards (High school, Transition, Postsecondary). Each card has:
@@ -186,13 +186,13 @@ The font family is `"Segoe UI", "Segoe UI Web (West European)", -apple-system, B
 3. **Report** (white): h2 "{Stage} report" with the current filters (`Place · Year · Group`) on the right. Below it:
    - the **single Power BI embed**
    - the source caption
-   - a "Key finding" box (`#f7f7f7`)
+   - an "About this indicator: {name}" box (`#f7f7f7`), shown only while an indicator's tab is open: a caption "Recommended metric from the Education-to-Workforce Indicator Framework", the metric (our own summary, `metric` in `stages.js`) and the "Learn about this indicator (EW framework)" link. It replaced the static "Key finding".
 4. **About these indicators** (gray well): a 2-column grid of white cards, one per indicator. Each card has:
    - the indicator name as a colored eyebrow, and the question as h3
    - "What is this?" and "How to read it" text, plus an optional note box
    - two actions, vertically centered on one row: **"Show in report"** (a text button that switches the report page; in React it also scrolls to the report) and **"Learn about this indicator (EW framework)"**, a link to the indicator's page on educationtoworkforce.org (new tab)
    - "Coming later" indicators show a hatched note instead.
-5. **Questions strip** (white): "Questions about this data?" with `[SLDS EMAIL]`, and a "Send feedback" button that opens the feedback dialog.
+5. **Questions strip** (white): "Questions about this data?" with `[CONTACT EMAIL]`, and a "Send feedback" button that opens the feedback dialog.
 
 **Feedback dialog** (any page): a modal with About (the current page, "Another page" or "The whole site"), Type (Question, Problem, Suggestion), a required Message and an optional Email. Errors show in signal red under the field. Send shows a thank-you; the mock-up sends nothing.
 
@@ -204,9 +204,9 @@ The font family is `"Segoe UI", "Segoe UI Web (West European)", -apple-system, B
 - **Data dictionary:** a scrollable table (Indicator, Stage chip, Definition, Students counted, Source).
 - **How to read the charts:** a numbered anatomy demo (question, headline value, context line, trend, source) with a matching list.
 - **Download data:** four cards (High school CSV, Transition CSV, Postsecondary CSV, Data dictionary CSV). The files are built from the sample data in long format (one row per indicator, year, place and group), start with a "Sample data" note line and end in `-SAMPLE.csv`. Suppressed values are blank, with "Yes" in the Suppressed column.
-- **About the data:** one sentence naming the agencies ("The SLDS is led by the South Dakota Department of Education in partnership with the South Dakota Board of Regents and the South Dakota Board of Technical Education."), then four cards (sources, years covered, privacy, known limits). What each agency contributes is not described yet, pending the client; the "Where the data come from" card still names only DOE and BOR.
+- **About the data:** one sentence naming the agencies ("The dashboard is led by the South Dakota Department of Education in partnership with the South Dakota Board of Regents and the South Dakota Board of Technical Education."), then four cards (sources, years covered, privacy, known limits). What each agency contributes is not described yet, pending the client; the "Where the data come from" card still names only DOE and BOR.
 - **FAQ:** `<details>` accordions.
-- A "Still have a question?" strip with `[SLDS EMAIL]` closes the page.
+- A "Still have a question?" strip with `[CONTACT EMAIL]` closes the page.
 - *Not yet updated to match Home and Explore:* this page has no full-width bands, and its download cards still have 4px colored top borders. Ask the owner before restyling it.
 
 ---
@@ -218,7 +218,7 @@ The font family is `"Segoe UI", "Segoe UI Web (West European)", -apple-system, B
 | Stage | Indicators (in order) |
 |---|---|
 | **High school**: High school progress and college readiness | Consistent attendance; GPA; 11th grade reading and math proficiency (one report page with a reading trend tile and a math trend tile, never combined; series break note: Smarter Balanced → ACT in 2024–25); Early college coursework (dual credit) |
-| **Transition**: High school completion and transition | ACT participation and performance (series break note); College applications; FAFSA completion (data source note: Board of Regents, agreement pending); High school graduation (optional, also in the Report Card) |
+| **Transition**: High school completion and transition | ACT participation and performance (one report page with a participation trend tile, "Took the ACT", and a performance trend tile, "Met all four college-readiness benchmarks"; performance is the percent of test takers meeting all four ACT College Readiness Benchmarks; series break note: the ACT became the state 11th-grade test in 2024–25; below the tiles, a hidden-by-default "Show combined chart" example with participation bars on a 0–100% left axis and the average composite score as a line on a 0–36 right axis, the only place average scores appear); College applications; FAFSA completion (data source note: Board of Regents, agreement pending); High school graduation (optional, also in the Report Card) |
 | **Postsecondary**: Postsecondary enrollment and early progress | College enrollment (*added by design to cover enrollment; confirm with client*); First-year credits (24+ credits, gateway courses); Persistence; Degree completion (**coming later**) |
 
 Filter options:
@@ -226,7 +226,7 @@ Filter options:
 - **Schools:** placeholders [High school A], [High school B], [Alternative school].
 - **Student groups:** All students; Female; Male; American Indian or Alaska Native; Asian; Black or African American; Hispanic or Latino; Two or more races; White; Economically disadvantaged; Not economically disadvantaged.
 
-Each indicator with a report page also has a five-year sample `trend` (oldest year first) and, where the source changed, `breakAt` (reading and math proficiency at 2024–25, ACT at 2023–24). District, school and group values are derived from these with a fixed offset per name plus a fixed yearly drift per name, so trends separate from the state but the same filters always show the same numbers. A few small state-level groups (Asian, Black or African American, Two or more races) are suppressed in some years. `GROUP_CATEGORIES` in `stages.js` sets the group headings and order.
+Each indicator with a report page also has a five-year sample `trend` (oldest year first) and, where the source changed, `breakAt` (reading and math proficiency and ACT, both at 2024–25). District, school and group values are derived from these with a fixed offset per name plus a fixed yearly drift per name, so trends separate from the state but the same filters always show the same numbers. A few small state-level groups (Asian, Black or African American, Two or more races) are suppressed in some years. The parts of one indicator count the same students, so they are suppressed together (`suppressId`). Sample ACT performance and average score drop at the 2024–25 break, when nearly every 11th grader began taking the test. `GROUP_CATEGORIES` in `stages.js` sets the group headings and order.
 
 Full text for every stage and indicator lives in `src/data/stages.js` and `src/data/help.js` (React), and in each artboard's `renderVals()` (canvas).
 
@@ -238,7 +238,7 @@ Full text for every stage and indicator lives in `src/data/stages.js` and `src/d
 - **Use sentence case** everywhere. Only eyebrows are uppercase.
 - Give every number its unit, school year (`2025–26`, with an en dash), level and cohort.
 - Spell out acronyms on first use per page, and say "district" rather than "LEA" in the UI.
-- Mark all figures as **sample data**, and key findings with "(Sample data.)".
+- Mark all figures as **sample data**.
 - Mark unknown facts in **[BRACKETS]**. Never invent them.
 
 ---
@@ -285,8 +285,8 @@ Full text for every stage and indicator lives in `src/data/stages.js` and `src/d
 - **Power BI hosting:** "Publish to web" or Power BI Embedded (cost vs. security). The client wants a secure endpoint. Build the Power BI theme JSON from the tokens above. `embedUrl` support covers only the "Publish to web" case.
 - **Sample charts:** confirm with the owner whether the canvas artboard should get the same sample charts as React, and whether the sample heat table should use the teal data ramp instead of per-stage shades.
 - **For the Power BI report builders:** each stage's report should include (1) five-year trend lines on every indicator page, comparing the selected place with its district and the state, or the chosen group with all students; (2) a districts and schools page with small-multiple bar charts per indicator, plus a table view; (3) a student groups page (state level only) with an indicator slicer, bars per group against all students, and per-group trend sparklines. The sample report pages show the intended layout.
-- **Data:** FAFSA data-sharing agreement; postsecondary start year (2019–20 or 2020–21); attendance threshold; the year the test changed; subgroup suppression rules (currently state only, fewer than 10 students).
-- **Placeholders to replace:** `[SLDS EMAIL]`, `[YEAR]`, `[SCORE]`, `[SIZE]`, `[YEARS]`, the school names, and the Report Card URL (currently doe.sd.gov).
+- **Data:** FAFSA data-sharing agreement; postsecondary start year (2019–20 or 2020–21); attendance threshold; subgroup suppression rules (currently state only, fewer than 10 students).
+- **Placeholders to replace:** `[CONTACT EMAIL]`, `[YEAR]`, `[SCORE]`, `[SIZE]`, `[YEARS]`, the school names, and the Report Card URL (currently doe.sd.gov).
 - **Scope to confirm:** the College enrollment indicator, which was added by design; the relationship to the accountability Report Card; whether the Glossary and help page should get the band treatment.
 
 ## 10. Change log (summary)
@@ -307,3 +307,7 @@ Full text for every stage and indicator lives in `src/data/stages.js` and `src/d
 14. **Partner branding (2026-10-20):** Board of Regents and Board of Technical Education logos added after "In partnership with" in the footer and a new centered Home band, a partner sentence on About the data, and all three agencies named in the disclaimer.
 15. **Trends and comparisons (2026-10-20):** in response to feedback that the reports lacked trends over time and side-by-side comparisons of districts, schools and student groups. Indicator pages got a trend line chart against the district and state; "District comparison" became "Districts and schools" with small-multiple bar charts per indicator (table behind "Show as table"); a new "Student groups" page compares groups at state level with per-group trend sparklines.
 16. **Hero photo (2026-10-23):** the "Find your district or school" card was replaced with a photo of students that covers the right half of the hero and fades in from white on its left edge, shown on wide screens only.
+17. **ACT split (2026-10-23):** following the Oct 22 sync, ACT participation and ACT performance (percent meeting all four benchmarks) became two trend tiles on one report page, the average-score copy was removed, the series break moved to 2024–25 to match the state test change, and an example two-axis chart was added behind a toggle for discussion.
+18. **Hero title (2026-10-23):** the Home H1 "How are South Dakota students doing after high school?" was replaced with "High school to postsecondary transition dashboard" (PM request; the full system name belongs to an existing project), and the eyebrow above it was removed.
+19. **Generic naming (2026-10-23):** the full system name belongs to an existing project, so the site no longer uses it or "SLDS" in visible text. Header and tab titles say "HS to Postsecondary Dashboard" (tabs read "Page | HS to Postsecondary Dashboard"); the footer title is "High school to postsecondary transition dashboard"; "the SLDS team" became "the dashboard team" and `[SLDS EMAIL]` became `[CONTACT EMAIL]`; source lines name the Department of Education and partners; the glossary's SLDS entry became "Linked education records"; CSV files are named `hs-postsecondary-…-SAMPLE.csv`. Repo names, docs and code comments still say SLDS.
+20. **Framework metric (2026-10-23):** the stage-wide "Key finding" was replaced with the open indicator's recommended metric from the Education-to-Workforce Indicator Framework, written as our own summary with a link to the framework page.

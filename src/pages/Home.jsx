@@ -16,8 +16,7 @@ export default function Home() {
     <>
       <section className="hero">
         <div className="container hero__copy">
-          <span className="eyebrow muted">South Dakota Statewide Longitudinal Data System</span>
-          <h1 className="display">How are South Dakota students doing after high school?</h1>
+          <h1 className="display">High school to postsecondary transition dashboard</h1>
           <p className="hero__lead">
             Follow students from high school into college. See how they attend, learn, plan and progress, for the
             state, each district and each high school.

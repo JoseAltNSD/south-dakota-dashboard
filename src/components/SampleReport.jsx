@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useId, useLayoutEffect, useRef, useState } from 'react';
 import { DISTRICTS, SCHOOLS, YEARS, GROUP_CATEGORIES } from '../data/stages.js';
 import Select from './Select.jsx';
 
@@ -23,11 +23,13 @@ const offset = (key, spread) => (hash(key) % (2 * spread + 1)) - spread;
 // A fixed drift per name, in points per year from the middle year, so places and groups trend apart from the state.
 const drift = (key, spread, yearIdx) => offset(`${key}/slope`, spread) * (yearIdx - 2);
 
-// Returns a percent, or null when the value is suppressed (fewer than 10 students).
+// Returns a percent, or null when the value is suppressed (fewer than 10 students). Measures with the same
+// `suppressId` (the parts of one indicator) count the same students, so they are suppressed together.
 export function sampleValue(ind, yearIdx, { level, district, school, group }) {
+  const key = ind.suppressId ?? ind.id;
   let v = ind.trend[yearIdx];
   if (level !== 'State') {
-    if (hash(district + ind.id) % 7 === 0) return null;
+    if (hash(district + key) % 7 === 0) return null;
     v += offset(district + ind.id, 8) + drift(district + ind.id, 1, yearIdx);
   }
   if (level === 'School') {
@@ -35,15 +37,27 @@ export function sampleValue(ind, yearIdx, { level, district, school, group }) {
     v += offset(school + district + ind.id, 6) + drift(school + district + ind.id, 1, yearIdx);
   }
   if (level === 'State' && group !== 'All students') {
-    if (SMALL_GROUPS.includes(group) && hash(group + ind.id + yearIdx) % 6 === 0) return null;
+    if (SMALL_GROUPS.includes(group) && hash(group + key + yearIdx) % 6 === 0) return null;
     v += offset(group + ind.id, 10) + drift(group + ind.id, 2, yearIdx);
   }
   return Math.max(0, Math.min(100, Math.round(v)));
 }
 
+// Average ACT composite (1 to 36) for the example two-axis chart. Place and group offsets are derived as for a
+// percent and scaled to the 35-point range, so the state value is the sample `score` itself. It is suppressed
+// wherever participation is, since both count the same students.
+function sampleScore(ind, yearIdx, filters) {
+  const base = Math.round(((ind.score[yearIdx] - 1) / 35) * 100);
+  const pct = sampleValue({ id: `${ind.id}-score`, suppressId: ind.id, trend: ind.score.map(() => base) }, yearIdx, filters);
+  if (pct == null) return null;
+  const shift = pct - base;
+  return Math.round((ind.score[yearIdx] + (shift * 35) / 100) * 10) / 10;
+}
+
 // An indicator with `parts` (reading and math) is drawn as one measure per part, which keeps the indicator's break
-// and notes. Each part gets its own id, so its derived place and group values differ.
-export const measures = (ind) => (ind.parts ? ind.parts.map((p) => ({ ...ind, ...p, id: `${ind.id}-${p.id}` })) : [ind]);
+// and notes. Each part gets its own id, so its derived place and group values differ, but shares the indicator's
+// suppression.
+export const measures = (ind) => (ind.parts ? ind.parts.map((p) => ({ ...ind, ...p, id: `${ind.id}-${p.id}`, suppressId: ind.id })) : [ind]);
 const breakNote = (ind) => ind.breakNote ?? 'the data source changed';
 const fmt = (v) => (v == null ? 'Suppressed' : `${v}%`);
 const STATE = { level: 'State', group: 'All students' };
@@ -122,6 +136,7 @@ function IndicatorPage({ stage, ind, filters, yearIdx }) {
   const trendPanels = parts.map((m) => (
     <div key={m.id} className="rpt__panel">
       <span className="rpt__label">{m.name} · {filters.year}</span>
+      {m.detail && <span className="body-sm muted">{m.detail}</span>}
       <span className="rpt__hero rpt__hero--lg">{fmt(sampleValue(m, yearIdx, filters))}</span>
       {filters.level !== 'State' && (
         <span className="body-sm muted">South Dakota: {fmt(sampleValue(m, yearIdx, STATE))}</span>
@@ -149,6 +164,7 @@ function IndicatorPage({ stage, ind, filters, yearIdx }) {
   return (
     <div className="stack gap-16">
       <div className="rpt__body">{trendPanels}</div>
+      {ind.score && <ComboPanel stage={stage} ind={ind} filters={filters} yearIdx={yearIdx} />}
       <div className="rpt__panel">
         <span className="rpt__label">Districts compared, {filters.year}</span>
         <div className="rpt__body">
@@ -161,6 +177,97 @@ function IndicatorPage({ stage, ind, filters, yearIdx }) {
         </div>
         <span className="caption">* Suppressed: fewer than 10 students.</span>
       </div>
+    </div>
+  );
+}
+
+// An example for discussion, as suggested on the Oct 22 call: participation and average score on one chart with two
+// axes. Hidden until asked for, so the default view stays one measure per chart.
+function ComboPanel({ stage, ind, filters, yearIdx }) {
+  const [open, setOpen] = useState(false);
+  const [part] = measures(ind);
+  const bars = seriesValues(part, filters);
+  const line = YEARS_ASC.map((_, i) => sampleScore(ind, i, filters));
+
+  return (
+    <div className="rpt__panel">
+      <div className="rpt__toolbar" style={{ alignItems: 'center' }}>
+        <span className="rpt__label">Example: participation and average score on one chart</span>
+        <button type="button" className="rpt__switch" aria-expanded={open} onClick={() => setOpen(!open)}>
+          {open ? 'Hide combined chart' : 'Show combined chart'}
+        </button>
+      </div>
+      {open && (
+        <>
+          <ComboChart bars={bars} line={line} breakAt={ind.breakAt} yearIdx={yearIdx} color={stage.color} />
+          <span className="caption">
+            For discussion. Bars use the left axis (percent who took the ACT); the line uses the right axis (average
+            composite score, 1 to 36). Average scores appear only in this example. Striped bars are suppressed.
+          </span>
+        </>
+      )}
+    </div>
+  );
+}
+
+// Bars for a percent on the left axis (0 to 100) and a line for the ACT composite on the right axis (0 to 36).
+// Both axes start at zero so neither measure looks bigger than it is.
+function ComboChart({ bars, line, breakAt, yearIdx, color }) {
+  const [ref, width] = useWidth();
+  const hatch = useId();
+  const H = 240, T = 12, B = 28, L = 40, R = 40;
+  const W = Math.max(width, 280);
+  const slot = (W - L - R) / YEARS_ASC.length;
+  const x = (i) => L + slot * (i + 0.5);
+  const yPct = (v) => T + (1 - v / 100) * (H - T - B);
+  const yScore = (v) => T + (1 - v / 36) * (H - T - B);
+  const barW = Math.min(36, slot * 0.5);
+  const label = `ACT participation (bars, left axis) and average composite score (line, right axis) by school year. ${YEARS_ASC.map((yr, i) => `${yr}: ${fmt(bars[i])}, ${line[i] ?? 'Suppressed'}`).join('; ')}`;
+
+  return (
+    <div className="rpt-trend" ref={ref}>
+      <div className="rpt-trend__legend caption">
+        <span><i className="rpt-key" style={{ '--key': color }} />Took the ACT (%, left axis)</span>
+        <span><i className="rpt-key rpt-key--line" style={{ '--key': 'var(--ink)' }} />Average composite score (right axis)</span>
+      </div>
+      <svg width={W} height={H} role="img" aria-label={label}>
+        {/* The same stripes as the .hatch class, for suppressed bars. */}
+        <defs>
+          <pattern id={hatch} width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <rect width="12" height="12" fill="#e8e2d7" />
+            <rect width="6" height="12" fill="var(--suppressed)" />
+          </pattern>
+        </defs>
+        {[0, 25, 50, 75, 100].map((t, k) => (
+          <g key={t}>
+            <line x1={L} x2={W - R} y1={yPct(t)} y2={yPct(t)} className="rpt-trend__grid" />
+            <text x={L - 8} y={yPct(t) + 4} textAnchor="end" className="rpt-trend__tick">{t}%</text>
+            <text x={W - R + 8} y={yPct(t) + 4} className="rpt-trend__tick">{k * 9}</text>
+          </g>
+        ))}
+        {YEARS_ASC.map((yr, i) => (
+          <text key={yr} x={x(i)} y={H - 8} textAnchor="middle" className={`rpt-trend__tick${i === yearIdx ? ' rpt-trend__tick--on' : ''}`}>{yr}</text>
+        ))}
+        {bars.map((v, i) => (v == null
+          ? <rect key={i} x={x(i) - barW / 2} y={T} width={barW} height={H - T - B} fill={`url(#${hatch})`} />
+          : (
+            <rect key={i} x={x(i) - barW / 2} y={yPct(v)} width={barW} height={yPct(0) - yPct(v)} rx={3} fill={color} opacity={i === yearIdx ? 1 : 0.45}>
+              <title>{`Took the ACT, ${YEARS_ASC[i]}: ${v}%`}</title>
+            </rect>
+          )))}
+        {breakAt != null && <line x1={L + slot * breakAt} x2={L + slot * breakAt} y1={T} y2={H - B} className="rpt-trend__break" />}
+        {runs(line, breakAt).map((run) => (
+          <polyline key={run[0]} points={run.map((i) => `${x(i)},${yScore(line[i])}`).join(' ')} fill="none" stroke="var(--ink)" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
+        ))}
+        {line.map((v, i) => v != null && (
+          <g key={i}>
+            <circle cx={x(i)} cy={yScore(v)} r={4} fill="var(--ink)" className="rpt-trend__dot">
+              <title>{`Average composite, ${YEARS_ASC[i]}: ${v}`}</title>
+            </circle>
+            <text x={x(i)} y={yScore(v) - 10} textAnchor="middle" className="rpt-trend__end rpt-combo__label">{v.toFixed(1)}</text>
+          </g>
+        ))}
+      </svg>
     </div>
   );
 }
