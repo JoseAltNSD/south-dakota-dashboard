@@ -47,7 +47,7 @@ export function sampleValue(ind, yearIdx, { level, district, school, group }) {
 // (largest remainder). Each part starts from its `share` of enrollees, shifted by a fixed offset per place or group.
 // Returns null when the breakdown is suppressed: schools and small groups have few students in each part, so the
 // whole breakdown is hidden if any part is under 4%, and hiding one part alone would reveal it by subtraction.
-function sampleBreakdown(ind, bd, yearIdx, filters) {
+export function sampleBreakdown(ind, bd, yearIdx, filters) {
   const total = sampleValue(ind, yearIdx, filters);
   if (total == null) return null;
   const { level, district, school, group } = filters;

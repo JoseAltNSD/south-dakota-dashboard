@@ -1,13 +1,14 @@
 import { STAGES, STAGE_ORDER, YEARS, DISTRICTS, SCHOOLS, GROUPS } from './data/stages.js';
 import { DICTIONARY } from './data/help.js';
-import { sampleValue, measures } from './components/SampleReport.jsx';
+import { sampleValue, sampleBreakdown, measures } from './components/SampleReport.jsx';
 
 // The "Download data" files, built in the browser from the same sample values the report draws, so the numbers in
-// a file match the charts. Long format: one row per indicator, year, place and student group.
+// a file match the charts. Long format: one row per indicator, year, place and student group. College enrollment's
+// breakdowns add one row per part, named in the Part column, as percents of all graduates.
 
 const NOTE = 'Sample data for illustration only. These are not official South Dakota results.';
 const YEARS_ASC = [...YEARS].reverse();
-const DATA_HEADER = ['Stage', 'Indicator', 'School year', 'Level', 'Place', 'Student group', 'Value (%)', 'Suppressed'];
+const DATA_HEADER = ['Stage', 'Indicator', 'Part', 'School year', 'Level', 'Place', 'Student group', 'Value (%)', 'Suppressed'];
 
 // Every place and group the dashboard can show publicly. Student groups are state-level only (suppression rules).
 const VIEWS = [
@@ -19,14 +20,22 @@ const VIEWS = [
 
 function stageRows(key) {
   const stage = STAGES[key];
-  return stage.indicators.filter((i) => !i.later).flatMap(measures).flatMap((m) =>
-    VIEWS.flatMap((v) =>
-      YEARS_ASC.map((year, i) => {
-        const value = sampleValue(m, i, v);
-        return [stage.short, m.name, year, v.level, v.place, v.group, value, value == null ? 'Yes' : 'No'];
-      })
+  const row = (name, part, year, v, value) => [stage.short, name, part, year, v.level, v.place, v.group, value, value == null ? 'Yes' : 'No'];
+  const ready = stage.indicators.filter((i) => !i.later);
+  const values = ready.flatMap(measures).flatMap((m) =>
+    VIEWS.flatMap((v) => YEARS_ASC.map((year, i) => row(m.name, '', year, v, sampleValue(m, i, v))))
+  );
+  const parts = ready.filter((ind) => ind.breakdowns).flatMap((ind) =>
+    ind.breakdowns.flatMap((bd) =>
+      VIEWS.flatMap((v) =>
+        YEARS_ASC.flatMap((year, i) => {
+          const split = sampleBreakdown(ind, bd, i, v);
+          return bd.parts.map((p, k) => row(`${ind.name} ${bd.label.toLowerCase()}`, p.name, year, v, split ? split[k] : null));
+        })
+      )
     )
   );
+  return [...values, ...parts];
 }
 
 const slug = (text) => text.toLowerCase().replace(/[^a-z0-9]+/g, '-');

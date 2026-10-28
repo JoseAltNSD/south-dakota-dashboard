@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import Icon from '../components/Icon.jsx';
-import { SECTIONS, TERMS, DICTIONARY, DOWNLOADS, ABOUT, FAQ } from '../data/help.js';
+import { SECTIONS, TERMS, DICTIONARY, DOWNLOADS, ABOUT, FAQ, READ_STEPS, READ_SYMBOLS, READ_PAGES } from '../data/help.js';
 import { LEAD, PARTNERS } from '../data/agencies.js';
 import { downloadData } from '../downloads.js';
 
@@ -90,31 +90,35 @@ export default function Learn() {
           )}
 
           {section === 'read' && (
-            <section aria-labelledby="r-h" className="stack gap-16">
-              <h2 id="r-h" className="h2">How to read the charts</h2>
-              <p>Every indicator page in the report has the same five parts, in the same order.</p>
-              <div className="anatomy">
-                <div className="card anatomy__demo" aria-hidden="true" style={{ padding: 20 }}>
-                  <div className="anatomy__row"><span className="num">1</span><span className="h3">Are students attending school consistently?</span></div>
-                  <div className="anatomy__row"><span className="num">2</span><span style={{ fontSize: 44, lineHeight: '48px', fontWeight: 700 }}>77.8%</span></div>
-                  <div className="anatomy__row"><span className="num">3</span><span className="caption">Grades 9–12 · 2025–26 · South Dakota</span></div>
-                  <div className="anatomy__row" style={{ alignItems: 'flex-end' }}>
-                    <span className="num">4</span>
-                    <div className="mini-bars"><div style={{ height: 62 }} /><div style={{ height: 50 }} /><div style={{ height: 54 }} /><div style={{ height: 57 }} /><div style={{ height: 60 }} /></div>
-                  </div>
-                  <div className="anatomy__row"><span className="num">5</span><span className="caption">Source: South Dakota Department of Education and partners, 2025–26.</span></div>
+            <section aria-labelledby="r-h" className="stack gap-24">
+              <div className="stack gap-16">
+                <h2 id="r-h" className="h2">How to read the charts</h2>
+                <p>Each indicator has its own page in the report, and every indicator page is laid out the same way.</p>
+                <div className="anatomy">
+                  <AnatomyDemo />
+                  <ol>
+                    {READ_STEPS.map(([title, text]) => <li key={title}><strong>{title}.</strong> {text}</li>)}
+                  </ol>
                 </div>
-                <ol>
-                  <li><strong>The question.</strong> What the indicator helps you answer.</li>
-                  <li><strong>The headline value.</strong> The result for the place, year and group you chose.</li>
-                  <li><strong>The context line.</strong> Which students are counted, the school year and the place.</li>
-                  <li><strong>The trend.</strong> The last five years. The darker bar is the year you selected. A dashed line marks a change in how the data were collected.</li>
-                  <li><strong>Source and notes.</strong> Where the data come from and any limits.</li>
-                </ol>
               </div>
-              <div className="key-finding body-sm">
-                Gray bars beside a teal bar show the state value, so you can compare a district or school with South
-                Dakota as a whole. Striped cells mean the value is suppressed to protect privacy.
+              <div className="stack gap-12">
+                <h3 className="h3">What the symbols mean</h3>
+                <dl className="symbols">
+                  {READ_SYMBOLS.map((sym) => (
+                    <div key={sym.key}>
+                      <dt><SymbolSwatch kind={sym.key} /><span className="strong">{sym.label}</span></dt>
+                      <dd>{sym.text}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+              <div className="stack gap-12">
+                <h3 className="h3">The other report pages</h3>
+                <dl className="symbols symbols--pages">
+                  {READ_PAGES.map(([title, text]) => (
+                    <div key={title}><dt className="strong">{title}</dt><dd>{text}</dd></div>
+                  ))}
+                </dl>
               </div>
             </section>
           )}
@@ -177,5 +181,68 @@ export default function Learn() {
         </div>
       </div>
     </>
+  );
+}
+
+// A simplified indicator page for the chart guide, numbered to match READ_STEPS. Decorative: the list carries the
+// meaning. Values follow the sample attendance trend for a district against South Dakota.
+const DEMO_PLACE = [82, 73, 77, 79, 81];
+const DEMO_STATE = [78, 69, 72, 74, 76];
+
+function AnatomyDemo() {
+  const x = (i) => 16 + i * 52;
+  const y = (v) => 66 - ((v - 60) / 30) * 58;
+  const line = (values) => values.map((v, i) => `${x(i)},${y(v)}`).join(' ');
+  const bars = [['Brookings 05-1', 81, true], ['Sioux Falls 49-5', 77, false], ['Pierre 32-2', 72, false]];
+
+  return (
+    <div className="card anatomy__demo" aria-hidden="true">
+      <div className="anatomy__row"><span className="num">1</span><span className="h3">Are students attending school consistently?</span></div>
+      <div className="anatomy__row">
+        <span className="num">2</span>
+        <span className="stack">
+          <span className="rpt__label">Consistent attendance · 2025–26</span>
+          <span className="anatomy__value">81%</span>
+        </span>
+      </div>
+      <div className="anatomy__row"><span className="num">3</span><span className="body-sm muted">South Dakota: 76%</span></div>
+      <div className="anatomy__row">
+        <span className="num">4</span>
+        <svg viewBox="0 0 240 72" className="anatomy__chart">
+          <rect x={x(4) - 12} y={4} width={24} height={64} fill="var(--pbi-chrome)" />
+          <polyline points={line(DEMO_STATE)} fill="none" stroke="var(--data-ref)" strokeWidth="2" strokeLinejoin="round" />
+          <polyline points={line(DEMO_PLACE)} fill="none" stroke="var(--readiness)" strokeWidth="2" strokeLinejoin="round" />
+          {DEMO_PLACE.map((v, i) => <circle key={i} cx={x(i)} cy={y(v)} r="3" fill="var(--readiness)" />)}
+        </svg>
+      </div>
+      <div className="anatomy__row">
+        <span className="num">5</span>
+        <div className="anatomy__bars">
+          {bars.map(([name, v, picked]) => (
+            <div key={name} className="anatomy__bar-row">
+              <span className={picked ? 'strong' : undefined}>{name}</span>
+              <span className="anatomy__track">
+                <span style={{ width: `${v}%`, opacity: picked ? 1 : 0.45 }} />
+                <i style={{ left: '76%' }} />
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="anatomy__row"><span className="num">6</span><span className="caption">Source: South Dakota Department of Education and partners, 2025–26.</span></div>
+    </div>
+  );
+}
+
+// A small drawing of each chart symbol, in the same colors the report uses.
+function SymbolSwatch({ kind }) {
+  return (
+    <svg className="symbols__swatch" viewBox="0 0 32 16" aria-hidden="true">
+      {kind === 'ref' && <><line x1="2" y1="8" x2="20" y2="8" stroke="var(--data-ref)" strokeWidth="2" /><rect x="25" y="1" width="2" height="14" fill="var(--data-ref)" /></>}
+      {kind === 'dashed' && <line x1="2" y1="8" x2="30" y2="8" stroke="var(--readiness)" strokeWidth="2" strokeDasharray="6 4" />}
+      {kind === 'break' && <><line x1="2" y1="11" x2="12" y2="9" stroke="var(--readiness)" strokeWidth="2" /><line x1="16" y1="1" x2="16" y2="15" stroke="var(--muted)" strokeWidth="2" strokeDasharray="3 3" /><line x1="20" y1="5" x2="30" y2="4" stroke="var(--readiness)" strokeWidth="2" /></>}
+      {kind === 'hatch' && <foreignObject x="2" y="2" width="28" height="12"><div className="hatch" style={{ width: '100%', height: '100%' }} /></foreignObject>}
+      {kind === 'now' && <rect x="10" y="0" width="12" height="16" fill="var(--pbi-chrome)" stroke="#d6d4d2" />}
+    </svg>
   );
 }

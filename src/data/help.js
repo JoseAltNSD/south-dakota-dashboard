@@ -16,8 +16,10 @@ export const TERMS = [
   ['Cohort', 'A group of students who share a starting point, such as entering 9th grade or graduating in the same year. Following a cohort shows how the same students do over time.'],
   ['Common Education Data Standards (CEDS)', 'A shared national vocabulary for education data. The state uses it so records from schools and colleges line up.'],
   ['Consistent attendance', 'Attending at least 90% of the school days a student was enrolled. [Confirm threshold.]'],
+  ['Credential', 'A certificate, associate degree or bachelor’s degree earned in college. The enrollment breakdown groups students by the credential they are working toward.'],
   ['District', 'A public school district, also called a local education agency (LEA). Most South Dakota districts have one high school.'],
   ['Dual credit', 'A college course taken in high school that earns both high school and college credit. Also called early college coursework.'],
+  ['Education-to-Workforce (E-W) Indicator Framework', 'A national set of indicators, with recommended metrics, for tracking progress from early learning into the workforce. Each indicator on this site links to its framework page.'],
   ['FAFSA', 'The Free Application for Federal Student Aid. Completing it is required for most grants, loans and work-study.'],
   ['Gateway course', 'A student’s first credit-bearing college course in math or English. Passing it early is a strong sign of college success.'],
   ['Indicator', 'A single measure, such as FAFSA completion, shown as a percentage of students.'],
@@ -25,6 +27,7 @@ export const TERMS = [
   ['National Student Clearinghouse', 'A national organization that reports college enrollment and degrees. It lets us see students who attend college outside South Dakota.'],
   ['Persistence', 'Enrolling in college again in the fall after the first year, at the same or a different college.'],
   ['Proficiency', 'Meeting the state standard on a test for a student’s grade level.'],
+  ['Series break', 'A change in how data were collected, such as a new state test. Charts show it as a gap and a dashed line, and results on either side should not be compared directly.'],
   ['Student group', 'Students who share a characteristic, such as gender, race and ethnicity, or economic status. Sometimes called a subgroup.'],
   ['Suppression', 'Hiding a value when too few students are counted, usually fewer than 10, so no one can be identified.'],
 ].map(([term, def]) => ({ term, def }));
@@ -46,17 +49,45 @@ export const DICTIONARY = [
   row('ACT performance', 'T', 'Percent of ACT test takers who met all four ACT College Readiness Benchmarks (English, math, reading and science).', 'Grade 11 ACT test takers', 'ACT'),
   row('College applications', 'T', 'Percent of seniors submitting at least one college application.', 'Grade 12', 'Board of Regents [confirm]'),
   row('FAFSA completion', 'T', 'Percent of seniors completing the FAFSA by June 30.', 'Grade 12', 'Board of Regents, NCAN [pending]'),
-  row('High school graduation (optional)', 'T', 'Four-year adjusted cohort graduation rate.', '9th-grade cohort', 'SD DOE (K-12)'),
+  row('High school graduation', 'T', 'Four-year adjusted cohort graduation rate. Optional indicator, also published in the state Report Card.', '9th-grade cohort', 'SD DOE (K-12)'),
   row('College enrollment', 'P', 'Percent of graduates enrolled in college the fall after graduation.', 'High school graduates', 'Board of Regents, National Student Clearinghouse'),
-  row('First-year credits and gateway courses', 'P', 'Percent earning 24+ credits, and passing gateway math and English, in year one.', 'First-year students', 'Board of Regents'),
+  row('College enrollment by credential', 'P', 'College enrollment split by the credential students work toward: bachelor’s degree, associate degree, certificate, or other or undeclared. Each part is a percent of all graduates, so the parts add up to college enrollment.', 'High school graduates', 'Board of Regents, National Student Clearinghouse [confirm]'),
+  row('College enrollment by type of college', 'P', 'College enrollment split by where students enroll: in-state public university, in-state technical college, in-state private or tribal college, or out of state. Each part is a percent of all graduates.', 'High school graduates', 'Board of Regents, National Student Clearinghouse [confirm]'),
+  row('First-year credits', 'P', 'Percent of first-year students earning 24 or more credits, and passing gateway math and English, in year one.', 'First-year students', 'Board of Regents'),
   row('Persistence', 'P', 'Percent enrolled again the following fall.', 'First-year students', 'Board of Regents, National Student Clearinghouse'),
-  row('Degree or certificate completion', 'P', 'Coming later.', 'College entrants', 'Board of Regents, National Student Clearinghouse'),
+  row('Degree completion', 'P', 'Coming later.', 'College entrants', 'Board of Regents, National Student Clearinghouse'),
+];
+
+// "How to read the charts": the numbered parts of an indicator page (they match the demo drawn in Learn.jsx), what
+// each chart symbol means, and the other report pages.
+export const READ_STEPS = [
+  ['The question', 'What the indicator helps you answer.'],
+  ['The value', 'The result for the place, school year and student group picked in the filters. A few indicators have two measures, such as reading and math, each with its own value and trend; they are never added together.'],
+  ['The comparison', 'When you pick a district or school, the South Dakota value is shown under it.'],
+  ['Trend over time', 'Five school years as lines: your place in color, its district as a dashed line when you pick a school, and South Dakota in gray.'],
+  ['Districts compared', 'Each district as a bar from 0 to 100%, with a gray mark at the South Dakota value. The district you picked is darker.'],
+  ['Source and notes', 'Where the data come from, and any change in how they were collected.'],
+];
+
+export const READ_SYMBOLS = [
+  { key: 'ref', label: 'Gray line or mark', text: 'South Dakota, or all students on the Student groups page, for comparison.' },
+  { key: 'dashed', label: 'Dashed line', text: 'The district, when you pick a school.' },
+  { key: 'break', label: 'Gap and dashed rule', text: 'A series break: the way the data were collected changed. Compare years on either side with care.' },
+  { key: 'hatch', label: 'Stripes or *', text: 'Suppressed: fewer than 10 students are counted, so the value is hidden to protect privacy.' },
+  { key: 'now', label: 'Shaded column', text: 'The school year picked in the filters.' },
+];
+
+export const READ_PAGES = [
+  ['Overview', 'One tile per measure: the value for the year you picked, the change from the year before, and five years as small bars. The darker bar is the year you picked.'],
+  ['Districts and schools', 'A small bar chart per measure comparing districts, or the schools in your district when you pick a school (the gray bar is the district). “Show as table” lists the same values, shaded from lowest to highest.'],
+  ['Student groups', 'State results for each student group on the indicator you pick: a bar with a gray mark at all students, and a five-year line. The group picked in the filters is highlighted.'],
+  ['College enrollment parts', 'The College enrollment page also shows what graduates enroll in, by credential or by type of college. The parts of each column add up to the enrollment rate; “Show as lines” draws each part over time. A striped column means a part had too few students to show.'],
 ];
 
 export const DOWNLOADS = [
   { file: 'readiness', title: 'High school data', text: 'Attendance, GPA, proficiency and dual credit.', meta: 'CSV · 2021–22 to 2025–26 · [SIZE]', btn: 'Download CSV', color: 'var(--readiness)' },
-  { file: 'transition', title: 'Transition data', text: 'ACT, college applications, FAFSA and graduation.', meta: 'CSV · 2021–22 to 2025–26 · [SIZE]', btn: 'Download CSV', color: 'var(--transition)' },
-  { file: 'postsecondary', title: 'Postsecondary data', text: 'Enrollment, first-year credits and persistence.', meta: 'CSV · graduating classes [YEARS] · [SIZE]', btn: 'Download CSV', color: 'var(--postsecondary)' },
+  { file: 'transition', title: 'Transition data', text: 'ACT participation and performance, college applications, FAFSA and graduation.', meta: 'CSV · 2021–22 to 2025–26 · [SIZE]', btn: 'Download CSV', color: 'var(--transition)' },
+  { file: 'postsecondary', title: 'Postsecondary data', text: 'Enrollment and its parts, first-year credits and persistence.', meta: 'CSV · graduating classes [YEARS] · [SIZE]', btn: 'Download CSV', color: 'var(--postsecondary)' },
   { file: 'dictionary', title: 'Data dictionary', text: 'Definitions, who is counted and sources.', meta: 'CSV · [SIZE]', btn: 'Download CSV', color: 'var(--control-border)' },
 ];
 

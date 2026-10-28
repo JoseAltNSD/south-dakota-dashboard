@@ -31,7 +31,7 @@ There is no test runner, linter or formatter configured.
   its `TITLES` map (add an entry when adding a route).
 - **Content lives in data files, not components.** `src/data/stages.js` holds each stage's copy, FAQ, indicators and
   the filter option lists (`YEARS`, `LEVELS`, `DISTRICTS`, `SCHOOLS`, `GROUPS`); `src/data/help.js` holds glossary,
-  dictionary, downloads and FAQ content for Learn. Pages render from these, so copy edits usually belong there.
+  dictionary, chart guide (`READ_*`), downloads and FAQ content for Learn. Pages render from these, so copy edits usually belong there.
 - **URL query params are the shared state between pages.** Home links into Explore with `?stage=` and
   `?stage=...&indicator=<id>` (opens that indicator's report page and scrolls to it). Explore also accepts
   `?level=District&district=...` (Home's district finder was removed, but keep the link working). Explore
@@ -56,7 +56,7 @@ There is no test runner, linter or formatter configured.
   grouped by `GROUP_CATEGORIES` in `stages.js`; `GROUPS` is derived from it. The README's "Connecting Power BI"
   section covers the swap to Power BI Embedded; the hosting model is still undecided.
 - **Downloads and feedback**: `src/downloads.js` builds every "Download data" CSV in the browser from
-  `sampleValue()`, so files match the charts; `DOWNLOADS` in `help.js` names each card's `file` (a stage key or
+  `sampleValue()` and `sampleBreakdown()`, so files match the charts (breakdown rows name their part in a Part column); `DOWNLOADS` in `help.js` names each card's `file` (a stage key or
   `dictionary`). `Feedback.jsx` provides a modal `<dialog>` to every page through `useFeedback()` (Explore's
   "Send feedback" and the footer link); it has no backend and only shows a thank-you.
 - **Drop-downs**: use `src/components/Select.jsx`, not a native `<select>`. Native menus are drawn by the OS and don't

@@ -334,12 +334,21 @@ button { font: inherit; }
 .faq summary { cursor: pointer; min-height: 52px; display: flex; align-items: center; font-size: 16px; line-height: 24px; font-weight: 600; }
 .faq details p { margin: 0 0 16px; font-size: 14px; line-height: 20px; }
 .anatomy { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
-.anatomy__demo { flex: 1 1 300px; display: flex; flex-direction: column; gap: 10px; }
+.anatomy__demo { flex: 1 1 300px; display: flex; flex-direction: column; gap: 10px; padding: 20px; }
 .anatomy__row { display: flex; gap: 8px; align-items: center; }
 .num { flex: none; width: 22px; height: 22px; border-radius: 11px; background: var(--ink); color: var(--on-red); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
 .anatomy ol { flex: 1 1 300px; margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 12px; }
-.mini-bars { flex: 1; height: 72px; display: flex; align-items: flex-end; gap: 8px; border-bottom: 1px solid var(--muted); }
-.mini-bars div { flex: 1; background: #5fa8ae; border-radius: 2px 2px 0 0; }
-.mini-bars div:last-child { background: var(--readiness); }
+.anatomy__value { font-size: 44px; line-height: 48px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.anatomy__chart { flex: 1; min-width: 0; height: 72px; }
+.anatomy__bars { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; font-size: 12px; line-height: 16px; }
+.anatomy__bar-row { display: grid; grid-template-columns: 7.5rem 1fr; align-items: center; gap: 8px; }
+.anatomy__track { position: relative; height: 10px; }
+.anatomy__track span { display: block; height: 100%; background: var(--readiness); border-radius: 0 3px 3px 0; }
+.anatomy__track i { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; background: var(--data-ref); }
+/* Chart guide: symbol key and report page notes */
+.symbols { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 12px 32px; font-size: 14px; line-height: 20px; }
+.symbols dt { display: flex; align-items: center; gap: 8px; }
+.symbols dd { margin: 4px 0 0; }
+.symbols__swatch { width: 32px; height: 16px; flex: none; }
 .contact-strip { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 20px; }
 .empty { font-size: 14px; line-height: 20px; color: var(--muted); }
