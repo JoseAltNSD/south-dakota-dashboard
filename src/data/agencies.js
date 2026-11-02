@@ -5,6 +5,16 @@
 import doeLogo from '../assets/sd-doe-logo-white.png';
 import borLogo from '../assets/sd-board-of-regents.webp';
 import bteLogo from '../assets/sd-board-of-technical-education.png';
+import collaborativeLogo from '../assets/sd-data-collaborative.svg';
+
+// The program the dashboard belongs to. Shown before the agencies, in full color on light backgrounds.
+// The file is cut from the branding guide PDF; replace it with the official artwork when it arrives.
+export const PROGRAM = {
+  name: 'South Dakota Data Collaborative',
+  logo: collaborativeLogo,
+  tone: 'color',
+  alt: 'South Dakota Data Collaborative: Classroom to Career Connections',
+};
 
 export const LEAD = {
   name: 'South Dakota Department of Education',

@@ -36,8 +36,8 @@ src/
   App.jsx                Layout and routes: /, /explore, /learn
   styles.css             Design tokens (CSS variables) and all styles
   components/
-    Header.jsx           Logo, product name, main navigation
-    Footer.jsx           Logo, illustrative disclaimer, footer links
+    Header.jsx           Product name, main navigation
+    Footer.jsx           Logos, illustrative disclaimer, footer links
     Feedback.jsx         "Send feedback" dialog, opened from Explore and the footer
     Select.jsx           Page-drawn drop-down (native menus don't show on a shared screen)
     PowerBIEmbed.jsx     Frame for the Power BI report (iframe when a stage has an embedUrl)
@@ -53,6 +53,7 @@ src/
   downloads.js           Builds the "Download data" CSVs in the browser from the sample values
   assets/
     sd-doe-logo-white.png  Placeholder logo (replace with the official file from DOE Communications)
+    sd-data-collaborative.svg  Logo cut from the branding guide PDF (replace with the official artwork)
 ```
 
 ## Deep links
@@ -83,7 +84,8 @@ To connect a secure report:
 
 ## Design notes
 
-- Colors, type and spacing come from the "South Dakota SLDS Dashboard" design system. PMS hex values are approximate
-  and need confirmation from DOE Communications, as does the extended palette (teal, gold, plum).
+- The chrome red, the stage colors (navy, sky, plum) and the font (Calibri, with Carlito as the web fallback) follow
+  the South Dakota Data Collaborative branding guide (`DataCollaborative-BrandingGuide (1).pdf`). Spacing and the
+  remaining tokens come from the "South Dakota SLDS Dashboard" design system.
 - Red is used for the site chrome only, never in data. Student group results are limited to the state level to
   respect suppression rules.

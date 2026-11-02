@@ -33,9 +33,9 @@ export const TERMS = [
 ].map(([term, def]) => ({ term, def }));
 
 const S = {
-  R: { stage: 'High school', ink: 'var(--readiness)', tint: '#e3f0f1' },
-  T: { stage: 'Transition', ink: 'var(--transition-ink)', tint: '#f3ebd6' },
-  P: { stage: 'Postsecondary', ink: 'var(--postsecondary)', tint: '#efe6ec' },
+  R: { stage: 'High school', ink: 'var(--readiness)', tint: 'var(--readiness-tint)' },
+  T: { stage: 'Transition', ink: 'var(--transition-ink)', tint: 'var(--transition-tint)' },
+  P: { stage: 'Postsecondary', ink: 'var(--postsecondary)', tint: 'var(--postsecondary-tint)' },
 };
 const row = (name, s, def, pop, src) => ({ name, ...S[s], def, pop, src });
 

@@ -63,7 +63,7 @@ There is no test runner, linter or formatter configured.
   show when the screen is shared in a meeting.
 - **Styling**: one global `src/styles.css` with design tokens as CSS variables on `:root` and BEM-ish class names
   (`.pbi__canvas`, `.btn--secondary`). Stage colors are `--readiness`, `--transition`/`--transition-ink`,
-  `--postsecondary`, each with a `--*-tint` for light fills; data files reference them as `var(--...)`. No CSS modules or utility framework.
+  `--postsecondary` (navy, sky and plum from the brand guide), each with a `--*-tint` for light fills; data files reference them as `var(--...)`. No CSS modules or utility framework.
 
 ## Domain rules to preserve
 
@@ -74,5 +74,10 @@ There is no test runner, linter or formatter configured.
 - Don't use "South Dakota Statewide Longitudinal Data System" or "SLDS" in visible text: that name belongs to an
   existing project. The site is "HS to Postsecondary Dashboard" (header, tab titles) or "High school to postsecondary
   transition dashboard" (hero, footer).
-- PMS hex values and the extended palette are approximate pending DOE Communications; the logo in `src/assets/` is a
-  placeholder.
+- Brand colors and the font come from the South Dakota Data Collaborative branding guide
+  (`DataCollaborative-BrandingGuide (1).pdf`): red `#802629` (`--prairie-red`), navy `#3c4f6b` (High school), sky
+  `#3db3e3` (Transition; use `--transition-ink` for text, since sky is 2.4:1 on white) and plum `#532a45`
+  (Postsecondary). The font is Calibri, with Carlito (self-hosted through `@fontsource/carlito`) for devices without it.
+  The header has no logo; the Data Collaborative and DOE logos appear only in the logo rows (footer and Home band).
+- The DOE logo and the Data Collaborative logo (cut from the branding guide PDF) in `src/assets/` are placeholders
+  until the official files arrive.

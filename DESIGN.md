@@ -1,6 +1,6 @@
 # South Dakota SLDS Dashboard: Design Spec and Handoff
 
-_Last updated 2026-10-20. This is the source of truth for anyone (human or agent) continuing work on the mock-up. Where this file and the original design system disagree, **this file wins**: it records decisions the project owner made during review._
+_Last updated 2026-11-02. This is the source of truth for anyone (human or agent) continuing work on the mock-up. Where this file and the original design system disagree, **this file wins**: it records decisions the project owner made during review._
 
 ---
 
@@ -39,26 +39,27 @@ These came out of review rounds. They override the original design system README
    - Rejected alternatives: tinted per-section backgrounds, rounded inset well boxes inside the margins, and hairline dividers between sections.
 4. **No "Essential Questions" or "EQ" wording** anywhere visible. The Education-to-Workforce framework is not of interest to users.
 5. **"Illustrative" must stay visible:** as a lime badge in the header, and as an outlined badge plus disclaimer text in the footer. The banner strip under the nav was **removed** at the owner's request. Do not re-add it.
-6. **The DOE logo** (white, transparent PNG) is used in the **header** (48px tall, linking to Home) and the **footer** (244px wide). It was cropped from an image the owner supplied, and the official file must come from DOE Communications.
+6. **The DOE logo** (white, transparent PNG) is used in the **footer** (244px wide) and the Home partner band. It was removed from the **header** on 2026-11-02 at the owner's request; the header has no logo. It was cropped from an image the owner supplied, and the official file must come from DOE Communications.
 7. **No "Download data" button in the top nav.** Downloads are reached from the Explore tool button, the Home help tile and the Glossary and help "Download data" section.
 8. **Explore filters are all dropdowns** (page-drawn `Select.jsx`, not native selects, so they show on screen shares), laid out in a labeled grid: Level, District, School, School year, Student group. A sentence-style ("Show results for… in… for…") layout was tried and **rejected**, as were segmented buttons and year buttons.
 9. **One single Power BI section per stage** on Explore, spanning the full content width. Do not split the report into per-indicator embeds, KPI tiles or a separate district-comparison embed. Those are now **pages inside the one report**.
 10. **No "On this page:" jump-link row** on Explore. It was removed.
 11. **Explore uses horizontal stage tabs.** A left sidebar index was tried, and was removed so the bands could run full width. Tabs also match the client's "three tabs" requirement.
 12. The owner wants to be able to **revert**. Before large changes, keep a copy of the current files.
-13. **Shared branding: DOE leads, the Board of Regents (BOR) and the Board of Technical Education (BTE) are partners** (Session 3 asked for branding that shows the agencies working together; decided 2026-10-20). The header stays DOE-only. The partners appear after an "In partnership with" label in the footer, in a Home band and on Learn's About the data. Partner logos are smaller than the DOE logo, and on any one background all logos share one tone (all white on red, all dark on light).
+13. **Shared branding: DOE leads, the Board of Regents (BOR) and the Board of Technical Education (BTE) are partners** (Session 3 asked for branding that shows the agencies working together; decided 2026-10-20). The header has no agency logo (see 6). The partners appear after an "In partnership with" label in the footer, in a Home band and on Learn's About the data. Partner logos are smaller than the DOE logo, and on any one background all agency logos share one tone (all white on red, all dark on light). The Data Collaborative logo keeps its brand colors on light backgrounds (see 14).
+14. **Data Collaborative brand (decided 2026-11-02).** The South Dakota Data Collaborative branding guide (`DataCollaborative-BrandingGuide (1).pdf`: Calibri; red `#802629`, plum `#532a45`, navy `#3c4f6b`, sky `#3db3e3`) sets the chrome red, the stage colors and the font. The site name stays "HS to Postsecondary Dashboard". The Data Collaborative logo (full lockup, with the "Classroom to Career Connections" tagline) appears only in the logo rows: first in the footer row (white) and first in the Home partner band (full color). It is **not** in the header, which has no logo at all. The lime "ILLUSTRATIVE" badge stays.
 
 ---
 
 ## 3. Design tokens
 
-Colors come from the DOE brand. The PMS values are approximate conversions and need confirmation from DOE Communications. Teal, gold and plum extend the official palette and need DOE sign-off.
+The chrome red and the three stage colors come from the South Dakota Data Collaborative branding guide (Pantone 1815 C, 7545 C, 298 C and 5115 C). Tints, inks, ramps and the reference gray are derived from them and checked with the dataviz palette validator. `signal-red` and the neutrals predate the guide.
 
 ### Color
 
 | Token | Hex | Use |
 |---|---|---|
-| `prairie-red` | `#7c2629` | Header and footer background, page H1, primary button |
+| `prairie-red` | `#802629` | Header and footer background, page H1, primary button (brand red, Pantone 1815 C) |
 | `signal-red` | `#af272f` | Links, focus ring, text buttons ("Reset filters", "Show in report") |
 | `on-red` | `#ffffff` | Text on red |
 | `ink` | `#1f1a1c` | Body text, headings, selected Power BI page button |
@@ -67,15 +68,16 @@ Colors come from the DOE brand. The PMS values are approximate conversions and n
 | `control-border` | `#857e80` | Inputs, selects, secondary buttons |
 | `band` (well) | `#f7f7f7` | Gray bands, "About this indicator" box, notes |
 | hover gray | `#f5f5f5` | Secondary button hover, stage-tab hover, question-link background, active side-nav item |
-| `lime-accent` / `on-lime` | `#babf10` / `#2a2d02` | "ILLUSTRATIVE" badge on the red header **only** |
-| `readiness` | `#1f6f78` | Readiness stage color, and the primary data color |
-| `transition` | `#8a6d1f` | Transition dot/fill (use `transition-ink` for text) |
-| `transition-ink` | `#7a5f18` | Transition text |
-| `postsecondary` | `#5b3550` | Postsecondary stage color |
-| Stage tints (`readiness-tint`, `transition-tint`, `postsecondary-tint`) | `#e3f0f1`, `#f3ebd6`, `#efe6ec` | Selected Explore stage tab, and small stage chips in the data dictionary |
-| `data-ref` | `#9a9395` | Reference series in charts: the South Dakota line, tick and bar, and the "All students" line and tick. Chosen with the palette validator to separate from all three stage colors; it is under 3:1 on white, so every chart that uses it has a legend and value labels. |
+| `lime-accent` / `on-lime` | `#babf10` / `#2a2d02` | "ILLUSTRATIVE" badge on the red header **only** (not a brand color; kept on purpose) |
+| `readiness` | `#3c4f6b` | High school stage color (brand navy, 7545 C), and the primary data color |
+| `transition` | `#3db3e3` | Transition dot, tab underline and chart marks (brand sky, 298 C). Only 2.4:1 on white, so never text, and its charts always carry value labels and legends |
+| `transition-ink` | `#287494` | Transition text (5.2:1 on white, 4.6:1 on its tint) |
+| `postsecondary` | `#532a45` | Postsecondary stage color (brand plum, 5115 C) |
+| `postsecondary-ramp-1…4` | `#532a45`, `#836679`, `#ac99a6`, `#cfc3cb` | Parts of the college enrollment breakdown, darkest first; 1 and 2 take white labels |
+| Stage tints (`readiness-tint`, `transition-tint`, `postsecondary-tint`) | `#e4e6ea`, `#e4f4fb`, `#e7e1e5` (14% of the stage color on white) | Selected Explore stage tab, and small stage chips in the data dictionary |
+| `data-ref` | `#7e7a7c` | Reference series in charts: the South Dakota line, tick and bar, and the "All students" line and tick. Darkened from `#9a9395` so it separates from the sky Transition color (normal-vision ΔE 18.7; at least 15 against navy and plum too). |
 | `suppressed` hatch | `repeating-linear-gradient(135deg, #cfc8bc 0 6px, #e8e2d7 6px 12px)` | "Coming later" or suppressed items |
-| Data ramp | `#e3f0f1 → #a9d1d4 → #5fa8ae → #1f6f78 → #134850` | Maps and heat tables (Power BI theme) |
+| Data ramp | `#e4e6ea → #b1b9c4 → #778497 → #3c4f6b → #273346` | Maps and heat tables (Power BI theme), in brand navy |
 | Sample heat ramp | `color-mix(in srgb, <stage color> 12–60%, white)`, 5 steps | "Show as table" view on the Districts and schools page of the React sample report. Capped at 60% so ink text stays readable. |
 | Power BI chrome | `#f3f2f1` bar, `#fafafa` canvas, `#ececec` sample panel borders | Embed placeholder and sample report |
 
@@ -83,7 +85,7 @@ Colors come from the DOE brand. The PMS values are approximate conversions and n
 
 ### Type
 
-The font family is `"Segoe UI", "Segoe UI Web (West European)", -apple-system, BlinkMacSystemFont, system-ui, Helvetica, Arial, sans-serif`, chosen to match Power BI. Use weights 400, 600 and 700 only.
+The font family is `Calibri, Carlito, "Segoe UI", -apple-system, BlinkMacSystemFont, system-ui, Helvetica, Arial, sans-serif`. Calibri is the brand font and is on most Windows and Office machines; Carlito is a free, metric-compatible copy, self-hosted through `@fontsource/carlito` (400 and 700, imported in `main.jsx`) so the build still works offline. The brand guide names Regular and Bold only, so 600 in the CSS renders as bold in Calibri and Carlito; it stays semibold in the Segoe UI fallback. Calibri has a short x-height, so the small sizes went up by 1px on 2026-11-02 (body 17, body-sm 15, caption and eyebrow 13, report rows 14); headings are unchanged. The Power BI report keeps its own font.
 
 | Style | Size / line height | Weight | Use |
 |---|---|---|---|
@@ -91,10 +93,10 @@ The font family is `"Segoe UI", "Segoe UI Web (West European)", -apple-system, B
 | h1 | 32 / 38 | 600 | Page title (prairie red) |
 | h2 | 24 / 30 | 600 | Section headings |
 | h3 | 18 / 24 | 600 | Card titles, sub-sections |
-| body | 16 / 24 | 400 | Explanatory text |
-| body-sm | 14 / 20 | 400 | Card body, labels, tables |
-| caption | 12 / 16 | 400 | Sources, notes (muted) |
-| eyebrow | 12 / 16, letter-spacing 0.06em, uppercase | 600 | Stage labels, indicator names |
+| body | 17 / 26 | 400 | Explanatory text |
+| body-sm | 15 / 22 | 400 | Card body, labels, tables |
+| caption | 13 / 18 | 400 | Sources, notes (muted) |
+| eyebrow | 13 / 18, letter-spacing 0.06em, uppercase | 600 | Stage labels, indicator names |
 | kpi | 44 / 48 | 700 | Headline numbers (chart guide only) |
 
 ### Space, shape and elevation
@@ -109,13 +111,13 @@ The font family is `"Segoe UI", "Segoe UI Web (West European)", -apple-system, B
 ## 4. Global components
 
 **Header** (prairie red, all pages)
-- Left: the logo (48px tall), a 1px white divider at 50% opacity, then "HS to Postsecondary Dashboard" (16/22, 600) with the lime "ILLUSTRATIVE" badge under it. The whole block links to Home.
+- Left: "HS to Postsecondary Dashboard" (16/22, 600) with the lime "ILLUSTRATIVE" badge under it, linking to Home. No logo (removed 2026-11-02).
 - Right: the main nav (Home, Explore the data, Glossary and help). Links are 14px, 600 weight, 44px tall. The active page has a 3px white underline and `aria-current="page"`.
 - The header wraps on narrow screens.
 
 **Footer** (prairie red)
 - Left column: "High school to postsecondary transition dashboard" (16, 600), an outlined "ILLUSTRATIVE" badge, and the disclaimer: *"Illustrative mock-up for design review. Agency names show intended branding only; this is not an official publication of the South Dakota Department of Education, the South Dakota Board of Regents or the South Dakota Board of Technical Education."*
-- Right column: the links (About the data, Accessibility, Privacy, Contact the dashboard team, Feedback, which opens the feedback dialog), then 32px below them one row of logos: the DOE logo (244px wide, white), then the "IN PARTNERSHIP WITH" eyebrow above the BOR and BTE logos (40px tall, white). The logos share a bottom edge, so the DOE logo sits level with the partner logos.
+- Right column: the links (About the data, Accessibility, Privacy, Contact the dashboard team, Feedback, which opens the feedback dialog), then 32px below them one row of logos: the Data Collaborative logo (244px wide, white), the DOE logo (244px wide, white), then the "IN PARTNERSHIP WITH" eyebrow above the BOR and BTE logos (40px tall, white). The logos share a bottom edge, so the two wide logos sit level with the partner logos. The row is about 860px wide, so the right column wraps below the disclaimer on desktop widths.
 
 **Buttons**
 - Primary: prairie red, turning ink on hover.
@@ -165,7 +167,7 @@ The font family is `"Segoe UI", "Segoe UI Web (West European)", -apple-system, B
    - a colored eyebrow, the h3 full stage name and a one-line blurb
    - every indicator in the stage as a link (rows filled with the stage tint, with an arrow) to its report page; a "coming later" indicator is a hatched row with no link
 3. **Help and context** (white, so the bands keep alternating): four tiles (Glossary, Data dictionary, How to read the charts, Download data) with icons, plus a line pointing to the state Report Card.
-4. **Partner agencies** (gray well, last band before the footer, no heading or body text): "IN PARTNERSHIP WITH" (16/22, 600, uppercase, muted) centered above one centered row of all three logos in one dark tone, 24px below the label: DOE (244px wide), BOR and BTE (40px tall), vertically centered on each other with 64px between them. The row wraps on narrow screens.
+4. **Partner agencies** (gray well, last band before the footer, no heading or body text): "IN PARTNERSHIP WITH" (16/22, 600, uppercase, muted) centered above one centered row of four logos, 24px below the label: the Data Collaborative logo (244px wide, in full color), then DOE (244px wide), BOR and BTE (40px tall), the agency logos in one dark tone, vertically centered on each other with 64px between them. The row wraps on narrow screens.
 
 ### Explore the data (`/explore`, `Explore.dc.html`)
 
@@ -280,7 +282,7 @@ Full text for every stage and indicator lives in `src/data/stages.js` and `src/d
 
 ## 9. Open items and placeholders
 
-- **Brand:** confirm the PMS hex values and the extended palette with DOE Communications; get the official logo file (SVG) and any joint DOE and Board of Regents lockup.
+- **Brand:** get the official DOE logo file (SVG) and any joint DOE and Board of Regents lockup. Get the official Data Collaborative artwork: `src/assets/sd-data-collaborative.svg` wraps the raster logo cut from the branding guide PDF (1536 × 698 with an alpha mask), so it is not true vector art. Confirm the derived colors (tints, `transition-ink`, plum ramp, navy data ramp, darker `data-ref`) with whoever owns the brand guide.
 - **Partner logos:** request official white (knockout) and one-color dark versions from BOR and BTE, plus a dark DOE version. Until then, `AgencyLogos.jsx` recolors with CSS filters. The BTE file (`sd-board-of-technical-education.png`) has a solid white background, so it is marked `matte` and recolored with a high-contrast filter plus a blend mode. The BOR file is a small (330px) white WebP. Confirm with the client what data each agency contributes.
 - **Power BI hosting:** "Publish to web" or Power BI Embedded (cost vs. security). The client wants a secure endpoint. Build the Power BI theme JSON from the tokens above. `embedUrl` support covers only the "Publish to web" case.
 - **Sample charts:** confirm with the owner whether the canvas artboard should get the same sample charts as React, and whether the sample heat table should use the teal data ramp instead of per-stage shades.
@@ -313,3 +315,4 @@ Full text for every stage and indicator lives in `src/data/stages.js` and `src/d
 20. **Framework metric (2026-10-23):** the stage-wide "Key finding" was replaced with the open indicator's recommended metric from the Education-to-Workforce Indicator Framework, written as our own summary with a link to the framework page.
 21. **Enrollment breakdown (2026-10-23):** following the Oct 22 sync, the College enrollment page shows its parts by credential or by type of college, as stacked columns or lines, to start a conversation about which breakdown the client wants.
 22. **Chart guide (2026-10-23):** "How to read the charts" was rewritten for the current charts (trend lines, districts compared, symbols, other report pages, enrollment parts); dictionary names now match the report tabs, the enrollment breakdowns got dictionary rows and CSV rows, and the glossary gained Credential, the E-W Indicator Framework and Series break.
+23. **Data Collaborative branding (2026-11-02):** applied the South Dakota Data Collaborative branding guide. Chrome red is now the brand red `#802629`; the stages moved from teal, gold and plum to brand navy, sky and plum, with new tints, a darker sky for text, a new plum ramp and a navy data ramp; `data-ref` darkened to `#7e7a7c` to stay apart from sky. The font is Calibri with self-hosted Carlito, and small text went up 1px. The Data Collaborative logo leads the footer logo row (white) and the Home partner band (full color), and the footer disclaimer names it. The DOE logo and divider were removed from the header, which now shows only the site name and the lime badge.
