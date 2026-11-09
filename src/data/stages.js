@@ -106,11 +106,12 @@ export const STAGES = {
       { q: 'Are out-of-state colleges included?', a: 'Yes. Out-of-state enrollment comes from the National Student Clearinghouse.' },
       { q: 'Why is degree completion not shown?', a: 'College data start in [2019–20 or 2020–21]. Completion will be added once enough classes have had time to finish.' },
       { q: 'Are tribal colleges included?', a: 'Records from tribal colleges may be incomplete.' },
+      { q: 'What do the institution results show?', a: 'Pick “Postsecondary institution” as the level to see first-year credits and persistence for South Dakota public high school graduates who enrolled at one university [to confirm]. Other indicators are shown for the state.' },
     ],
     indicators: [
       { id: 'enr', name: 'College enrollment', trend: [61, 59, 58, 59, 60], breakdowns: ENROLLMENT_BREAKDOWNS, framework: 'postsecondary-enrollment-directly-after-high-school', metric: 'The percent of high school graduates enrolled in any for-credit college program, including credit-bearing career and technical education, by October 31 after graduation.', question: 'Do graduates enroll in college?', definition: 'The percent of high school graduates enrolled at any two- or four-year college in the fall after graduation.', howto: 'Counts enrollment in or out of state, at public or private colleges.' },
-      { id: 'cred', name: 'First-year credits', trend: [44, 45, 46, 47, 47], framework: 'first-year-credit-accumulation', metric: 'The percent of first-year undergraduates who attempt and earn enough credits to stay on pace to graduate on time: 30 credits a year for full-time students and 15 for part-time students.', question: 'Are first-year students earning enough credits?', definition: 'The percent of first-year students who earned 24 or more college credits, and who passed gateway math and English.', howto: 'Earning 24 credits in year one keeps a student on pace for a degree. Gateway course results appear in the table view.' },
-      { id: 'pers', name: 'Persistence', trend: [79, 80, 81, 80, 81], framework: 'postsecondary-persistence', metric: 'The percent of students who are still enrolled the next year, at the same or another college, or who have earned a credential. It is tracked for up to 150% of normal program length.', question: 'Do students come back for a second year?', definition: 'The percent of first-year students who enrolled at any college the following fall.', howto: 'A student counts as persisting even if they move to a different college.' },
+      { id: 'cred', name: 'First-year credits', byInstitution: true, trend: [44, 45, 46, 47, 47], framework: 'first-year-credit-accumulation', metric: 'The percent of first-year undergraduates who attempt and earn enough credits to stay on pace to graduate on time: 30 credits a year for full-time students and 15 for part-time students.', question: 'Are first-year students earning enough credits?', definition: 'The percent of first-year students who earned 24 or more college credits, and who passed gateway math and English.', howto: 'Earning 24 credits in year one keeps a student on pace for a degree. Gateway course results appear in the table view.' },
+      { id: 'pers', name: 'Persistence', byInstitution: true, trend: [79, 80, 81, 80, 81], framework: 'postsecondary-persistence', metric: 'The percent of students who are still enrolled the next year, at the same or another college, or who have earned a credential. It is tracked for up to 150% of normal program length.', question: 'Do students come back for a second year?', definition: 'The percent of first-year students who enrolled at any college the following fall.', howto: 'A student counts as persisting even if they move to a different college.' },
       { id: 'deg', name: 'Degree completion', framework: 'postsecondary-certificate-or-degree-completion', question: 'Do students earn a degree or certificate?', later: true, definition: 'Completion rates will be added once enough graduating classes have had time to finish a degree or certificate.' },
     ],
   },
@@ -120,6 +121,10 @@ export const YEARS = ['2025–26', '2024–25', '2023–24', '2022–23', '2021�
 export const LEVELS = ['State', 'District', 'School'];
 export const DISTRICTS = ['Aberdeen 06-1', 'Brookings 05-1', 'Pierre 32-2', 'Rapid City Area 51-4', 'Sioux Falls 49-5'];
 export const SCHOOLS = ['[High school A]', '[High school B]', '[Alternative school]'];
+// The Postsecondary stage adds this level for its indicators marked `byInstitution`. The value is short for the URL
+// (`?level=Institution&institution=...`); the label is what the Level dropdown shows.
+export const INSTITUTION_LEVEL = { value: 'Institution', label: 'Postsecondary institution' };
+export const INSTITUTIONS = ['South Dakota State University', 'University of South Dakota', 'Northern State University'];
 // Student groups, in the order the Student groups report page shows them.
 export const GROUP_CATEGORIES = [
   { label: 'Sex', groups: ['Female', 'Male'] },

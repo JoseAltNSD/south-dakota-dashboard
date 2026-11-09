@@ -9,7 +9,8 @@ import Icon from './Icon.jsx';
  *   - reportId / embedUrl / accessToken  -> embedConfig
  *   - pages[activePage].name             -> report.setPage(pageName)
  *   - filters                             -> report.setFilters([...]) (basic filters on
- *                                            Level, District, School, Year, Student group)
+ *                                            Level, District, School or Institution, Year,
+ *                                            Student group)
  * The page buttons in the bottom bar mirror Power BI's page navigation; hide them
  * if the report's own navigation pane is shown instead.
  */

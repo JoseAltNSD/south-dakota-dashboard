@@ -26,6 +26,7 @@ export const TERMS = [
   ['Linked education records', 'Records from schools and colleges connected securely over time, from K-12 into college, so groups of students can be followed. Individual students are never shown.'],
   ['National Student Clearinghouse', 'A national organization that reports college enrollment and degrees. It lets us see students who attend college outside South Dakota.'],
   ['Persistence', 'Enrolling in college again in the fall after the first year, at the same or a different college.'],
+  ['Postsecondary institution', 'A college or university. On the Postsecondary tab you can pick one of three [to confirm] South Dakota public universities as the level, to see first-year credits and persistence for the graduates who enrolled there.'],
   ['Proficiency', 'Meeting the state standard on a test for a student’s grade level.'],
   ['Series break', 'A change in how data were collected, such as a new state test. Charts show it as a gap and a dashed line, and results on either side should not be compared directly.'],
   ['Student group', 'Students who share a characteristic, such as gender, race and ethnicity, or economic status. Sometimes called a subgroup.'],
@@ -65,7 +66,7 @@ export const READ_STEPS = [
   ['The value', 'The result for the place, school year and student group picked in the filters. A few indicators have two measures, such as reading and math, each with its own value and trend; they are never added together.'],
   ['The comparison', 'When you pick a district or school, the South Dakota value is shown under it.'],
   ['Trend over time', 'Five school years as lines: your place in color, its district as a dashed line when you pick a school, and South Dakota in gray.'],
-  ['Districts compared', 'Each district as a bar from 0 to 100%, with a gray mark at the South Dakota value. The district you picked is darker.'],
+  ['Districts compared', 'Each district as a bar from 0 to 100%, with a gray mark at the South Dakota value. The district you picked is darker. “Map” shows the same values on a map of South Dakota, with darker districts higher. When you pick a postsecondary institution, the bars compare institutions instead.'],
   ['Source and notes', 'Where the data come from, and any change in how they were collected.'],
 ];
 
@@ -79,7 +80,7 @@ export const READ_SYMBOLS = [
 
 export const READ_PAGES = [
   ['Overview', 'One tile per measure: the value for the year you picked, the change from the year before, and five years as small bars. The darker bar is the year you picked.'],
-  ['Districts and schools', 'A small bar chart per measure comparing districts, or the schools in your district when you pick a school (the gray bar is the district). “Show as table” lists the same values, shaded from lowest to highest.'],
+  ['Districts and schools', 'A small bar chart per measure comparing districts, or the schools in your district when you pick a school (the gray bar is the district). “Map” shades each district on a map of the state, and “Table” lists the same values, shaded from lowest to highest.'],
   ['Student groups', 'State results for each student group on the indicator you pick: a bar with a gray mark at all students, and a five-year line. The group picked in the filters is highlighted.'],
   ['College enrollment parts', 'The College enrollment page also shows what graduates enroll in, by credential or by type of college. The parts of each column add up to the enrollment rate; “Show as lines” draws each part over time. A striped column means a part had too few students to show.'],
 ];

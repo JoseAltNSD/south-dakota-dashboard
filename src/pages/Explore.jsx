@@ -6,7 +6,7 @@ import SampleReport from '../components/SampleReport.jsx';
 import Select from '../components/Select.jsx';
 import { useFeedback } from '../components/Feedback.jsx';
 import { downloadData } from '../downloads.js';
-import { STAGES, STAGE_ORDER, YEARS, LEVELS, DISTRICTS, SCHOOLS, GROUPS, EW_FRAMEWORK_URL } from '../data/stages.js';
+import { STAGES, STAGE_ORDER, YEARS, LEVELS, DISTRICTS, SCHOOLS, INSTITUTION_LEVEL, INSTITUTIONS, GROUPS, EW_FRAMEWORK_URL } from '../data/stages.js';
 
 const TOOLS = [
   { key: 'seeing', label: 'What am I seeing?', icon: 'info' },
@@ -15,7 +15,10 @@ const TOOLS = [
   { key: 'download', label: 'Download data', icon: 'download' },
 ];
 
-const DEFAULT_FILTERS = { level: 'State', district: DISTRICTS[1], school: SCHOOLS[0], year: YEARS[0], group: 'All students' };
+const DEFAULT_FILTERS = { level: 'State', district: DISTRICTS[1], school: SCHOOLS[0], institution: INSTITUTIONS[0], year: YEARS[0], group: 'All students' };
+const INST = INSTITUTION_LEVEL.value;
+// The institution level is offered only on a stage with at least one indicator reported by institution.
+const levelsFor = (stage) => (stage.indicators.some((i) => i.byInstitution) ? [...LEVELS, INST] : LEVELS);
 
 export default function Explore() {
   const [params, setParams] = useSearchParams();
@@ -28,9 +31,12 @@ export default function Explore() {
   const [reportPage, setReportPage] = useState(() => stage.indicators.filter((i) => !i.later).findIndex((i) => i.id === params.get('indicator')) + 1);
   const [filters, setFilters] = useState(() => ({
     ...DEFAULT_FILTERS,
-    level: LEVELS.includes(params.get('level')) ? params.get('level') : DEFAULT_FILTERS.level,
+    level: levelsFor(stage).includes(params.get('level')) ? params.get('level') : DEFAULT_FILTERS.level,
     district: DISTRICTS.includes(params.get('district')) ? params.get('district') : DEFAULT_FILTERS.district,
+    institution: INSTITUTIONS.includes(params.get('institution')) ? params.get('institution') : DEFAULT_FILTERS.institution,
   }));
+  const levels = levelsFor(stage);
+  const byInstitution = filters.level === INST;
 
   const ready = stage.indicators.filter((i) => !i.later);
 
@@ -58,6 +64,7 @@ export default function Explore() {
   const place =
     filters.level === 'State' ? 'South Dakota'
       : filters.level === 'District' ? filters.district
+      : byInstitution ? filters.institution
       : `${filters.school}, ${filters.district}`;
   const viewing = `${place} · ${filters.year} · ${filters.group}`;
 
@@ -67,6 +74,7 @@ export default function Explore() {
     setParams(next, { replace: true });
     setPanel(null);
     setReportPage(0);
+    if (!levelsFor(STAGES[key]).includes(filters.level)) setFilters((f) => ({ ...f, level: 'State' }));
   }
 
   function update(field) {
@@ -140,7 +148,7 @@ export default function Explore() {
                   <li>Each page of the report answers one question with one indicator.</li>
                   <li>The report is an interactive Power BI report. Use the page buttons along its bottom bar to move between indicators, hover to see exact values, or open it full screen.</li>
                   <li>The filters above apply to every page of the report.</li>
-                  <li>When you pick a district or school, the reports show the state value for comparison.</li>
+                  <li>When you pick a district, school or institution, the reports show the state value for comparison.</li>
                   <li>A dashed line marks a change in how the data were collected. Striped cells are suppressed to protect privacy.</li>
                 </ul>
               )}
@@ -200,9 +208,12 @@ export default function Explore() {
             <button type="button" className="link-btn" onClick={() => setFilters(DEFAULT_FILTERS)}>Reset filters</button>
           </div>
           <div role="search" aria-labelledby="flt-h" className="filters__grid">
-            <Field id="f-lvl" label="Level" value={filters.level} onChange={update('level')} options={LEVELS} />
-            <Field id="f-dist" label="District" value={filters.district} onChange={update('district')} options={DISTRICTS} disabled={filters.level === 'State'} />
-            <Field id="f-sch" label="School" value={filters.school} onChange={update('school')} options={SCHOOLS} disabled={filters.level !== 'School'} />
+            <Field id="f-lvl" label="Level" value={filters.level} onChange={update('level')} options={levels.map((l) => (l === INST ? INSTITUTION_LEVEL : l))} />
+            <Field id="f-dist" label="District" value={filters.district} onChange={update('district')} options={DISTRICTS} disabled={filters.level === 'State' || byInstitution} />
+            {/* The School slot lists institutions while the institution level is picked. */}
+            {byInstitution
+              ? <Field id="f-sch" label="Institution" value={filters.institution} onChange={update('institution')} options={INSTITUTIONS} />
+              : <Field id="f-sch" label="School" value={filters.school} onChange={update('school')} options={SCHOOLS} disabled={filters.level !== 'School'} />}
             <Field id="f-yr" label="School year" value={filters.year} onChange={update('year')} options={YEARS} />
             <Field id="f-grp" label="Student group" value={filters.group} onChange={update('group')} options={GROUPS} disabled={filters.level !== 'State'} />
           </div>
