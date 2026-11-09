@@ -59,7 +59,8 @@ src/
 ## Deep links
 
 - `#/explore?stage=transition` opens a stage tab.
-- `#/explore?level=District&district=Brookings%2005-1` pre-sets the filters.
+- `#/explore?level=District&district=Brookings%2005-1` pre-sets the filters. Repeat `district` (or `institution`) to
+  compare several: `&district=Brookings%2005-1&district=Pierre%2032-2`.
 - `#/learn?section=dictionary` opens a help topic (`glossary`, `dictionary`, `read`, `download`, `about`, `faq`).
 
 ## Connecting Power BI
@@ -70,7 +71,9 @@ district comparison), a districts and schools page (small-multiple bar charts, o
 (state level only, with per-group trends). They follow the Explore filters and use the sample `trend` values in `src/data/stages.js`.
 
 To show an actual Power BI report for a stage, add `embedUrl: 'https://app.powerbi.com/view?r=...'` (a "Publish to
-web" link) to that stage in `stages.js`. The frame then shows the report in an iframe in place of the sample.
+web" link) to that stage in `stages.js`. The frame then shows the report in an iframe in place of the sample. The
+page tabs above it stay, but a "Publish to web" iframe can't be switched from outside, so they only change the
+"About this indicator" box; the report's own page navigation changes its pages.
 
 To connect a secure report:
 
@@ -78,8 +81,9 @@ To connect a secure report:
    row-level security). This decision is still open with the client.
 2. For Power BI Embedded, add `powerbi-client` and `powerbi-client-react`, replace the `.pbi__canvas` block with
    `<PowerBIEmbed embedConfig={...} />`, and get embed tokens from a small server-side endpoint.
-3. Map the page buttons to `report.setPage(pageName)` and the Explore filters (level, district, school, year,
-   student group) to `report.setFilters(...)`.
+3. Map the page tabs to `report.setPage(pageName)` (and hide the report's own page navigation) and the Explore
+   filters (level, districts, schools, year, student groups) to `report.setFilters(...)`, using an `In` filter with
+   every pick for the multi-select ones.
 4. Generate the Power BI theme JSON from the design tokens in `styles.css` so the report matches the site.
 
 ## Design notes

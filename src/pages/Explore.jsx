@@ -2,11 +2,11 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import Icon from '../components/Icon.jsx';
 import PowerBIEmbed from '../components/PowerBIEmbed.jsx';
-import SampleReport from '../components/SampleReport.jsx';
+import SampleReport, { picksOf } from '../components/SampleReport.jsx';
 import Select from '../components/Select.jsx';
 import { useFeedback } from '../components/Feedback.jsx';
 import { downloadData } from '../downloads.js';
-import { STAGES, STAGE_ORDER, YEARS, LEVELS, DISTRICTS, SCHOOLS, INSTITUTION_LEVEL, INSTITUTIONS, GROUPS, EW_FRAMEWORK_URL } from '../data/stages.js';
+import { STAGES, STAGE_ORDER, YEARS, LEVELS, DISTRICTS, SCHOOLS, SCHOOL_PLACES, INSTITUTION_LEVEL, INSTITUTIONS, GROUPS, EW_FRAMEWORK_URL } from '../data/stages.js';
 
 const TOOLS = [
   { key: 'seeing', label: 'What am I seeing?', icon: 'info' },
@@ -15,7 +15,18 @@ const TOOLS = [
   { key: 'download', label: 'Download data', icon: 'download' },
 ];
 
-const DEFAULT_FILTERS = { level: 'State', district: DISTRICTS[1], school: SCHOOLS[0], institution: INSTITUTIONS[0], year: YEARS[0], group: 'All students' };
+// Districts, schools, institutions and student groups are lists in pick order, never empty. Schools are
+// "School, District" values from SCHOOL_PLACES, always in one of the picked districts.
+const firstSchool = (district) => `${SCHOOLS[0]}, ${district}`;
+const DEFAULT_FILTERS = {
+  level: 'State', districts: [DISTRICTS[1]], schools: [firstSchool(DISTRICTS[1])], institutions: [INSTITUTIONS[0]], year: YEARS[0], groups: ['All students'],
+};
+const NOUNS = { District: ['district', 'districts'], School: ['school', 'schools'], Institution: ['institution', 'institutions'] };
+// Keeps the valid values of a repeated URL parameter (`?district=A&district=B`), or the fallback when none are.
+const listParam = (params, name, valid, fallback) => {
+  const list = [...new Set(params.getAll(name).filter((v) => valid.includes(v)))];
+  return list.length ? list : fallback;
+};
 const INST = INSTITUTION_LEVEL.value;
 // The institution level is offered only on a stage with at least one indicator reported by institution.
 const levelsFor = (stage) => (stage.indicators.some((i) => i.byInstitution) ? [...LEVELS, INST] : LEVELS);
@@ -29,12 +40,16 @@ export default function Explore() {
   const [panel, setPanel] = useState(null);
   // `?indicator=` opens that indicator's report page; anything else opens the Overview (page 0).
   const [reportPage, setReportPage] = useState(() => stage.indicators.filter((i) => !i.later).findIndex((i) => i.id === params.get('indicator')) + 1);
-  const [filters, setFilters] = useState(() => ({
-    ...DEFAULT_FILTERS,
-    level: levelsFor(stage).includes(params.get('level')) ? params.get('level') : DEFAULT_FILTERS.level,
-    district: DISTRICTS.includes(params.get('district')) ? params.get('district') : DEFAULT_FILTERS.district,
-    institution: INSTITUTIONS.includes(params.get('institution')) ? params.get('institution') : DEFAULT_FILTERS.institution,
-  }));
+  const [filters, setFilters] = useState(() => {
+    const districts = listParam(params, 'district', DISTRICTS, DEFAULT_FILTERS.districts);
+    return {
+      ...DEFAULT_FILTERS,
+      level: levelsFor(stage).includes(params.get('level')) ? params.get('level') : DEFAULT_FILTERS.level,
+      districts,
+      schools: [firstSchool(districts[0])],
+      institutions: listParam(params, 'institution', INSTITUTIONS, DEFAULT_FILTERS.institutions),
+    };
+  });
   const levels = levelsFor(stage);
   const byInstitution = filters.level === INST;
 
@@ -61,12 +76,14 @@ export default function Explore() {
   // The framework metadata below the report follows the open tab; other tabs have no single indicator.
   const openIndicator = pages[activePage].indicator;
 
-  const place =
-    filters.level === 'State' ? 'South Dakota'
-      : filters.level === 'District' ? filters.district
-      : byInstitution ? filters.institution
-      : `${filters.school}, ${filters.district}`;
-  const viewing = `${place} · ${filters.year} · ${filters.group}`;
+  // Names one pick, or counts several ("3 districts").
+  const picks = picksOf(filters);
+  const name = (list, noun) => (list.length === 1 ? list[0].label : `${list.length} ${noun}`);
+  const state = filters.level === 'State';
+  // "All students" checked beside other groups is only the gray comparison line, so it isn't counted.
+  const place = state ? 'South Dakota' : name(picks, NOUNS[filters.level][1]);
+  const group = state && picks.length ? name(picks, 'student groups') : 'All students';
+  const viewing = `${place} · ${filters.year} · ${group}`;
 
   function selectStage(key) {
     const next = new URLSearchParams(params);
@@ -79,12 +96,15 @@ export default function Explore() {
 
   function update(field) {
     return (value) => {
-      setFilters((f) => ({
-        ...f,
-        [field]: value,
+      setFilters((f) => {
+        const next = { ...f, [field]: value };
         // Student group results are shown for the state only (suppression rules).
-        ...(field === 'level' && value !== 'State' ? { group: 'All students' } : {}),
-      }));
+        if (field === 'level' && value !== 'State') next.groups = ['All students'];
+        // Schools stay within the picked districts; if none are left, the first school of the first district.
+        const schools = next.schools.filter((v) => next.districts.includes(SCHOOL_PLACES.find((p) => p.value === v).district));
+        next.schools = schools.length ? schools : [firstSchool(next.districts[0])];
+        return next;
+      });
     };
   }
 
@@ -146,9 +166,9 @@ export default function Explore() {
               {panel === 'seeing' && (
                 <ul>
                   <li>Each page of the report answers one question with one indicator.</li>
-                  <li>The report is an interactive Power BI report. Use the page buttons along its bottom bar to move between indicators, hover to see exact values, or open it full screen.</li>
+                  <li>The report is an interactive Power BI report. Use the tabs along its top to move between indicators, and hover to see exact values.</li>
                   <li>The filters above apply to every page of the report.</li>
-                  <li>When you pick a district, school or institution, the reports show the state value for comparison.</li>
+                  <li>When you pick a district, school or institution, the reports show the state value for comparison. Pick several to compare them side by side.</li>
                   <li>A dashed line marks a change in how the data were collected. Striped cells are suppressed to protect privacy.</li>
                 </ul>
               )}
@@ -201,27 +221,28 @@ export default function Explore() {
             <div className="stack gap-4">
               <h2 id="flt-h" className="h3">Choose what to see</h2>
               <p className="body-sm muted">
-                Pick a level and place, then a school year. Student group results are shown for the state only, so
-                small groups can’t be identified.
+                Pick a level, then one or more places to compare, and a school year. Student group results are shown for
+                the state only, so small groups can’t be identified.
               </p>
             </div>
             <button type="button" className="link-btn" onClick={() => setFilters(DEFAULT_FILTERS)}>Reset filters</button>
           </div>
           <div role="search" aria-labelledby="flt-h" className="filters__grid">
             <Field id="f-lvl" label="Level" value={filters.level} onChange={update('level')} options={levels.map((l) => (l === INST ? INSTITUTION_LEVEL : l))} />
-            <Field id="f-dist" label="District" value={filters.district} onChange={update('district')} options={DISTRICTS} disabled={filters.level === 'State' || byInstitution} />
-            {/* The School slot lists institutions while the institution level is picked. */}
+            <Field id="f-dist" label="District" value={filters.districts} onChange={update('districts')} options={DISTRICTS} noun="districts" disabled={filters.level === 'State' || byInstitution} />
+            {/* The School slot lists institutions while the institution level is picked. Schools are listed for
+                the picked districts. */}
             {byInstitution
-              ? <Field id="f-sch" label="Institution" value={filters.institution} onChange={update('institution')} options={INSTITUTIONS} />
-              : <Field id="f-sch" label="School" value={filters.school} onChange={update('school')} options={SCHOOLS} disabled={filters.level !== 'School'} />}
+              ? <Field id="f-sch" label="Institution" value={filters.institutions} onChange={update('institutions')} options={INSTITUTIONS} noun="institutions" />
+              : <Field id="f-sch" label="School" value={filters.schools} onChange={update('schools')} options={SCHOOL_PLACES.filter((p) => filters.districts.includes(p.district)).map((p) => p.value)} noun="schools" disabled={filters.level !== 'School'} />}
             <Field id="f-yr" label="School year" value={filters.year} onChange={update('year')} options={YEARS} />
-            <Field id="f-grp" label="Student group" value={filters.group} onChange={update('group')} options={GROUPS} disabled={filters.level !== 'State'} />
+            <Field id="f-grp" label="Student group" value={filters.groups} onChange={update('groups')} options={GROUPS} noun="student groups" disabled={filters.level !== 'State'} />
           </div>
         </div>
       </section>
 
       <section className="band" style={{ paddingTop: 56, paddingBottom: 56 }} aria-labelledby="report-h">
-        <div className="container stack gap-16">
+        <div className="container stack gap-16" style={{ '--stage': stage.color, '--stage-tint': stage.tint }}>
           <div className="report-head">
             <h2 id="report-h" className="h2" style={{ scrollMarginTop: 16 }}>{stage.short} report</h2>
             <span className="body-sm muted">{viewing}</span>
@@ -294,11 +315,12 @@ export default function Explore() {
   );
 }
 
-function Field({ id, label, value, onChange, options, disabled = false }) {
+// A filter drop-down; an array `value` makes it a multi-select, counted with `noun`.
+function Field({ id, label, value, onChange, options, noun, disabled = false }) {
   return (
     <div className="field">
       <label htmlFor={id}>{label}</label>
-      <Select id={id} value={value} onChange={onChange} options={options} disabled={disabled} />
+      <Select id={id} value={value} onChange={onChange} options={options} multiple={Array.isArray(value)} noun={noun} disabled={disabled} />
     </div>
   );
 }

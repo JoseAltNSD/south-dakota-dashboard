@@ -34,7 +34,8 @@ There is no test runner, linter or formatter configured.
   dictionary, chart guide (`READ_*`), downloads and FAQ content for Learn. Pages render from these, so copy edits usually belong there.
 - **URL query params are the shared state between pages.** Home links into Explore with `?stage=` and
   `?stage=...&indicator=<id>` (opens that indicator's report page and scrolls to it). Explore also accepts
-  `?level=District&district=...` (Home's district finder was removed, but keep the link working). Explore
+  `?level=District&district=...` (Home's district finder was removed, but keep the link working); `district` and
+  `institution` may repeat to pick several. Explore
   validates them against `STAGE_ORDER`/indicator ids/`LEVELS`/`DISTRICTS` before use. Postsecondary also accepts
   `?level=Institution&institution=...` (`INSTITUTION_LEVEL`, `INSTITUTIONS`); that level is offered only on a stage
   with indicators marked `byInstitution`, and other report pages fall back to state values with a notice.
@@ -46,7 +47,10 @@ There is no test runner, linter or formatter configured.
   but get no report page.
 - **Framework metric**: each indicator's `metric` (our own summary of the EW framework's recommended metric, not
   copied text) shows in the "About this indicator" box below the report while that indicator's tab is open.
-- **Report frame**: `PowerBIEmbed.jsx` shows an iframe when the stage has an `embedUrl`, otherwise its children,
+- **Report frame**: `PowerBIEmbed.jsx` shows the report pages as tabs along the frame's top (styled like the stage
+  tabs, colored from `--stage`/`--stage-tint` set by Explore), switching to a "Report page" drop-down when they don't
+  fit on one line. The tabs show with a live `embedUrl` too, though a "Publish to web" iframe can't follow them. Below
+  the tabs it shows an iframe when the stage has an `embedUrl`, otherwise its children,
   which Explore sets to `SampleReport.jsx`. The sample pages are drawn from each indicator's `trend` (oldest year
   first, the reverse of `YEARS`) and `breakAt` (series break). `sampleValue()` derives district, school and group
   values from fixed per-name offsets and yearly drifts and returns `null` for suppressed cells. An indicator with
@@ -65,6 +69,12 @@ There is no test runner, linter or formatter configured.
   "Send feedback" and the footer link); it has no backend and only shows a thank-you.
 - **Drop-downs**: use `src/components/Select.jsx`, not a native `<select>`. Native menus are drawn by the OS and don't
   show when the screen is shared in a meeting.
+- **Multi-select filters**: districts, schools, institutions and student groups are lists in pick order (`multiple`
+  on `Select`), never empty. Schools are `"School, District"` values from `SCHOOL_PLACES`, kept within the picked
+  districts. `picksOf()` in `SampleReport.jsx` turns the filters into the compared picks: one pick keeps the stage
+  color, 2 to 4 take `--pick-1`…`--pick-4` in pick order (a validated color-blind-safe set, no red), and 5 or more
+  become small multiples in the stage color. Panels built around one place (enrollment breakdown, ACT combined chart)
+  get a "Showing" picker. "All students" checked beside other groups is only the gray comparison line.
 - **Styling**: one global `src/styles.css` with design tokens as CSS variables on `:root` and BEM-ish class names
   (`.pbi__canvas`, `.btn--secondary`). Stage colors are `--readiness`, `--transition`/`--transition-ink`,
   `--postsecondary` (navy, sky and plum from the brand guide), each with a `--*-tint` for light fills; data files reference them as `var(--...)`. No CSS modules or utility framework.

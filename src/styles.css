@@ -26,6 +26,14 @@
   --postsecondary-ramp-3: #ac99a6;
   --postsecondary-ramp-4: #cfc3cb;
 
+  /* One color per pick when 2 to 4 places or groups are compared, in pick order (5 or more become small
+     multiples in the stage color). No red. Checked for color-blind separation across every pair; amber and orchid
+     are under 3:1 on white, so lines always carry a legend, end values and tooltips. */
+  --pick-1: #2b5ca8;
+  --pick-2: #d9932b;
+  --pick-3: #2a9d8f;
+  --pick-4: #d47cc0;
+
   --suppressed: #cfc8bc;
   /* Reference series in charts (South Dakota, All students). Dark enough to separate from the sky Transition color. */
   --data-ref: #7e7a7c;
@@ -202,6 +210,14 @@ button { font: inherit; }
 .dropdown__option { min-height: 36px; padding: 8px 12px; cursor: pointer; }
 .dropdown__option.is-active { background: #f5f5f5; }
 .dropdown__option[aria-selected="true"] { font-weight: 600; box-shadow: inset 3px 0 0 var(--ink); }
+/* Multi-select: a checkbox per option, and Select all / Clear above the options, which scroll on their own. */
+.dropdown__list--multi { display: flex; flex-direction: column; padding: 0; overflow: hidden; max-height: 336px; }
+.dropdown__actions { display: flex; gap: 16px; padding: 8px 12px; border-bottom: 1px solid var(--hairline); }
+.dropdown__options { margin: 0; padding: 4px 0; list-style: none; overflow-y: auto; }
+.dropdown__option--check { display: flex; align-items: center; gap: 10px; }
+.dropdown__option--check[aria-selected="true"] { box-shadow: none; }
+.dropdown__box { flex: none; width: 18px; height: 18px; border: 1.5px solid var(--control-border); border-radius: 3px; background: var(--surface); color: var(--on-red); display: inline-flex; align-items: center; justify-content: center; }
+.dropdown__option--check[aria-selected="true"] .dropdown__box { background: var(--ink); border-color: var(--ink); }
 
 /* Feedback dialog (a modal <dialog>; clicks on the dialog itself close it, so the padding sits on __inner) */
 .dialog { width: min(520px, calc(100vw - 32px)); max-height: calc(100vh - 32px); padding: 0; border: 0; border-radius: var(--radius-lg); background: var(--surface); color: var(--ink); box-shadow: 0 12px 32px rgba(31, 26, 28, 0.24); }
@@ -231,11 +247,17 @@ button { font: inherit; }
 .pbi { width: 100%; background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius-lg); overflow: hidden; display: flex; flex-direction: column; }
 .pbi__canvas { width: 100%; min-height: 420px; background: #fafafa; padding: 20px; }
 .pbi__frame { display: block; width: 100%; aspect-ratio: 16 / 9; min-height: 420px; border: 0; }
-.pbi__bar { border-top: 1px solid var(--hairline); background: var(--pbi-chrome); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 6px 12px; font-size: 13px; line-height: 18px; color: var(--muted); }
-.pbi__pages { display: flex; flex-wrap: wrap; gap: 4px; }
-.pbi__page { min-height: 32px; padding: 0 10px; border: 1px solid #c8c6c4; border-radius: var(--radius-md); background: var(--surface); color: var(--ink); font-size: 13px; font-weight: 600; cursor: pointer; }
-.pbi__page[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: var(--on-red); }
-.pbi__fullscreen { display: inline-flex; align-items: center; gap: 4px; background: transparent; border: 0; color: var(--muted); font-size: 13px; cursor: pointer; padding: 4px; }
+/* Page tabs along the top edge, styled like the stage tabs. The row never wraps: when it overflows,
+   PowerBIEmbed swaps in the drop-down and keeps the row in place, hidden, to measure it again. */
+.pbi__nav { position: relative; padding: 8px 12px 0; background: var(--surface); }
+.pbi__tabs { flex-wrap: nowrap; gap: 4px; }
+/* A notch smaller than the stage tabs: the second level of tabs, and with full indicator names it lets every
+   stage's row fit at full width. */
+.pbi__tab { flex: none; white-space: nowrap; padding-left: 12px; padding-right: 12px; }
+.pbi__tab .stage-tab__title { font-size: 15px; }
+.pbi__nav--compact { padding: 12px; border-bottom: 2px solid var(--hairline); }
+.pbi__nav--compact .pbi__tabs { position: absolute; top: 0; left: 12px; right: 12px; visibility: hidden; }
+.pbi__picker { max-width: 360px; }
 
 /* Sample report pages (stand-in for the Power BI report) */
 .rpt { display: flex; flex-direction: column; gap: 16px; }
@@ -272,6 +294,14 @@ button { font: inherit; }
 .rpt__switch[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--surface); }
 .rpt__segments { display: flex; flex-wrap: wrap; gap: 4px; }
 .rpt__slicer { display: flex; flex-direction: column; gap: 4px; flex: 0 1 260px; }
+.rpt__smalls { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); gap: 12px 16px; }
+.rpt-picks { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 2px 12px; align-items: baseline; font-size: 15px; line-height: 22px; }
+.rpt-picks__name { min-width: 0; overflow-wrap: anywhere; }
+.rpt__tiles--picks { grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.rpt-picks__value { font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+.rpt-picks__change { font-size: 13px; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+.rpt-picks__ref { color: var(--muted); border-top: 1px solid var(--hairline); padding-top: 4px; }
+.rpt-picks--lg .rpt-picks__value { font-size: 20px; line-height: 28px; }
 .rpt__multiples { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; }
 
 /* Legend keys: a swatch, a line or a tick in the series color, beside text in text colors. */

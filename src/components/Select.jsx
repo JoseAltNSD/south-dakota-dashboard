@@ -6,10 +6,16 @@ import Icon from './Icon.jsx';
  * operating system, so they don't appear when the screen is shared in a meeting. Follows the ARIA
  * "select-only combobox" pattern: focus stays on the button and the open list tracks the active option.
  * `options` are strings or { value, label }; `onChange` receives the new value.
+ *
+ * With `multiple`, `value` is an array kept in the order the options were picked (chart colors follow that
+ * order), each option has a checkbox, and the list stays open while picking. At least one option always stays
+ * picked: unchecking the last one does nothing, and "Clear" leaves the first option. The button names the pick,
+ * or counts them with `noun` ("3 districts").
  */
-export default function Select({ id, value, options, onChange, disabled = false }) {
+export default function Select({ id, value, options, onChange, disabled = false, multiple = false, noun = 'selected' }) {
   const items = options.map((o) => (typeof o === 'string' ? { value: o, label: o } : o));
-  const selected = Math.max(0, items.findIndex((o) => o.value === value));
+  const picked = multiple ? value : [value];
+  const selected = Math.max(0, items.findIndex((o) => o.value === picked[0]));
   const listId = useId();
   const root = useRef(null);
   const typed = useRef({ text: '', at: 0 });
@@ -33,8 +39,15 @@ export default function Select({ id, value, options, onChange, disabled = false 
   }
 
   function pick(i) {
-    setOpen(false);
-    if (items[i].value !== value) onChange(items[i].value);
+    const v = items[i].value;
+    if (!multiple) {
+      setOpen(false);
+      if (v !== value) onChange(v);
+    } else if (!value.includes(v)) {
+      onChange([...value, v]);
+    } else if (value.length > 1) {
+      onChange(value.filter((x) => x !== v));
+    }
   }
 
   // Typing letters jumps to the next option that starts with them, like a native select.
@@ -61,7 +74,8 @@ export default function Select({ id, value, options, onChange, disabled = false 
       ' ': () => (open ? pick(active) : show()),
     };
     if (e.key === 'Tab') {
-      if (open) pick(active);
+      if (open && !multiple) pick(active);
+      setOpen(false);
     } else if (e.key === 'Escape') {
       // Only stop Escape while the list is open, so a closed drop-down inside a dialog still lets it close.
       if (open) {
@@ -75,6 +89,35 @@ export default function Select({ id, value, options, onChange, disabled = false 
       typeahead(e.key);
     }
   }
+
+  const labelOf = (v) => items.find((o) => o.value === v)?.label ?? v;
+  const summary = !multiple || value.length === 1 ? labelOf(picked[0])
+    : value.length === items.length ? `All ${items.length} ${noun}`
+    : `${value.length} ${noun}`;
+
+  const list = (
+    <ul id={listId} role="listbox" className={multiple ? 'dropdown__options' : 'dropdown__list'} aria-labelledby={id} aria-multiselectable={multiple || undefined}>
+      {items.map((o, i) => {
+        const on = picked.includes(o.value);
+        return (
+          <li
+            key={o.value}
+            id={`${listId}-${i}`}
+            role="option"
+            aria-selected={on}
+            className={`dropdown__option${i === active ? ' is-active' : ''}${multiple ? ' dropdown__option--check' : ''}`}
+            title={multiple && on && value.length === 1 ? 'At least one stays picked' : undefined}
+            onPointerMove={() => setActive(i)}
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => pick(i)}
+          >
+            {multiple && <span className="dropdown__box" aria-hidden="true">{on && <Icon name="check" size={12} strokeWidth={3} />}</span>}
+            {o.label}
+          </li>
+        );
+      })}
+    </ul>
+  );
 
   return (
     <div className="dropdown" ref={root}>
@@ -91,26 +134,19 @@ export default function Select({ id, value, options, onChange, disabled = false 
         onClick={() => (open ? setOpen(false) : show())}
         onKeyDown={onKeyDown}
       >
-        <span className="dropdown__value">{items[selected]?.label}</span>
+        <span className="dropdown__value">{summary}</span>
         <Icon name="chevronDown" size={16} strokeWidth={2} />
       </button>
-      {open && (
-        <ul id={listId} role="listbox" className="dropdown__list" aria-labelledby={id}>
-          {items.map((o, i) => (
-            <li
-              key={o.value}
-              id={`${listId}-${i}`}
-              role="option"
-              aria-selected={i === selected}
-              className={`dropdown__option${i === active ? ' is-active' : ''}`}
-              onPointerMove={() => setActive(i)}
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => pick(i)}
-            >
-              {o.label}
-            </li>
-          ))}
-        </ul>
+      {open && !multiple && list}
+      {open && multiple && (
+        <div className="dropdown__list dropdown__list--multi">
+          {/* Mouse shortcuts; keyboard users toggle options with Space or Enter. */}
+          <div className="dropdown__actions" onMouseDown={(e) => e.preventDefault()}>
+            <button type="button" tabIndex={-1} className="link-btn" onClick={() => onChange([...value, ...items.map((o) => o.value).filter((v) => !value.includes(v))])}>Select all</button>
+            <button type="button" tabIndex={-1} className="link-btn" onClick={() => onChange([items[0].value])}>Clear</button>
+          </div>
+          {list}
+        </div>
       )}
     </div>
   );

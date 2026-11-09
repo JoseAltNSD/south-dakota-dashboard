@@ -64,9 +64,9 @@ export const DICTIONARY = [
 export const READ_STEPS = [
   ['The question', 'What the indicator helps you answer.'],
   ['The value', 'The result for the place, school year and student group picked in the filters. A few indicators have two measures, such as reading and math, each with its own value and trend; they are never added together.'],
-  ['The comparison', 'When you pick a district or school, the South Dakota value is shown under it.'],
+  ['The comparison', 'When you pick a district, school or institution, the South Dakota value is shown under it. Pick several to compare them: each gets a row and its own line color, or its own small chart when there are five or more.'],
   ['Trend over time', 'Five school years as lines: your place in color, its district as a dashed line when you pick a school, and South Dakota in gray.'],
-  ['Districts compared', 'Each district as a bar from 0 to 100%, with a gray mark at the South Dakota value. The district you picked is darker. “Map” shows the same values on a map of South Dakota, with darker districts higher. When you pick a postsecondary institution, the bars compare institutions instead.'],
+  ['Districts compared', 'Each district as a bar from 0 to 100%, with a gray mark at the South Dakota value. The districts you picked are darker, in their line colors when you compare several. “Map” shows the same values on a map of South Dakota, with darker districts higher. When you pick a postsecondary institution, the bars compare institutions instead.'],
   ['Source and notes', 'Where the data come from, and any change in how they were collected.'],
 ];
 
@@ -79,9 +79,9 @@ export const READ_SYMBOLS = [
 ];
 
 export const READ_PAGES = [
-  ['Overview', 'One tile per measure: the value for the year you picked, the change from the year before, and five years as small bars. The darker bar is the year you picked.'],
-  ['Districts and schools', 'A small bar chart per measure comparing districts, or the schools in your district when you pick a school (the gray bar is the district). “Map” shades each district on a map of the state, and “Table” lists the same values, shaded from lowest to highest.'],
-  ['Student groups', 'State results for each student group on the indicator you pick: a bar with a gray mark at all students, and a five-year line. The group picked in the filters is highlighted.'],
+  ['Overview', 'One tile per measure: the value for the year you picked, the change from the year before, and five years as small bars. The darker bar is the year you picked. With several places or groups picked, each tile lists them as rows with South Dakota last.'],
+  ['Districts and schools', 'A small bar chart per measure comparing districts, or the schools in the districts you pick at the school level, grouped by district (the gray bar is the district). “Map” shades each district on a map of the state, and “Table” lists the same values, shaded from lowest to highest.'],
+  ['Student groups', 'State results for each student group on the indicator you pick: a bar with a gray mark at all students, and a five-year line. The groups picked in the filters are highlighted.'],
   ['College enrollment parts', 'The College enrollment page also shows what graduates enroll in, by credential or by type of college. The parts of each column add up to the enrollment rate; “Show as lines” draws each part over time. A striped column means a part had too few students to show.'],
 ];
 

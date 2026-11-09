@@ -121,6 +121,9 @@ export const YEARS = ['2025–26', '2024–25', '2023–24', '2022–23', '2021�
 export const LEVELS = ['State', 'District', 'School'];
 export const DISTRICTS = ['Aberdeen 06-1', 'Brookings 05-1', 'Pierre 32-2', 'Rapid City Area 51-4', 'Sioux Falls 49-5'];
 export const SCHOOLS = ['[High school A]', '[High school B]', '[Alternative school]'];
+// Every school as a pick for the multi-select School filter, which lists the schools of the districts picked.
+// `value` ("School, District") is what the filter stores and the report shows.
+export const SCHOOL_PLACES = DISTRICTS.flatMap((district) => SCHOOLS.map((school) => ({ value: `${school}, ${district}`, school, district })));
 // The Postsecondary stage adds this level for its indicators marked `byInstitution`. The value is short for the URL
 // (`?level=Institution&institution=...`); the label is what the Level dropdown shows.
 export const INSTITUTION_LEVEL = { value: 'Institution', label: 'Postsecondary institution' };

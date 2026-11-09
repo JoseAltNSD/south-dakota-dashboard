@@ -1,5 +1,5 @@
-import { useId, useLayoutEffect, useRef, useState } from 'react';
-import { DISTRICTS, SCHOOLS, INSTITUTIONS, YEARS, GROUP_CATEGORIES } from '../data/stages.js';
+import { Fragment, useId, useLayoutEffect, useRef, useState } from 'react';
+import { DISTRICTS, SCHOOL_PLACES, INSTITUTIONS, YEARS, GROUP_CATEGORIES } from '../data/stages.js';
 import { DISTRICT_SHAPES, SD_OUTLINE } from '../data/districtMap.js';
 import Select from './Select.jsx';
 
@@ -87,12 +87,36 @@ const fmt = (v) => (v == null ? 'Suppressed' : `${v}%`);
 const STATE = { level: 'State', group: 'All students' };
 const seriesValues = (ind, f) => YEARS_ASC.map((_, i) => sampleValue(ind, i, f));
 
-export default function SampleReport({ stage, page, indicators, filters: picked, subtitle }) {
-  const yearIdx = Math.max(0, YEARS_ASC.indexOf(picked.year));
+const ALL = 'All students';
+const PICK_COLORS = ['var(--pick-1)', 'var(--pick-2)', 'var(--pick-3)', 'var(--pick-4)'];
+// Above this many picks, trend charts become one small chart per pick instead of one color per pick.
+const MAX_LINES = 4;
+
+// The places or student groups picked in the filters, in pick order, each with the values `sampleValue` takes. An
+// empty list means the state as a whole (State level with only "All students").
+export function picksOf(filters) {
+  if (filters.level === 'District') return filters.districts.map((d) => ({ label: d, f: { level: 'District', district: d, group: ALL } }));
+  if (filters.level === 'School') {
+    return filters.schools.map((value) => {
+      const { district, school } = SCHOOL_PLACES.find((p) => p.value === value);
+      return { label: value, district, f: { level: 'School', district, school, group: ALL } };
+    });
+  }
+  if (filters.level === 'Institution') return filters.institutions.map((n) => ({ label: n, f: { level: 'Institution', institution: n, group: ALL } }));
+  return filters.groups.filter((g) => g !== ALL).map((g) => ({ label: g, f: { level: 'State', group: g } }));
+}
+
+export default function SampleReport({ stage, page, indicators, filters: chosen, subtitle }) {
+  const yearIdx = Math.max(0, YEARS_ASC.indexOf(chosen.year));
   // Only indicators marked `byInstitution` have institution results; every other page falls back to the state.
-  const fallback = picked.level === 'Institution' && !(page.kind === 'indicator' && page.indicator.byInstitution);
-  const filters = fallback ? { ...picked, level: 'State', group: 'All students' } : picked;
-  const props = { stage, indicators: indicators.flatMap(measures), filters, yearIdx };
+  const fallback = chosen.level === 'Institution' && !(page.kind === 'indicator' && page.indicator.byInstitution);
+  const filters = fallback ? { ...chosen, level: 'State', groups: [ALL] } : chosen;
+  const found = picksOf(filters);
+  // One pick keeps the stage color; 2 to 4 take the pick colors in pick order; more are drawn apart in the stage color.
+  const picks = found.map((p, i) => ({ ...p, color: found.length > 1 && found.length <= MAX_LINES ? PICK_COLORS[i] : stage.color }));
+  // The gray comparison: all students when comparing groups, otherwise the state.
+  const refLabel = filters.level === 'State' && picks.length ? ALL : 'South Dakota';
+  const props = { stage, indicators: indicators.flatMap(measures), filters, picks, refLabel, yearIdx };
   const sub = page.kind === 'groups' ? `South Dakota · ${filters.year} · All student groups`
     : fallback ? `South Dakota · ${filters.year} · All students` : subtitle;
 
@@ -111,70 +135,112 @@ export default function SampleReport({ stage, page, indicators, filters: picked,
   );
 }
 
-function Overview({ stage, indicators, filters, yearIdx }) {
+// The change from the year before, e.g. "+3 pts from 2024–25" (`long`) or "+3 pts".
+function changeText(ind, f, yearIdx, long) {
+  if (yearIdx === 0) return long ? 'First year shown' : '';
+  if (ind.breakAt === yearIdx) return long ? 'Not comparable with the year before' : 'Not comparable';
+  const v = sampleValue(ind, yearIdx, f);
+  const prev = sampleValue(ind, yearIdx - 1, f);
+  if (v == null || prev == null) return long ? 'First year shown' : '';
+  const d = v - prev;
+  return `${d > 0 ? '+' : d < 0 ? '−' : '±'}${Math.abs(d)} ${Math.abs(d) === 1 ? 'pt' : 'pts'}${long ? ` from ${YEARS_ASC[yearIdx - 1]}` : ''}`;
+}
+
+// One row per pick (color key, name, value, change), then the gray comparison row.
+function PickRows({ ind, picks, refLabel, yearIdx, large = false, changes = false }) {
+  const rows = [
+    ...picks.map((p) => ({ ...p, value: sampleValue(ind, yearIdx, p.f) })),
+    { label: refLabel, f: STATE, color: REF, value: sampleValue(ind, yearIdx, STATE), ref: true },
+  ];
   return (
-    <div className="rpt__tiles">
-      {indicators.map((ind) => {
-        const v = sampleValue(ind, yearIdx, filters);
-        const prev = yearIdx > 0 ? sampleValue(ind, yearIdx - 1, filters) : null;
-        let change = 'First year shown';
-        if (ind.breakAt === yearIdx) change = 'Not comparable with the year before';
-        else if (v != null && prev != null) {
-          const d = v - prev;
-          change = `${d > 0 ? '+' : d < 0 ? '−' : '±'}${Math.abs(d)} ${Math.abs(d) === 1 ? 'pt' : 'pts'} from ${YEARS_ASC[yearIdx - 1]}`;
-        }
+    <div className={`rpt-picks${large ? ' rpt-picks--lg' : ''}`}>
+      {rows.map((r) => {
+        const ref = r.ref ? ' rpt-picks__ref' : '';
         return (
-          <div key={ind.id} className="rpt__panel">
-            <span className="rpt__label">{ind.name}</span>
-            <span className="rpt__hero">{fmt(v)}</span>
-            <span className="caption">{change}</span>
-            <TrendBars ind={ind} filters={filters} yearIdx={yearIdx} color={stage.color} />
-          </div>
+          <Fragment key={r.label}>
+            <span className={`rpt-picks__name${ref}`} title={r.label}><i className="rpt-key rpt-key--line" style={{ '--key': r.color }} />{r.label}</span>
+            <span className={`rpt-picks__value${ref}`}>{r.value == null ? <span title="Suppressed: fewer than 10 students">*</span> : `${r.value}%`}</span>
+            <span className={`rpt-picks__change${ref}`}>{changes ? changeText(ind, r.f, yearIdx, false) : ''}</span>
+          </Fragment>
         );
       })}
     </div>
   );
 }
 
-// The lines a trend chart compares: the selected place or group, plus its reference lines.
-function trendSeries(ind, filters, color) {
-  if (filters.level === 'State') {
-    if (filters.group === 'All students') return [{ label: 'South Dakota', values: seriesValues(ind, STATE), color }];
-    return [
-      { label: filters.group, values: seriesValues(ind, filters), color },
-      { label: 'All students', values: seriesValues(ind, STATE), color: REF },
-    ];
+function Overview({ stage, indicators, picks, refLabel, yearIdx }) {
+  // Two or more picks list one row per pick in each tile; the five small bars only fit one place or group.
+  if (picks.length > 1) {
+    return (
+      <div className="rpt__tiles rpt__tiles--picks">
+        {indicators.map((ind) => (
+          <div key={ind.id} className="rpt__panel">
+            <span className="rpt__label">{ind.name}</span>
+            <PickRows ind={ind} picks={picks} refLabel={refLabel} yearIdx={yearIdx} changes />
+          </div>
+        ))}
+        <span className="caption" style={{ gridColumn: '1 / -1' }}>Change is from the school year before. * Suppressed: fewer than 10 students.</span>
+      </div>
+    );
   }
-  if (filters.level === 'Institution') {
-    return [
-      { label: filters.institution, values: seriesValues(ind, filters), color },
-      { label: 'South Dakota', values: seriesValues(ind, STATE), color: REF },
-    ];
-  }
-  const series = [];
-  if (filters.level === 'School') series.push({ label: filters.school, values: seriesValues(ind, filters), color });
-  series.push({
-    label: filters.district,
-    values: seriesValues(ind, { level: 'District', district: filters.district }),
-    color,
-    dashed: filters.level === 'School',
-  });
-  series.push({ label: 'South Dakota', values: seriesValues(ind, STATE), color: REF });
-  return series;
+  const f = picks[0]?.f ?? STATE;
+  return (
+    <div className="rpt__tiles">
+      {indicators.map((ind) => (
+        <div key={ind.id} className="rpt__panel">
+          <span className="rpt__label">{ind.name}</span>
+          <span className="rpt__hero">{fmt(sampleValue(ind, yearIdx, f))}</span>
+          <span className="caption">{changeText(ind, f, yearIdx, true)}</span>
+          <TrendBars ind={ind} filters={f} yearIdx={yearIdx} color={stage.color} />
+        </div>
+      ))}
+    </div>
+  );
 }
 
-function IndicatorPage({ stage, ind, filters, yearIdx }) {
+// A trend chart of the picks against the gray comparison line. Up to MAX_LINES picks share one chart, one color each
+// (a single school adds its district as a dashed line); more get one small chart each, all on the same scale.
+function PickTrends({ m, picks, refLabel, yearIdx, color }) {
+  const ref = { label: refLabel, values: seriesValues(m, STATE), color: REF };
+  if (!picks.length) return <TrendLines series={[{ ...ref, color }]} breakAt={m.breakAt} yearIdx={yearIdx} name={m.name} />;
+  const lines = picks.map((p) => ({ label: p.label, values: seriesValues(m, p.f), color: p.color }));
+  if (picks.length <= MAX_LINES) {
+    const district = picks.length === 1 && picks[0].district;
+    const parent = district ? [{ label: district, values: seriesValues(m, { level: 'District', district }), color: picks[0].color, dashed: true }] : [];
+    return <TrendLines series={[...lines, ...parent, ref]} breakAt={m.breakAt} yearIdx={yearIdx} name={m.name} />;
+  }
+  const range = domain([ref.values, ...lines.map((l) => l.values)]);
+  return (
+    <>
+      <div className="rpt__smalls">
+        {lines.map((l) => (
+          <div key={l.label} className="stack gap-4">
+            <span className="body-sm strong rpt-picks__name" title={l.label}>{l.label}</span>
+            <TrendLines series={[l, ref]} breakAt={m.breakAt} yearIdx={yearIdx} name={`${m.name}, ${l.label}`} range={range} small />
+          </div>
+        ))}
+      </div>
+      <span className="caption"><i className="rpt-key rpt-key--line" />Gray line: {refLabel}. Every chart uses the same scale.</span>
+    </>
+  );
+}
+
+function IndicatorPage({ stage, ind, filters, picks, refLabel, yearIdx }) {
   const parts = measures(ind);
   const districtRows = (m) => DISTRICTS.map((d) => ({ name: d, value: sampleValue(m, yearIdx, { level: 'District', district: d }) }));
   const institutionRows = (m) => INSTITUTIONS.map((n) => ({ name: n, value: sampleValue(m, yearIdx, { level: 'Institution', institution: n }) }));
   const byInstitution = filters.level === 'Institution';
-  const picked = byInstitution ? filters.institution : filters.level !== 'State' ? filters.district : null;
+  // Highlighted bars: the picked districts or institutions, or the districts of the picked schools.
+  const picked = filters.level === 'State' ? [] : [...new Set(picks.map((p) => p.district ?? p.label))];
+  // Bars of picked places wear their line color, so a place has one color across the page.
+  const colors = filters.level !== 'School' && picks.length > 1 ? Object.fromEntries(picks.map((p) => [p.label, p.color])) : {};
+  const views = picks.length ? picks : [{ label: 'South Dakota', f: STATE }];
   const [chosen, setView] = useState('bars');
   // Institutions aren't districts, so they compare as bars only.
   const view = byInstitution ? 'bars' : chosen;
   const compare = (m) => (view === 'map'
     ? <DistrictMap rows={districtRows(m)} color={stage.color} picked={picked} state={sampleValue(m, yearIdx, STATE)} name={`${m.name}, ${filters.year}`} />
-    : <CompareBars rows={byInstitution ? institutionRows(m) : districtRows(m)} color={stage.color} picked={picked} state={sampleValue(m, yearIdx, STATE)} wide={byInstitution} />);
+    : <CompareBars rows={byInstitution ? institutionRows(m) : districtRows(m)} color={stage.color} colors={colors} picked={picked} state={sampleValue(m, yearIdx, STATE)} wide={byInstitution} />);
   const compareHead = (
     <div className="rpt__toolbar" style={{ alignItems: 'center' }}>
       <span className="rpt__label">{byInstitution ? 'Institutions' : 'Districts'} compared, {filters.year}</span>
@@ -187,12 +253,14 @@ function IndicatorPage({ stage, ind, filters, yearIdx }) {
     <div key={m.id} className="rpt__panel">
       <span className="rpt__label">{m.name} · {filters.year}</span>
       {m.detail && <span className="body-sm muted">{m.detail}</span>}
-      <span className="rpt__hero rpt__hero--lg">{fmt(sampleValue(m, yearIdx, filters))}</span>
-      {filters.level !== 'State' && (
-        <span className="body-sm muted">South Dakota: {fmt(sampleValue(m, yearIdx, STATE))}</span>
+      {picks.length > 1 ? <PickRows ind={m} picks={picks} refLabel={refLabel} yearIdx={yearIdx} large /> : (
+        <>
+          <span className="rpt__hero rpt__hero--lg">{fmt(sampleValue(m, yearIdx, views[0].f))}</span>
+          {picks.length === 1 && <span className="body-sm muted">{refLabel}: {fmt(sampleValue(m, yearIdx, STATE))}</span>}
+        </>
       )}
       <span className="rpt__label" style={{ marginTop: 8 }}>{m.short ? `${m.short}: trend over time` : 'Trend over time'}</span>
-      <TrendLines series={trendSeries(m, filters, stage.color)} breakAt={m.breakAt} yearIdx={yearIdx} name={m.name} />
+      <PickTrends m={m} picks={picks} refLabel={refLabel} yearIdx={yearIdx} color={stage.color} />
       {m.breakAt != null && <span className="caption">Gap and dashed line: {breakNote(m)} in {YEARS_ASC[m.breakAt]}. Compare years on either side with care.</span>}
     </div>
   ));
@@ -212,7 +280,7 @@ function IndicatorPage({ stage, ind, filters, yearIdx }) {
     return (
       <div className="stack gap-16">
         {body}
-        <BreakdownPanel ind={ind} filters={filters} yearIdx={yearIdx} />
+        <BreakdownPanel ind={ind} views={views} yearIdx={yearIdx} />
       </div>
     );
   }
@@ -221,7 +289,7 @@ function IndicatorPage({ stage, ind, filters, yearIdx }) {
   return (
     <div className="stack gap-16">
       <div className="rpt__body">{trendPanels}</div>
-      {ind.score && <ComboPanel stage={stage} ind={ind} filters={filters} yearIdx={yearIdx} />}
+      {ind.score && <ComboPanel stage={stage} ind={ind} views={views} yearIdx={yearIdx} />}
       <div className="rpt__panel">
         {compareHead}
         <div className="rpt__body">
@@ -240,8 +308,10 @@ function IndicatorPage({ stage, ind, filters, yearIdx }) {
 
 // An example for discussion, as suggested on the Oct 22 call: participation and average score on one chart with two
 // axes. Hidden until asked for, so the default view stays one measure per chart.
-function ComboPanel({ stage, ind, filters, yearIdx }) {
+function ComboPanel({ stage, ind, views, yearIdx }) {
   const [open, setOpen] = useState(false);
+  const [showing, setShowing] = useState(0);
+  const { f: filters } = views[Math.min(showing, views.length - 1)];
   const [part] = measures(ind);
   const bars = seriesValues(part, filters);
   const line = YEARS_ASC.map((_, i) => sampleScore(ind, i, filters));
@@ -256,6 +326,7 @@ function ComboPanel({ stage, ind, filters, yearIdx }) {
       </div>
       {open && (
         <>
+          {views.length > 1 && <ShowingPicker views={views} value={showing} onChange={setShowing} />}
           <ComboChart bars={bars} line={line} breakAt={ind.breakAt} yearIdx={yearIdx} color={stage.color} />
           <span className="caption">
             For discussion. Bars use the left axis (percent who took the ACT); the line uses the right axis (average
@@ -323,6 +394,17 @@ function ComboChart({ bars, line, breakAt, yearIdx, color }) {
   );
 }
 
+// These panels draw one place or group at a time; with several picked, this picks which one (the first by default).
+function ShowingPicker({ views, value, onChange }) {
+  const id = useId();
+  return (
+    <div className="rpt__slicer">
+      <label htmlFor={id} className="rpt__label">Showing</label>
+      <Select id={id} value={String(Math.min(value, views.length - 1))} onChange={(v) => onChange(Number(v))} options={views.map((p, i) => ({ value: String(i), label: p.label }))} />
+    </div>
+  );
+}
+
 // The same stripes as the .hatch class, for suppressed marks inside an SVG chart. Fill with `url(#id)`.
 function HatchPattern({ id }) {
   return (
@@ -337,8 +419,10 @@ function HatchPattern({ id }) {
 
 // "What graduates enroll in": the indicator split into parts, by credential or by type of college. Stacked columns
 // show the total as column height; "Show as lines" draws each part as its own line beside the total.
-function BreakdownPanel({ ind, filters, yearIdx }) {
+function BreakdownPanel({ ind, views, yearIdx }) {
   const [bdId, setBdId] = useState(ind.breakdowns[0].id);
+  const [showing, setShowing] = useState(0);
+  const { f: filters } = views[Math.min(showing, views.length - 1)];
   const [asLines, setAsLines] = useState(false);
   const bd = ind.breakdowns.find((b) => b.id === bdId);
   const columns = YEARS_ASC.map((_, i) => ({ total: sampleValue(ind, i, filters), parts: sampleBreakdown(ind, bd, i, filters) }));
@@ -360,6 +444,7 @@ function BreakdownPanel({ ind, filters, yearIdx }) {
             ))}
           </div>
         </div>
+        {views.length > 1 && <ShowingPicker views={views} value={showing} onChange={setShowing} />}
         <button type="button" className="rpt__switch" onClick={() => setAsLines(!asLines)}>
           {asLines ? 'Show as stacked columns' : 'Show as lines'}
         </button>
@@ -441,14 +526,30 @@ function StackedColumns({ parts, columns, yearIdx, name }) {
   );
 }
 
+// The places the Districts and schools table lists: every district, or at School level the schools of the picked
+// districts, named "School, District" when there are several, with each district's own row below them.
+function placeRows(filters) {
+  if (filters.level !== 'School') {
+    return { parents: [], rows: DISTRICTS.map((d) => ({ name: d, f: { level: 'District', district: d } })) };
+  }
+  const one = filters.districts.length === 1;
+  return {
+    parents: filters.districts.map((d) => ({ name: d, f: { level: 'District', district: d } })),
+    rows: SCHOOL_PLACES.filter((p) => filters.districts.includes(p.district))
+      .map((p) => ({ id: p.value, name: one ? p.school : p.value, f: { level: 'School', district: p.district, school: p.school } })),
+  };
+}
+
 // Districts and schools: one small chart or map per indicator, or the same values as a table. Schools have no map,
 // so at School level a map choice falls back to the charts.
 function PlacesPage({ stage, indicators, filters, yearIdx }) {
   const [chosen, setView] = useState('charts');
   const schools = filters.level === 'School';
   const view = schools && chosen === 'map' ? 'charts' : chosen;
-  const what = schools ? `Schools in ${filters.district}` : 'Districts';
+  const one = filters.districts.length === 1;
+  const what = !schools ? 'Districts' : one ? `Schools in ${filters.districts[0]}` : `Schools in ${filters.districts.length} districts`;
   const views = [['charts', 'Charts'], ...(schools ? [] : [['map', 'Map']]), ['table', 'Table']];
+  const picked = schools ? filters.schools : filters.level === 'District' ? filters.districts : [];
 
   return (
     <>
@@ -465,7 +566,7 @@ function PlacesPage({ stage, indicators, filters, yearIdx }) {
               <DistrictMap
                 rows={DISTRICTS.map((d) => ({ name: d, value: sampleValue(ind, yearIdx, { level: 'District', district: d }) }))}
                 color={stage.color}
-                picked={filters.level === 'District' ? filters.district : null}
+                picked={picked}
                 state={sampleValue(ind, yearIdx, STATE)}
                 name={`${ind.name}, ${filters.year}`}
               />
@@ -476,22 +577,36 @@ function PlacesPage({ stage, indicators, filters, yearIdx }) {
       {view === 'charts' && (
         <div className="rpt__multiples">
           {indicators.map((ind) => {
-            const rows = schools
-              ? [
-                  ...SCHOOLS.map((s) => ({ name: s, value: sampleValue(ind, yearIdx, { level: 'School', district: filters.district, school: s }) })),
-                  { name: filters.district, value: sampleValue(ind, yearIdx, { level: 'District', district: filters.district }), parent: true },
-                ]
-              : DISTRICTS.map((d) => ({ name: d, value: sampleValue(ind, yearIdx, { level: 'District', district: d }) }));
+            const state = sampleValue(ind, yearIdx, STATE);
             return (
               <div key={ind.id} className="rpt__panel">
                 <span className="rpt__label">{ind.name}</span>
-                <CompareBars
-                  rows={rows}
-                  color={stage.color}
-                  picked={schools ? filters.school : filters.level === 'District' ? filters.district : null}
-                  state={sampleValue(ind, yearIdx, STATE)}
-                  sort={!schools}
-                />
+                {!schools && (
+                  <CompareBars
+                    rows={DISTRICTS.map((d) => ({ name: d, value: sampleValue(ind, yearIdx, { level: 'District', district: d }) }))}
+                    color={stage.color}
+                    picked={picked}
+                    state={state}
+                  />
+                )}
+                {/* Schools are grouped by district, each group ending with its district's bar in gray. */}
+                {schools && filters.districts.map((d) => (
+                  <div key={d} className="stack gap-4">
+                    {!one && <span className="body-sm strong">{d}</span>}
+                    <CompareBars
+                      rows={[
+                        ...SCHOOL_PLACES.filter((p) => p.district === d)
+                          .map((p) => ({ id: p.value, name: p.school, value: sampleValue(ind, yearIdx, { level: 'School', district: d, school: p.school }) })),
+                        { name: d, value: sampleValue(ind, yearIdx, { level: 'District', district: d }), parent: true },
+                      ]}
+                      color={stage.color}
+                      picked={picked}
+                      state={state}
+                      sort={false}
+                      stateKey={d === filters.districts[filters.districts.length - 1]}
+                    />
+                  </div>
+                ))}
               </div>
             );
           })}
@@ -499,22 +614,20 @@ function PlacesPage({ stage, indicators, filters, yearIdx }) {
       )}
       {view === 'map'
         ? <span className="caption">{MAP_NOTE}</span>
-        : <span className="caption">* Suppressed: fewer than 10 students.{schools ? ` The gray bar is ${filters.district}.` : ' Bars are sorted from highest to lowest within each indicator.'}</span>}
+        : <span className="caption">* Suppressed: fewer than 10 students.{!schools ? ' Bars are sorted from highest to lowest within each indicator.' : one ? ` The gray bar is ${filters.districts[0]}.` : ' The gray bar under each district’s schools is the district.'}</span>}
     </>
   );
 }
 
 function PlacesTable({ stage, indicators, filters, yearIdx }) {
   const schools = filters.level === 'School';
-  const names = schools ? SCHOOLS : DISTRICTS;
-  const at = (ind, name) =>
-    sampleValue(ind, yearIdx, schools ? { level: 'School', district: filters.district, school: name } : { level: 'District', district: name });
+  const { parents, rows } = placeRows(filters);
   const cols = indicators.map((ind) => {
-    const values = names.map((n) => at(ind, n));
+    const values = rows.map((r) => sampleValue(ind, yearIdx, r.f));
     const shown = values.filter((v) => v != null);
     return { ind, values, lo: Math.min(...shown), hi: Math.max(...shown) };
   });
-  const picked = schools ? filters.school : filters.level === 'District' ? filters.district : null;
+  const picked = schools ? filters.schools : filters.level === 'District' ? filters.districts : [];
 
   // Five shades of the stage color, lightest = lowest within each indicator.
   function cellStyle(v, lo, hi) {
@@ -531,22 +644,22 @@ function PlacesTable({ stage, indicators, filters, yearIdx }) {
             <tr><th scope="col">{schools ? 'School' : 'District'}, {YEARS_ASC[yearIdx]}</th>{indicators.map((i) => <th key={i.id} scope="col">{i.name}</th>)}</tr>
           </thead>
           <tbody>
-            {names.map((n, r) => (
-              <tr key={n}>
-                <th scope="row" style={n === picked ? { textDecoration: 'underline' } : undefined}>{n}</th>
+            {rows.map((row, r) => (
+              <tr key={row.name}>
+                <th scope="row" style={picked.includes(row.id ?? row.name) ? { textDecoration: 'underline' } : undefined}>{row.name}</th>
                 {cols.map(({ ind, values, lo, hi }) => (
                   values[r] == null
-                    ? <td key={ind.id} className="hatch" title={`${n}, ${ind.name}: suppressed`}>*</td>
-                    : <td key={ind.id} style={cellStyle(values[r], lo, hi)} title={`${n}, ${ind.name}: ${values[r]}%`}>{values[r]}%</td>
+                    ? <td key={ind.id} className="hatch" title={`${row.name}, ${ind.name}: suppressed`}>*</td>
+                    : <td key={ind.id} style={cellStyle(values[r], lo, hi)} title={`${row.name}, ${ind.name}: ${values[r]}%`}>{values[r]}%</td>
                 ))}
               </tr>
             ))}
-            {schools && (
-              <tr className="rpt-heat__state">
-                <th scope="row">{filters.district}</th>
-                {indicators.map((ind) => <td key={ind.id}>{fmt(sampleValue(ind, yearIdx, { level: 'District', district: filters.district }))}</td>)}
+            {parents.map((row, k) => (
+              <tr key={row.name} className={k === 0 ? 'rpt-heat__state' : undefined}>
+                <th scope="row">{row.name}</th>
+                {indicators.map((ind) => <td key={ind.id}>{fmt(sampleValue(ind, yearIdx, row.f))}</td>)}
               </tr>
-            )}
+            ))}
             <tr className={schools ? undefined : 'rpt-heat__state'}>
               <th scope="row">South Dakota</th>
               {indicators.map((ind) => <td key={ind.id}>{fmt(sampleValue(ind, yearIdx, STATE))}</td>)}
@@ -554,7 +667,7 @@ function PlacesTable({ stage, indicators, filters, yearIdx }) {
           </tbody>
         </table>
       </div>
-      <span className="caption">Darker cells are higher within each indicator.</span>
+      <span className="caption">{picked.length ? 'Underlined: picked in the filters. ' : ''}Darker cells are higher within each indicator.</span>
     </div>
   );
 }
@@ -589,7 +702,7 @@ function GroupsPage({ stage, indicators, filters, yearIdx }) {
             {cat.groups.map((g) => {
               const f = { level: 'State', group: g };
               const v = sampleValue(ind, yearIdx, f);
-              const picked = filters.level === 'State' && filters.group === g;
+              const picked = filters.level === 'State' && filters.groups.includes(g);
               return (
                 <div
                   key={g}
@@ -622,26 +735,29 @@ function GroupsPage({ stage, indicators, filters, yearIdx }) {
 
 // Horizontal bars, 0 to 100%, with a gray tick for the state value on every row.
 // `wide` gives the names more room, for long names such as universities.
-function CompareBars({ rows, color, picked, state, sort = true, wide = false }) {
+// `picked` lists the names (or row ids) to highlight; the rest are lighter. `colors` gives a picked row its own color.
+// `stateKey={false}` leaves out the South Dakota key, for stacked groups that share one.
+function CompareBars({ rows, color, colors = {}, picked = [], state, sort = true, wide = false, stateKey = true }) {
   const list = sort ? [...rows].sort((a, b) => (b.value ?? -1) - (a.value ?? -1)) : rows;
   return (
     <div className={`rpt-compare${wide ? ' rpt-compare--wide' : ''}`}>
       {list.map((r) => {
-        const on = picked == null || r.name === picked;
+        const mine = picked.includes(r.id ?? r.name);
+        const on = !picked.length || mine;
         return (
           <div key={r.name} className="rpt-compare__row" title={`${r.name}: ${fmt(r.value)}${state != null ? ` (South Dakota ${state}%)` : ''}`}>
-            <span className={`rpt-compare__name${r.name === picked ? ' strong' : ''}`}>{r.name}</span>
+            <span className={`rpt-compare__name${mine ? ' strong' : ''}`}>{r.name}</span>
             <div className="rpt-compare__track rpt-compare__track--ref">
               {r.value == null
                 ? <div className="rpt-compare__bar hatch" style={{ width: '100%' }} />
-                : <div className="rpt-compare__bar" style={{ width: `${r.value}%`, background: r.parent ? REF : color, opacity: on || r.parent ? 1 : 0.45 }} />}
+                : <div className="rpt-compare__bar" style={{ width: `${r.value}%`, background: r.parent ? REF : colors[r.name] ?? color, opacity: on || r.parent ? 1 : 0.45 }} />}
               {state != null && <span className="rpt-compare__tick" style={{ left: `${state}%` }} />}
             </div>
             <span className="rpt-compare__value">{r.value == null ? '*' : `${r.value}%`}</span>
           </div>
         );
       })}
-      {state != null && <span className="caption"><i className="rpt-key rpt-key--tick" />South Dakota: {state}%</span>}
+      {state != null && stateKey && <span className="caption"><i className="rpt-key rpt-key--tick" />South Dakota: {state}%</span>}
     </div>
   );
 }
@@ -678,7 +794,7 @@ function mapSteps(values) {
 // Districts on a schematic South Dakota map, shaded in the stage color by which step of the range their value falls
 // in. The rest of the state is gray, since the sample has only five districts. Lon/lat are projected flat, with
 // longitude scaled by the cosine of the state's middle latitude.
-function DistrictMap({ rows, color, picked, state, name }) {
+function DistrictMap({ rows, color, picked = [], state, name }) {
   const [ref, width] = useWidth();
   const hatch = useId();
   const P = 8, LON0 = -104.05, LAT1 = 45.94, K = Math.cos((44.2 * Math.PI) / 180);
@@ -709,7 +825,7 @@ function DistrictMap({ rows, color, picked, state, name }) {
         <HatchPattern id={hatch} />
         <path d={path(SD_OUTLINE)} className="rpt-map__state" />
         {rows.map((r) => DISTRICT_SHAPES[r.name] && (
-          <path key={r.name} d={path(DISTRICT_SHAPES[r.name].shape)} fill={fill(r.value)} className={`rpt-map__district${r.name === picked ? ' rpt-map__district--picked' : ''}`}>
+          <path key={r.name} d={path(DISTRICT_SHAPES[r.name].shape)} fill={fill(r.value)} className={`rpt-map__district${picked.includes(r.name) ? ' rpt-map__district--picked' : ''}`}>
             <title>{`${r.name}: ${fmt(r.value)}${state != null ? ` (South Dakota ${state}%)` : ''}`}</title>
           </path>
         ))}
@@ -719,7 +835,7 @@ function DistrictMap({ rows, color, picked, state, name }) {
           const [x, y] = pt(geo.label);
           return (
             <text key={r.name} x={x} y={y - 2} textAnchor={geo.anchor} className="rpt-map__label" aria-hidden="true">
-              <tspan className={r.name === picked ? 'rpt-map__name--picked' : undefined}>{r.name}</tspan>
+              <tspan className={picked.includes(r.name) ? 'rpt-map__name--picked' : undefined}>{r.name}</tspan>
               <tspan x={x} dy={15} className="rpt-map__value">{r.value == null ? '*' : `${r.value}%`}</tspan>
             </text>
           );
@@ -763,12 +879,14 @@ function runs(values, breakAt) {
 }
 
 // Five-year line chart on a zoomed axis. Lines end in a value label; a legend names each line.
-function TrendLines({ series, breakAt, yearIdx, name }) {
+// `small` draws a shorter chart with year ticks shortened ("24–25") and no legend, for small multiples that share
+// one `range`.
+function TrendLines({ series, breakAt, yearIdx, name, range, small = false }) {
   const [ref, width] = useWidth();
-  const H = 220, T = 12, B = 28, L = 36, R = 44;
-  const W = Math.max(width, 240);
+  const H = small ? 150 : 220, T = 12, B = 28, L = 36, R = 44;
+  const W = Math.max(width, small ? 180 : 240);
   const x = (i) => L + (i * (W - L - R)) / (YEARS_ASC.length - 1);
-  const [lo, hi] = domain(series.map((s) => s.values));
+  const [lo, hi] = range ?? domain(series.map((s) => s.values));
   const step = hi - lo > 40 ? 20 : 10;
   const ticks = Array.from({ length: (hi - lo) / step + 1 }, (_, i) => lo + i * step);
   const y = (v) => T + (1 - (v - lo) / (hi - lo)) * (H - T - B);
@@ -784,7 +902,7 @@ function TrendLines({ series, breakAt, yearIdx, name }) {
 
   return (
     <div className="rpt-trend" ref={ref}>
-      {series.length > 1 && (
+      {series.length > 1 && !small && (
         <div className="rpt-trend__legend caption">
           {series.map((s) => (
             <span key={s.label}><i className={`rpt-key rpt-key--line${s.dashed ? ' rpt-key--dashed' : ''}`} style={{ '--key': s.color }} />{s.label}</span>
@@ -800,7 +918,7 @@ function TrendLines({ series, breakAt, yearIdx, name }) {
           </g>
         ))}
         {YEARS_ASC.map((yr, i) => (
-          <text key={yr} x={x(i)} y={H - 8} textAnchor="middle" className={`rpt-trend__tick${i === yearIdx ? ' rpt-trend__tick--on' : ''}`}>{yr}</text>
+          <text key={yr} x={x(i)} y={H - 8} textAnchor="middle" className={`rpt-trend__tick${i === yearIdx ? ' rpt-trend__tick--on' : ''}`}>{small ? yr.slice(2) : yr}</text>
         ))}
         {breakAt != null && <line x1={(x(breakAt - 1) + x(breakAt)) / 2} x2={(x(breakAt - 1) + x(breakAt)) / 2} y1={T} y2={H - B} className="rpt-trend__break" />}
         {[...series].reverse().map((s) => (
